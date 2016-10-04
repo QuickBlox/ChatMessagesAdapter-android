@@ -24,7 +24,7 @@ public class MessageTextViewLeft extends MessageTextView {
 
     @Override
     protected void setTextLayout() {
-        viewTextStub.setLayoutResource(R.layout.list_item_text_left);
+        viewTextStub.setLayoutResource(R.layout.widget_text_msg_left);
         layoutStub = (LinearLayout) viewTextStub.inflate();
     }
 }

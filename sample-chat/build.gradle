@@ -26,5 +26,6 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:24.2.1'
     testCompile 'junit:junit:4.12'
+    compile 'se.emilsjolander:stickylistheaders:2.7.0'
     compile project(':chat-development-kit')
 }

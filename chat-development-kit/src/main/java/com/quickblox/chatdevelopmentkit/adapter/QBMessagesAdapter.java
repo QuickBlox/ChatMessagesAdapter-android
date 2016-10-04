@@ -36,10 +36,10 @@ public class QBMessagesAdapter extends RecyclerView.Adapter<QBMessagesAdapter.QB
 
     private SparseIntArray containerLayoutRes = new SparseIntArray() {
         {
-            put(TYPE_OWN_TEXT, R.layout.widget_text_msg_right);
-            put(TYPE_OPPONENT_TEXT, R.layout.widget_text_msg_left);
-            put(TYPE_OWN_ATTACH, R.layout.widget_attach_msg_right);
-            put(TYPE_OPPONENT_ATTACH, R.layout.widget_attach_msg_left);
+            put(TYPE_OWN_TEXT, R.layout.list_item_text_right);
+            put(TYPE_OPPONENT_TEXT, R.layout.list_item_text_left);
+            put(TYPE_OWN_ATTACH, R.layout.list_item_attach_right);
+            put(TYPE_OPPONENT_ATTACH, R.layout.list_item_attach_left);
         }
     };
 
