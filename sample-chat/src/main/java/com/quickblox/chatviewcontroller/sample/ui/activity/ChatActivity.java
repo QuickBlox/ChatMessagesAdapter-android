@@ -13,25 +13,22 @@ import android.widget.ProgressBar;
 
 import com.quickblox.chat.model.QBChatDialog;
 import com.quickblox.chat.model.QBChatMessage;
-import com.quickblox.chat.model.QBDialogType;
 import com.quickblox.chatdevelopmentkit.adapter.QBMessagesAdapter;
 import com.quickblox.chatviewcontroller.R;
+import com.quickblox.chatviewcontroller.sample.ui.adapter.CustomMessageAdapter;
 import com.quickblox.chatviewcontroller.sample.utils.ChatHelper;
 import com.quickblox.core.QBEntityCallback;
 import com.quickblox.core.exception.QBResponseException;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
-
-import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
-import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 import static android.widget.LinearLayout.VERTICAL;
 
 public class ChatActivity extends AppCompatActivity {
     private static final String TAG = ChatActivity.class.getSimpleName();
 
+    private final String dialogID = "57b701e8a0eb472505000039";
     private int skipPagination = 0;
     private QBChatDialog chatDialog;
     private RecyclerView messagesListView;
@@ -47,7 +44,7 @@ public class ChatActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        chatDialog = new QBChatDialog("57ecdca7a0eb47557900000a");
+        chatDialog = new QBChatDialog(dialogID);
 
         messagesListView = (RecyclerView) findViewById(R.id.list_chat_messages);
         progressBar = (ProgressBar) findViewById(R.id.progress_chat);
@@ -59,28 +56,30 @@ public class ChatActivity extends AppCompatActivity {
         ChatHelper.getInstance().loadChatHistory(chatDialog, skipPagination, new QBEntityCallback<ArrayList<QBChatMessage>>() {
             @Override
             public void onSuccess(ArrayList<QBChatMessage> messages, Bundle args) {
-                Log.d(TAG, "loadChatHistoryonSuccess " + messages);
+                Log.d(TAG, "loadChatHistoryOnSuccess " + messages);
                 Collections.reverse(messages);
-                if (chatAdapter == null) {
-                    chatAdapter = new QBMessagesAdapter(ChatActivity.this, messages);
 
-                    LinearLayoutManager layoutManager
-                            = new LinearLayoutManager(ChatActivity.this, VERTICAL, false);
-                    messagesListView.setLayoutManager(layoutManager);
-                    messagesListView.setAdapter(chatAdapter);
-                    progressBar.setVisibility(View.GONE);
-                } else {
-                    chatAdapter.addList(messages);
-                }
+                chatAdapter = new CustomMessageAdapter(ChatActivity.this, messages);
+
+                LinearLayoutManager layoutManager
+                        = new LinearLayoutManager(ChatActivity.this, VERTICAL, false);
+                messagesListView.setLayoutManager(layoutManager);
+                messagesListView.setAdapter(chatAdapter);
+                progressBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onError(QBResponseException e) {
-//                progressBar.setVisibility(View.GONE);
-//                skipPagination -= ChatHelper.CHAT_HISTORY_ITEMS_PER_PAGE;
-//                snackbar = showErrorSnackbar(R.string.connection_error, e, null);
+                progressBar.setVisibility(View.GONE);
+                Log.e(TAG, "loadChatHistoryOnError " + e.getMessage());
             }
         });
-        skipPagination += ChatHelper.CHAT_HISTORY_ITEMS_PER_PAGE;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.d(TAG, "onBackPressed");
+        ChatHelper.getInstance().logout();
+        finish();
     }
 }

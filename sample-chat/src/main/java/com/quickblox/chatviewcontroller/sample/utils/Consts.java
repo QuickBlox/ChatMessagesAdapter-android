@@ -9,9 +9,13 @@ public interface Consts {
         String AUTH_SECRET = "BTFsj7Rtt27DAmT";
         String ACCOUNT_KEY = "rz2sXxBt5xgSxGjALDW6";
 
-        String userOwnLogin = "firstuserfirstuser";
-        String userOwnPassword = "x6Bt0VDy5";
-//        int userOwnId = 8904437;
+        String userOneLogin = "firstuserfirstuser";
+        String userTwoLogin = "seconduserseconduser";
+
+        String userPassword = "x6Bt0VDy5";
+
+        int userOneID = 16575824;
+        int userTwoID = 16575844;
 
         String USERS_TAG = "justfortest";
         String USERS_PASSWORD = "x6Bt0VDy5";

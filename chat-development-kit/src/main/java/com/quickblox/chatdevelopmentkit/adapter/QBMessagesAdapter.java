@@ -80,7 +80,7 @@ public class QBMessagesAdapter extends RecyclerView.Adapter<QBMessagesAdapter.QB
     }
 
     protected QBMessageViewHolder onCreateCustomViewHolder(ViewGroup parent, int viewType) {
-        Log.i(TAG, "You must create ViewHolder by your own");
+        Log.e(TAG, "You must create ViewHolder by your own");
         return null;
     }
 

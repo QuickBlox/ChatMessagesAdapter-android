@@ -1,13 +1,9 @@
 package com.quickblox.chatviewcontroller.sample.ui.activity;
 
-import android.content.pm.PackageInstaller;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 
-import com.quickblox.auth.QBAuth;
-import com.quickblox.auth.model.QBSession;
 import com.quickblox.chatviewcontroller.R;
 import com.quickblox.chatviewcontroller.sample.utils.ChatHelper;
 import com.quickblox.chatviewcontroller.sample.utils.Consts;
@@ -23,14 +19,11 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_splash);
-
         loginToChat();
-
     }
 
     private void loginToChat() {
-        QBUser qbUser = new QBUser(Consts.userOwnLogin, Consts.userOwnPassword);
-//        qbUser.setId(Consts.userOwnId);
+        QBUser qbUser = new QBUser(Consts.userTwoLogin, Consts.userPassword);
 
         ChatHelper.getInstance().login(qbUser, new QBEntityCallback<Void>() {
             @Override
