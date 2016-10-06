@@ -29,17 +29,17 @@ import java.util.Locale;
 public class QBMessagesAdapter extends RecyclerView.Adapter<QBMessagesAdapter.QBMessageViewHolder> implements QBBaseAdapter<QBChatMessage> {
     private static final String TAG = QBMessagesAdapter.class.getSimpleName();
 
-    protected static final int TYPE_OWN_TEXT = 1;
-    protected static final int TYPE_OPPONENT_TEXT = 2;
-    protected static final int TYPE_OWN_ATTACH = 3;
-    protected static final int TYPE_OPPONENT_ATTACH = 4;
+    protected static final int TYPE_TEXT_RIGHT = 1;
+    protected static final int TYPE_TEXT_LEFT = 2;
+    protected static final int TYPE_ATTACH_RIGHT = 3;
+    protected static final int TYPE_ATTACH_LEFT = 4;
 
     private SparseIntArray containerLayoutRes = new SparseIntArray() {
         {
-            put(TYPE_OWN_TEXT, R.layout.list_item_text_right);
-            put(TYPE_OPPONENT_TEXT, R.layout.list_item_text_left);
-            put(TYPE_OWN_ATTACH, R.layout.list_item_attach_right);
-            put(TYPE_OPPONENT_ATTACH, R.layout.list_item_attach_left);
+            put(TYPE_TEXT_RIGHT, R.layout.list_item_text_right);
+            put(TYPE_TEXT_LEFT, R.layout.list_item_text_left);
+            put(TYPE_ATTACH_RIGHT, R.layout.list_item_attach_right);
+            put(TYPE_ATTACH_LEFT, R.layout.list_item_attach_left);
         }
     };
 
@@ -59,16 +59,16 @@ public class QBMessagesAdapter extends RecyclerView.Adapter<QBMessagesAdapter.QB
     @Override
     public QBMessageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
-            case TYPE_OWN_TEXT:
+            case TYPE_TEXT_RIGHT:
                 qbViewHolder = new TextMessageHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_text_message, R.id.msg_text_time_message);
                 return qbViewHolder;
-            case TYPE_OPPONENT_TEXT:
+            case TYPE_TEXT_LEFT:
                 qbViewHolder = new TextMessageHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_text_message, R.id.msg_text_time_message);
                 return qbViewHolder;
-            case TYPE_OWN_ATTACH:
+            case TYPE_ATTACH_RIGHT:
                 qbViewHolder = new ImageAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_image_attach, R.id.msg_progressbar_attach);
                 return qbViewHolder;
-            case TYPE_OPPONENT_ATTACH:
+            case TYPE_ATTACH_LEFT:
                 qbViewHolder = new ImageAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_image_attach, R.id.msg_progressbar_attach);
                 return qbViewHolder;
 
@@ -93,19 +93,19 @@ public class QBMessagesAdapter extends RecyclerView.Adapter<QBMessagesAdapter.QB
         QBChatMessage chatMessage = getItem(position);
         int valueType = getItemViewType(position);
         switch (valueType) {
-            case TYPE_OWN_TEXT:
-                onBindViewMsgOwnHolder((TextMessageHolder) holder, chatMessage, position);
+            case TYPE_TEXT_RIGHT:
+                onBindViewMsgRightHolder((TextMessageHolder) holder, chatMessage, position);
                 break;
-            case TYPE_OPPONENT_TEXT:
-                onBindViewMsgOpponentHolder((TextMessageHolder) holder, chatMessage, position);
+            case TYPE_TEXT_LEFT:
+                onBindViewMsgLeftHolder((TextMessageHolder) holder, chatMessage, position);
                 break;
-            case TYPE_OWN_ATTACH:
-                Log.i(TAG, "onBindViewHolder TYPE_ATTACHMENT_MESSAGE_OWN");
-                onBindViewAttachOwnHolder((ImageAttachHolder) holder, chatMessage, position);
+            case TYPE_ATTACH_RIGHT:
+                Log.i(TAG, "onBindViewHolder TYPE_ATTACH_RIGHT");
+                onBindViewAttachRightHolder((ImageAttachHolder) holder, chatMessage, position);
                 break;
-            case TYPE_OPPONENT_ATTACH:
-                Log.i(TAG, "onBindViewHolder TYPE_ATTACHMENT_MESSAGE_OPPONENT");
-                onBindViewAttachOpponentHolder((ImageAttachHolder) holder, chatMessage, position);
+            case TYPE_ATTACH_LEFT:
+                Log.i(TAG, "onBindViewHolder TYPE_ATTACH_LEFT");
+                onBindViewAttachLeftHolder((ImageAttachHolder) holder, chatMessage, position);
                 break;
             default:
                 onBindViewCustomHolder(holder, chatMessage, position);
@@ -117,7 +117,7 @@ public class QBMessagesAdapter extends RecyclerView.Adapter<QBMessagesAdapter.QB
     protected void onBindViewCustomHolder(QBMessageViewHolder holder, QBChatMessage chatMessage, int position) {
     }
 
-    protected void onBindViewAttachOwnHolder(ImageAttachHolder holder, QBChatMessage chatMessage, int position) {
+    protected void onBindViewAttachRightHolder(ImageAttachHolder holder, QBChatMessage chatMessage, int position) {
         displayAttachment(holder, position);
 
         int valueType = getItemViewType(position);
@@ -127,7 +127,7 @@ public class QBMessagesAdapter extends RecyclerView.Adapter<QBMessagesAdapter.QB
         }
     }
 
-    protected void onBindViewAttachOpponentHolder(ImageAttachHolder holder, QBChatMessage chatMessage, int position) {
+    protected void onBindViewAttachLeftHolder(ImageAttachHolder holder, QBChatMessage chatMessage, int position) {
         displayAttachment(holder, position);
 
         int valueType = getItemViewType(position);
@@ -137,7 +137,7 @@ public class QBMessagesAdapter extends RecyclerView.Adapter<QBMessagesAdapter.QB
         }
     }
 
-    protected void onBindViewMsgOpponentHolder(TextMessageHolder holder, QBChatMessage chatMessage, int position) {
+    protected void onBindViewMsgLeftHolder(TextMessageHolder holder, QBChatMessage chatMessage, int position) {
         holder.messageTextView.setText(chatMessage.getBody());
         holder.timeTextMessageTextView.setText(getDate(chatMessage.getDateSent() * 1000));
 
@@ -148,7 +148,7 @@ public class QBMessagesAdapter extends RecyclerView.Adapter<QBMessagesAdapter.QB
         }
     }
 
-    protected void onBindViewMsgOwnHolder(TextMessageHolder holder, QBChatMessage chatMessage, int position) {
+    protected void onBindViewMsgRightHolder(TextMessageHolder holder, QBChatMessage chatMessage, int position) {
         holder.messageTextView.setText(chatMessage.getBody());
         holder.timeTextMessageTextView.setText(getDate(chatMessage.getDateSent() * 1000));
 
@@ -193,24 +193,16 @@ public class QBMessagesAdapter extends RecyclerView.Adapter<QBMessagesAdapter.QB
             Log.d("QBMessagesAdapter", "attachment.getType= " + attachment.getType());
 
             if (QBAttachment.PHOTO_TYPE.equals(attachment.getType())) {
-                if (isIncoming(chatMessage)) {
-                    return TYPE_OPPONENT_ATTACH;
-                } else {
-                    return TYPE_OWN_ATTACH;
-                }
+                return isIncoming(chatMessage) ? TYPE_ATTACH_LEFT : TYPE_ATTACH_RIGHT;
             }
 
         } else {
-            if (isIncoming(chatMessage)) {
-                return TYPE_OPPONENT_TEXT;
-            } else {
-                return TYPE_OWN_TEXT;
-            }
+            return isIncoming(chatMessage) ? TYPE_TEXT_LEFT : TYPE_TEXT_RIGHT;
         }
-        return customViewType();
+        return customViewType(position);
     }
 
-    protected int customViewType() {
+    protected int customViewType(int position) {
         return -1;
     }
 
@@ -236,7 +228,7 @@ public class QBMessagesAdapter extends RecyclerView.Adapter<QBMessagesAdapter.QB
         return chatMessage.getSenderId() != null && !chatMessage.getSenderId().equals(currentUser.getId());
     }
 
-    private boolean hasAttachments(QBChatMessage chatMessage) {
+    protected boolean hasAttachments(QBChatMessage chatMessage) {
         Collection<QBAttachment> attachments = chatMessage.getAttachments();
         return attachments != null && !attachments.isEmpty();
     }

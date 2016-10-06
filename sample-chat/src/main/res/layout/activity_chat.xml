@@ -2,14 +2,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout_chat_container"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    style="@style/MatchParent"
     tools:ignore="RtlHardcoded">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/list_chat_messages"
         style="@style/ListViewWithoutDividerStyle"
-        android:layout_above="@+id/layout_attachment_preview_container"/>
+        android:layout_above="@+id/layout_attachment_preview_container" />
+
     <ProgressBar
         android:id="@+id/progress_chat"
         style="@style/CenterProgressBarStyle" />
@@ -36,8 +36,7 @@
 
     <LinearLayout
         android:id="@+id/layout_chat_send_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        style="@style/MatchWidth"
         android:layout_alignParentBottom="true"
         android:background="?attr/colorPrimary"
         android:orientation="horizontal">
@@ -52,8 +51,8 @@
         <EditText
             android:id="@+id/edit_chat_message"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:hint="@string/chat_edit_text_hint"
             android:inputType="textShortMessage"
             android:maxLength="1024" />

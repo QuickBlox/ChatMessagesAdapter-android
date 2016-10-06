@@ -6,15 +6,19 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.quickblox.chat.QBChatService;
 import com.quickblox.chat.model.QBAttachment;
 import com.quickblox.chat.model.QBChatMessage;
 import com.quickblox.chatdevelopmentkit.adapter.QBMessagesAdapter;
-import com.quickblox.chatviewcontroller.sample.utils.Consts;
+import com.quickblox.chatviewcontroller.R;
+import com.quickblox.users.model.QBUser;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -22,17 +26,61 @@ import java.util.List;
 public class CustomMessageAdapter extends QBMessagesAdapter {
     private static final String TAG = CustomMessageAdapter.class.getSimpleName();
     private RequestListener glideRequestListener;
-    private final String userOneAvatarUrl = "https://qbprod.s3.amazonaws.com/c91b4cdf084b4ecdb0989ce8b0e8c57900";
-    private final String userTwoAvatarUrl = "https://qbprod.s3.amazonaws.com/0263a8c8840b440584311da82980351500";
+    protected static final int TYPE_OWN_VIDEO_ATTACH = 5;
+    protected static final int TYPE_OPPONENT_VIDEO_ATTACH = 6;
 
-    public CustomMessageAdapter(Context context, List<QBChatMessage> chatMessages) {
+    private QBUser currentUser;
+    private QBUser opponentUser;
+
+    public CustomMessageAdapter(Context context, List<QBChatMessage> chatMessages, ArrayList<QBUser> qbUsers) {
         super(context, chatMessages);
+        setUsers(qbUsers);
     }
 
+    private void setUsers(ArrayList<QBUser> qbUsers) {
+        int currentUserID = QBChatService.getInstance().getUser().getId();
+
+        for (QBUser user : qbUsers) {
+            if (user.getId().equals(currentUserID)) {
+                currentUser = user;
+            } else {
+                opponentUser = user;
+            }
+        }
+    }
+
+    @Override
+    protected int customViewType(int position) {
+        QBChatMessage chatMessage = getItem(position);
+
+        if (hasAttachments(chatMessage)) {
+            QBAttachment attachment = chatMessage.getAttachments().iterator().next();
+            if (QBAttachment.VIDEO_TYPE.equals(attachment.getType())) {
+                return isIncoming(chatMessage) ? TYPE_OPPONENT_VIDEO_ATTACH : TYPE_OWN_VIDEO_ATTACH;
+            }
+        }
+        return -1;
+    }
+
+    @Override
     protected QBMessageViewHolder onCreateCustomViewHolder(ViewGroup parent, int viewType) {
         Log.d(TAG, "onCreateCustomViewHolder viewType= " + viewType);
-        return new ImageAttachHolder(inflater.inflate(com.quickblox.chatdevelopmentkit.R.layout.list_item_attach_left, parent, false),
-                com.quickblox.chatdevelopmentkit.R.id.msg_image_attach, com.quickblox.chatdevelopmentkit.R.id.msg_progressbar_attach);
+        return viewType == TYPE_OWN_VIDEO_ATTACH ? new ImageAttachHolder(inflater.inflate(com.quickblox.chatdevelopmentkit.R.layout.list_item_attach_right, parent, false),
+                com.quickblox.chatdevelopmentkit.R.id.msg_image_attach, com.quickblox.chatdevelopmentkit.R.id.msg_progressbar_attach) : null;
+    }
+
+
+    @Override
+    protected void onBindViewCustomHolder(QBMessageViewHolder holder, QBChatMessage chatMessage, int position) {
+        displayAttachment(holder, position);
+        holder.avatar.setVisibility(View.GONE);
+    }
+
+    @Override
+    protected void onBindViewMsgRightHolder(TextMessageHolder holder, QBChatMessage chatMessage, int position) {
+        TextView view = (TextView) holder.itemView.findViewById(R.id.custom_text_view);
+        view.setText(currentUser.getFullName());
+        super.onBindViewMsgRightHolder(holder, chatMessage, position);
     }
 
     @Override
@@ -83,6 +131,7 @@ public class CustomMessageAdapter extends QBMessagesAdapter {
 
     @Override
     public String obtainAvatarUrl(int valueType, QBChatMessage chatMessage) {
-        return chatMessage.getSenderId() == Consts.userOneID ? userOneAvatarUrl : userTwoAvatarUrl;
+        return currentUser.getId().equals(chatMessage.getSenderId()) ?
+                currentUser.getCustomData() : opponentUser.getCustomData();
     }
 }

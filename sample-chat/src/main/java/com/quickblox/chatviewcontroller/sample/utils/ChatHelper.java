@@ -35,6 +35,7 @@ public class ChatHelper {
             QBSettings.getInstance().setLogLevel(LogLevel.DEBUG);
             QBChatService.setDebugEnabled(true);
             QBChatService.setConfigurationBuilder(buildChatConfigs());
+            QBChatService.setDefaultPacketReplyTimeout(20 * 1000);
             instance = new ChatHelper();
         }
         return instance;
@@ -53,24 +54,25 @@ public class ChatHelper {
         return configurationBuilder;
     }
 
-    public void login(final QBUser user, final QBEntityCallback<Void> callback) {
+    public void login(final QBUser user, final QBEntityCallback<ArrayList<QBUser>> callback) {
         // Create REST API session on QuickBlox
         QBAuth.createSession(user).performAsync(new QBEntityCallback<QBSession>() {
             @Override
             public void onSuccess(QBSession session, Bundle args) {
                 user.setId(session.getUserId());
-                loginToChat(user, callback);
+                UserHelper.getUsers(callback);
             }
 
             @Override
             public void onError(QBResponseException e) {
-                Log.e(TAG, "onError " + e.getMessage());
+                callback.onError(e);
             }
         });
     }
 
-    private void loginToChat(final QBUser user, final QBEntityCallback<Void> callback) {
+    public void loginToChat(final QBUser user, final QBEntityCallback<Void> callback) {
         if (qbChatService.isLoggedIn()) {
+            Log.d(TAG, "qbChatService.isLoggedIn()");
             callback.onSuccess(null, null);
             return;
         }

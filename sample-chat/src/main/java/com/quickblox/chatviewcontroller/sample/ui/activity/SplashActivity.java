@@ -11,25 +11,28 @@ import com.quickblox.core.QBEntityCallback;
 import com.quickblox.core.exception.QBResponseException;
 import com.quickblox.users.model.QBUser;
 
+import java.util.ArrayList;
+
 public class SplashActivity extends AppCompatActivity {
     private static final String TAG = SplashActivity.class.getSimpleName();
+
+    private QBUser qbUser = new QBUser(Consts.userTwoLogin, Consts.userPassword);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_splash);
-        loginToChat();
+        loginToQB();
     }
 
-    private void loginToChat() {
-        QBUser qbUser = new QBUser(Consts.userTwoLogin, Consts.userPassword);
+    private void loginToQB() {
 
-        ChatHelper.getInstance().login(qbUser, new QBEntityCallback<Void>() {
+        ChatHelper.getInstance().login(qbUser, new QBEntityCallback<ArrayList<QBUser>>() {
             @Override
-            public void onSuccess(Void aVoid, Bundle bundle) {
-                Log.d(TAG, "login to chat onSuccess ");
-                ChatActivity.start(SplashActivity.this);
+            public void onSuccess(ArrayList<QBUser> qbUsers, Bundle bundle) {
+                Log.d(TAG, "loginToQB onSuccess");
+                loginToChat(qbUsers);
             }
 
             @Override
@@ -38,4 +41,20 @@ public class SplashActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void loginToChat(final ArrayList<QBUser> qbUsers) {
+        ChatHelper.getInstance().loginToChat(qbUser, new QBEntityCallback<Void>() {
+            @Override
+            public void onSuccess(Void aVoid, Bundle bundle) {
+                Log.d(TAG, "loginToChat onSuccess");
+                ChatActivity.start(SplashActivity.this, qbUsers);
+            }
+
+            @Override
+            public void onError(QBResponseException e) {
+                Log.d(TAG, "onError " + e.getMessage());
+            }
+        });
+    }
+
 }
