@@ -14,9 +14,18 @@ import com.quickblox.core.QBEntityCallback;
 import com.quickblox.core.QBSettings;
 import com.quickblox.core.exception.QBResponseException;
 import com.quickblox.core.request.QBRequestGetBuilder;
+import com.quickblox.core.server.Performer;
+import com.quickblox.extensions.RxJavaPerformProcessor;
+import com.quickblox.users.QBUsers;
 import com.quickblox.users.model.QBUser;
 
 import java.util.ArrayList;
+
+import rx.Observable;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 public class ChatHelper {
     private static final String TAG = ChatHelper.class.getSimpleName();
@@ -54,20 +63,41 @@ public class ChatHelper {
         return configurationBuilder;
     }
 
-    public void login(final QBUser user, final QBEntityCallback<ArrayList<QBUser>> callback) {
-        // Create REST API session on QuickBlox
-        QBAuth.createSession(user).performAsync(new QBEntityCallback<QBSession>() {
-            @Override
-            public void onSuccess(QBSession session, Bundle args) {
-                user.setId(session.getUserId());
-                UserHelper.getUsers(callback);
-            }
+    public void loginAndGetUsers(final QBUser user, final QBEntityCallback<ArrayList<QBUser>> callback) {
+        final ArrayList<Integer> usersIds = new ArrayList<>();
+        usersIds.add(Consts.userOneID);
+        usersIds.add(Consts.userTwoID);
 
-            @Override
-            public void onError(QBResponseException e) {
-                callback.onError(e);
-            }
-        });
+        Performer<QBSession> performer = QBAuth.createSession(user);
+        Observable<QBSession> observable = performer.convertTo(RxJavaPerformProcessor.INSTANCE);
+
+        observable
+                .flatMap(new Func1<QBSession, Observable<ArrayList<QBUser>>>() {
+                    @Override
+                    public Observable<ArrayList<QBUser>> call(QBSession qbSession) {
+                        user.setId(qbSession.getUserId());
+                        return QBUsers.getUsersByIDs(usersIds, null).convertTo(RxJavaPerformProcessor.INSTANCE);
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<ArrayList<QBUser>>() {
+                    @Override
+                    public void onCompleted() {
+                        Log.d(TAG, "onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d(TAG, "onError= " + e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(ArrayList<QBUser> qbUsers) {
+                        Log.d(TAG, "qbUsers= " + qbUsers.toString());
+                        callback.onSuccess(qbUsers, Bundle.EMPTY);
+                    }
+                });
     }
 
     public void loginToChat(final QBUser user, final QBEntityCallback<Void> callback) {

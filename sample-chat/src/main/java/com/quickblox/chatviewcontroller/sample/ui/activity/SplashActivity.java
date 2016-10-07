@@ -28,7 +28,7 @@ public class SplashActivity extends AppCompatActivity {
 
     private void loginToQB() {
 
-        ChatHelper.getInstance().login(qbUser, new QBEntityCallback<ArrayList<QBUser>>() {
+        ChatHelper.getInstance().loginAndGetUsers(qbUser, new QBEntityCallback<ArrayList<QBUser>>() {
             @Override
             public void onSuccess(ArrayList<QBUser> qbUsers, Bundle bundle) {
                 Log.d(TAG, "loginToQB onSuccess");
@@ -56,5 +56,4 @@ public class SplashActivity extends AppCompatActivity {
             }
         });
     }
-
 }
