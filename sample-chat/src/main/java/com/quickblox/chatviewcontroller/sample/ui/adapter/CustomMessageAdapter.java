@@ -11,11 +11,13 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.google.gson.Gson;
 import com.quickblox.chat.QBChatService;
 import com.quickblox.chat.model.QBAttachment;
 import com.quickblox.chat.model.QBChatMessage;
 import com.quickblox.chatdevelopmentkit.adapter.QBMessagesAdapter;
 import com.quickblox.chatviewcontroller.R;
+import com.quickblox.chatviewcontroller.sample.utils.UserData;
 import com.quickblox.users.model.QBUser;
 
 import java.util.ArrayList;
@@ -31,6 +33,8 @@ public class CustomMessageAdapter extends QBMessagesAdapter {
 
     private QBUser currentUser;
     private QBUser opponentUser;
+    private UserData currentUserData;
+    private UserData opponentUserData;
 
     public CustomMessageAdapter(Context context, List<QBChatMessage> chatMessages, ArrayList<QBUser> qbUsers) {
         super(context, chatMessages);
@@ -47,6 +51,12 @@ public class CustomMessageAdapter extends QBMessagesAdapter {
                 opponentUser = user;
             }
         }
+        setUsersData();
+    }
+
+    private void setUsersData() {
+        currentUserData = new Gson().fromJson(currentUser.getCustomData(), UserData.class);
+        opponentUserData = new Gson().fromJson(opponentUser.getCustomData(), UserData.class);
     }
 
     @Override
@@ -132,6 +142,6 @@ public class CustomMessageAdapter extends QBMessagesAdapter {
     @Override
     public String obtainAvatarUrl(int valueType, QBChatMessage chatMessage) {
         return currentUser.getId().equals(chatMessage.getSenderId()) ?
-                currentUser.getCustomData() : opponentUser.getCustomData();
+                currentUserData.getUserAvatar() : opponentUserData.getUserAvatar();
     }
 }
