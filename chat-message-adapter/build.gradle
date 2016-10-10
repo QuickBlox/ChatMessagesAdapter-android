@@ -27,13 +27,16 @@ dependencies {
     compile "com.quickblox:quickblox-android-sdk-chat:$rootProject.qbSdkVersion"
     compile 'com.android.support:recyclerview-v7:24.2.1'
     compile 'de.hdodenhof:circleimageview:2.1.0'
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
+
 }
 
 // ChatViewController version. Update it from release to release.
 def versionName = "1.0"
+
+def sharedManifest = manifest {
+    attributes("Implementation-Version": versionName,
+            "Created-By": "QuickBlox")
+}
 
 def gitArtifactsRepo = System.getenv('QUICKBLOX_ANDROID_SDK_RELEASES_DIR');
 
@@ -45,7 +48,7 @@ task gitPush << {
     if (!status.isClean()) {
         println "'git push' is executing.."
 //        grGit.add(patterns: ['com/quickblox'])
-//        grGit.commit(message: 'commit new version:' + rootProject.versionName + $buildFile.parentFile.name)
+//        grGit.commit(message: 'commit new version:' + rootProject.versionName)
 //        grGit.push()
         println "'git push' done"
     }
@@ -64,15 +67,15 @@ uploadArchives {
 
             developers {
                 developer {
-                    id 'igorkhomenko'
-                    name 'Igor Khomenko'
-                    email 'igore@quickblox.com'
-                    organizationUrl 'https://quickblox.com'
-                }
-                developer {
                     id 'vadimfite'
                     name 'Vadim Fite'
                     email 'vadim.fite@quickblox.com'
+                    organizationUrl 'https://quickblox.com'
+                }
+                developer {
+                    id 'romanpronin'
+                    name 'Roman Pronin'
+                    email 'roman.pronin@injoit.com'
                     organizationUrl 'https://quickblox.com'
                 }
             }
@@ -83,6 +86,6 @@ uploadArchives {
         }
     }
 
-    uploadArchives.finalizedBy gitPush
+//    uploadArchives.finalizedBy gitPush
 
 }

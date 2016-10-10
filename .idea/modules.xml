@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ChatViewController.iml" filepath="$PROJECT_DIR$/ChatViewController.iml" />
-      <module fileurl="file://$PROJECT_DIR$/chat-development-kit/chat-development-kit.iml" filepath="$PROJECT_DIR$/chat-development-kit/chat-development-kit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/chat-message-adapter/chat-message-adapter.iml" filepath="$PROJECT_DIR$/chat-message-adapter/chat-message-adapter.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample-chat/sample-chat.iml" filepath="$PROJECT_DIR$/sample-chat/sample-chat.iml" />
     </modules>
   </component>

@@ -1,1 +1,1 @@
-include ':sample-chat', ':chat-development-kit'
+include ':sample-chat', ':chat-message-adapter'
