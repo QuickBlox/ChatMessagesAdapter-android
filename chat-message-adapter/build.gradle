@@ -1,5 +1,3 @@
-import org.ajoberstar.grgit.*
-
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
@@ -27,65 +25,5 @@ dependencies {
     compile "com.quickblox:quickblox-android-sdk-chat:$rootProject.qbSdkVersion"
     compile 'com.android.support:recyclerview-v7:24.2.1'
     compile 'de.hdodenhof:circleimageview:2.1.0'
-
-}
-
-// ChatViewController version. Update it from release to release.
-def versionName = "1.0"
-
-def sharedManifest = manifest {
-    attributes("Implementation-Version": versionName,
-            "Created-By": "QuickBlox")
-}
-
-def gitArtifactsRepo = System.getenv('QUICKBLOX_ANDROID_SDK_RELEASES_DIR');
-
-task gitPush << {
-    println 'QUICKBLOX_ANDROID_SDK_RELEASES_DIR=' + gitArtifactsRepo
-    def grGit = Grgit.open(dir: gitArtifactsRepo)
-    def status = grGit.status()
-    println "status= " + status
-    if (!status.isClean()) {
-        println "'git push' is executing.."
-//        grGit.add(patterns: ['com/quickblox'])
-//        grGit.commit(message: 'commit new version:' + rootProject.versionName)
-//        grGit.push()
-        println "'git push' done"
-    }
-}
-
-uploadArchives {
-    repositories.mavenDeployer {
-        repository(url: "file://$gitArtifactsRepo")
-
-        pom.project {
-            name 'ChatViewController'
-            packaging 'aar'
-            version = versionName
-            inceptionYear '2016'
-            url 'https://quickblox.com'
-
-            developers {
-                developer {
-                    id 'vadimfite'
-                    name 'Vadim Fite'
-                    email 'vadim.fite@quickblox.com'
-                    organizationUrl 'https://quickblox.com'
-                }
-                developer {
-                    id 'romanpronin'
-                    name 'Roman Pronin'
-                    email 'roman.pronin@injoit.com'
-                    organizationUrl 'https://quickblox.com'
-                }
-            }
-
-            dependencies {
-                version = versionName
-            }
-        }
-    }
-
-//    uploadArchives.finalizedBy gitPush
 
 }
