@@ -1,4 +1,4 @@
-package com.quickblox.chatdevelopmentkit.widget;
+package com.quickblox.ui.kit.chatmessage.adapter.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -12,7 +12,7 @@ import android.view.ViewStub;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-import com.quickblox.chatdevelopmentkit.R;
+import com.quickblox.ui.kit.chatmessage.adapter.R;
 
 
 public abstract class MessageTextView extends FrameLayout {

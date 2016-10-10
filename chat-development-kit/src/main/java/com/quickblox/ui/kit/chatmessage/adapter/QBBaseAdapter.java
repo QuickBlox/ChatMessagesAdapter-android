@@ -1,4 +1,4 @@
-package com.quickblox.chatdevelopmentkit.adapter;
+package com.quickblox.ui.kit.chatmessage.adapter;
 
 import android.widget.ImageView;
 import com.quickblox.chat.model.QBChatMessage;

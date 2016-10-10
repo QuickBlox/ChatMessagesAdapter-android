@@ -1,9 +1,9 @@
-package com.quickblox.chatviewcontroller.sample;
+package com.quickblox.sample.chatadapter;
 
 import android.app.Application;
 
-import com.quickblox.chatviewcontroller.sample.utils.Consts;
 import com.quickblox.core.QBSettings;
+import com.quickblox.sample.chatadapter.utils.Consts;
 
 
 public class App extends Application {

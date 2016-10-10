@@ -1,14 +1,14 @@
-package com.quickblox.chatviewcontroller.sample.ui.activity;
+package com.quickblox.sample.chatadapter.ui.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.quickblox.chatviewcontroller.R;
-import com.quickblox.chatviewcontroller.sample.utils.ChatHelper;
-import com.quickblox.chatviewcontroller.sample.utils.Consts;
 import com.quickblox.core.QBEntityCallback;
 import com.quickblox.core.exception.QBResponseException;
+import com.quickblox.sample.chatadapter.R;
+import com.quickblox.sample.chatadapter.utils.ChatHelper;
+import com.quickblox.sample.chatadapter.utils.Consts;
 import com.quickblox.users.model.QBUser;
 
 import java.util.ArrayList;

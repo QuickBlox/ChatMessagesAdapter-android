@@ -43,42 +43,42 @@ task gitPush << {
     def status = grGit.status()
     if (!status.isClean()) {
         println "'git push' is executing.."
-//        grGit.add(patterns: ['com/quickblox'])
-//        grGit.commit(message: 'commit new version:' + rootProject.versionName)
-//        grGit.push()
+        grGit.add(patterns: ['com/quickblox'])
+        grGit.commit(message: 'commit new version:' + rootProject.versionName + $buildFile.parentFile.name)
+        grGit.push()
         println "'git push' done"
     }
 }
 
 uploadArchives {
-        repositories.mavenDeployer {
-            repository(url: "file://$gitArtifactsRepo")
+    repositories.mavenDeployer {
+        repository(url: "file://$gitArtifactsRepo")
 
-            pom.project {
-                name 'ChatViewController'
-                packaging 'aar'
-                version = versionName
-                inceptionYear '2016'
-                url 'https://quickblox.com'
+        pom.project {
+            name 'ChatViewController'
+            packaging 'aar'
+            version = versionName
+            inceptionYear '2016'
+            url 'https://quickblox.com'
 
-                developers {
-                    developer {
-                        id 'igorkhomenko'
-                        name 'Igor Khomenko'
-                        email 'igore@quickblox.com'
-                        organizationUrl 'https://quickblox.com'
-                    }
-                    developer {
-                        id 'vadimfite'
-                        name 'Vadim Fite'
-                        email 'vadim.fite@quickblox.com'
-                        organizationUrl 'https://quickblox.com'
-                    }
+            developers {
+                developer {
+                    id 'igorkhomenko'
+                    name 'Igor Khomenko'
+                    email 'igore@quickblox.com'
+                    organizationUrl 'https://quickblox.com'
                 }
-
-                dependencies {
-                    version = versionName
+                developer {
+                    id 'vadimfite'
+                    name 'Vadim Fite'
+                    email 'vadim.fite@quickblox.com'
+                    organizationUrl 'https://quickblox.com'
                 }
             }
+
+            dependencies {
+                version = versionName
+            }
         }
+    }
 }

@@ -1,4 +1,4 @@
-package com.quickblox.chatdevelopmentkit.adapter;
+package com.quickblox.ui.kit.chatmessage.adapter;
 
 import android.content.Context;
 import android.support.annotation.IdRes;
@@ -17,7 +17,6 @@ import android.widget.TextView;
 import com.quickblox.chat.QBChatService;
 import com.quickblox.chat.model.QBAttachment;
 import com.quickblox.chat.model.QBChatMessage;
-import com.quickblox.chatdevelopmentkit.R;
 import com.quickblox.users.model.QBUser;
 
 import java.text.SimpleDateFormat;

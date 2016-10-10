@@ -1,4 +1,4 @@
-package com.quickblox.chatviewcontroller.sample.ui.activity;
+package com.quickblox.sample.chatadapter.ui.activity;
 
 
 import android.content.Context;
@@ -13,10 +13,10 @@ import android.widget.ProgressBar;
 
 import com.quickblox.chat.model.QBChatDialog;
 import com.quickblox.chat.model.QBChatMessage;
-import com.quickblox.chatdevelopmentkit.adapter.QBMessagesAdapter;
-import com.quickblox.chatviewcontroller.R;
-import com.quickblox.chatviewcontroller.sample.ui.adapter.CustomMessageAdapter;
-import com.quickblox.chatviewcontroller.sample.utils.ChatHelper;
+import com.quickblox.sample.chatadapter.R;
+import com.quickblox.sample.chatadapter.ui.adapter.CustomMessageAdapter;
+import com.quickblox.sample.chatadapter.utils.ChatHelper;
+import com.quickblox.ui.kit.chatmessage.adapter.QBMessagesAdapter;
 import com.quickblox.core.QBEntityCallback;
 import com.quickblox.core.exception.QBResponseException;
 import com.quickblox.users.model.QBUser;

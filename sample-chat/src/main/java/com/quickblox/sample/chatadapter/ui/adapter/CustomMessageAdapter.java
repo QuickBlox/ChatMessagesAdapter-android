@@ -1,4 +1,4 @@
-package com.quickblox.chatviewcontroller.sample.ui.adapter;
+package com.quickblox.sample.chatadapter.ui.adapter;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -15,9 +15,9 @@ import com.google.gson.Gson;
 import com.quickblox.chat.QBChatService;
 import com.quickblox.chat.model.QBAttachment;
 import com.quickblox.chat.model.QBChatMessage;
-import com.quickblox.chatdevelopmentkit.adapter.QBMessagesAdapter;
-import com.quickblox.chatviewcontroller.R;
-import com.quickblox.chatviewcontroller.sample.utils.UserData;
+import com.quickblox.sample.chatadapter.R;
+import com.quickblox.sample.chatadapter.utils.UserData;
+import com.quickblox.ui.kit.chatmessage.adapter.QBMessagesAdapter;
 import com.quickblox.users.model.QBUser;
 
 import java.util.ArrayList;
@@ -75,8 +75,8 @@ public class CustomMessageAdapter extends QBMessagesAdapter {
     @Override
     protected QBMessageViewHolder onCreateCustomViewHolder(ViewGroup parent, int viewType) {
         Log.d(TAG, "onCreateCustomViewHolder viewType= " + viewType);
-        return viewType == TYPE_OWN_VIDEO_ATTACH ? new ImageAttachHolder(inflater.inflate(com.quickblox.chatdevelopmentkit.R.layout.list_item_attach_right, parent, false),
-                com.quickblox.chatdevelopmentkit.R.id.msg_image_attach, com.quickblox.chatdevelopmentkit.R.id.msg_progressbar_attach) : null;
+        return viewType == TYPE_OWN_VIDEO_ATTACH ? new ImageAttachHolder(inflater.inflate(R.layout.list_item_attach_right, parent, false),
+                R.id.msg_image_attach, R.id.msg_progressbar_attach) : null;
     }
 
 
@@ -109,7 +109,7 @@ public class CustomMessageAdapter extends QBMessagesAdapter {
                 .listener(glideRequestListener)
                 .override(preferredImageSizePreview, preferredImageSizePreview)
                 .dontTransform()
-                .error(com.quickblox.chatdevelopmentkit.R.drawable.ic_error)
+                .error(R.drawable.ic_error)
                 .into(((ImageAttachHolder) holder).attachImageView);
     }
 

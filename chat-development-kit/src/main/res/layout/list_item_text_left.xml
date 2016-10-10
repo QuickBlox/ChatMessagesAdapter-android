@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.quickblox.chatdevelopmentkit.widget.MessageTextViewLeft xmlns:android="http://schemas.android.com/apk/res/android"
+<com.quickblox.ui.kit.chatmessage.adapter.widget.MessageTextViewLeft xmlns:android="http://schemas.android.com/apk/res/android"
 
     android:id="@+id/msg_message_text_view_left"
     style="@style/WidgetTextMessage.Left">
 
-</com.quickblox.chatdevelopmentkit.widget.MessageTextViewLeft>
+</com.quickblox.ui.kit.chatmessage.adapter.widget.MessageTextViewLeft>

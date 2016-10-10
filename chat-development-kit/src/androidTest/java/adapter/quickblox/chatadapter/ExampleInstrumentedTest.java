@@ -1,4 +1,4 @@
-package com.quickblox.chatdevelopmentkit;
+package adapter.quickblox.chatadapter;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

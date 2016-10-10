@@ -1,4 +1,4 @@
-package com.quickblox.chatviewcontroller.sample.utils;
+package com.quickblox.sample.chatadapter.utils;
 
 
 import com.google.gson.annotations.SerializedName;
