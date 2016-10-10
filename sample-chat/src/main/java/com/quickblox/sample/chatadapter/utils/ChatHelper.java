@@ -20,11 +20,13 @@ import com.quickblox.users.QBUsers;
 import com.quickblox.users.model.QBUser;
 
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
 
 import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
+import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 
 public class ChatHelper {
@@ -64,60 +66,62 @@ public class ChatHelper {
     }
 
     public void loginAndGetUsers(final QBUser user, final QBEntityCallback<ArrayList<QBUser>> callback) {
+        Performer<QBSession> performer = QBAuth.createSession(user);
+        final Observable<QBSession> observableSession = performer.convertTo(RxJavaPerformProcessor.INSTANCE);
+
+        Observable<Void> observableLoginToChat = Observable.fromCallable(new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                QBChatService.getInstance().login(user);
+                return null;
+            }
+        });
+
+        performMultiRequest(observableSession, observableLoginToChat, callback);
+    }
+
+    private void performMultiRequest(Observable<QBSession> session, Observable<Void> loginToChat, final QBEntityCallback<ArrayList<QBUser>> callback) {
         final ArrayList<Integer> usersIds = new ArrayList<>();
         usersIds.add(Consts.userOneID);
         usersIds.add(Consts.userTwoID);
 
-        Performer<QBSession> performer = QBAuth.createSession(user);
-        Observable<QBSession> observable = performer.convertTo(RxJavaPerformProcessor.INSTANCE);
-
-        observable
-                .flatMap(new Func1<QBSession, Observable<ArrayList<QBUser>>>() {
+        Observable.zip(
+                loginToChat.subscribeOn(Schedulers.io()),
+                session.flatMap(new Func1<QBSession, Observable<ArrayList<QBUser>>>() {
                     @Override
                     public Observable<ArrayList<QBUser>> call(QBSession qbSession) {
-                        user.setId(qbSession.getUserId());
                         return QBUsers.getUsersByIDs(usersIds, null).convertTo(RxJavaPerformProcessor.INSTANCE);
                     }
                 })
-                .subscribeOn(Schedulers.io())
+                        .subscribeOn(Schedulers.io()),
+                mergeResult()
+        )
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<ArrayList<QBUser>>() {
                     @Override
                     public void onCompleted() {
-                        Log.d(TAG, "onCompleted");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.d(TAG, "onError= " + e.getMessage());
+                        Log.d(TAG, "onError " + e);
                     }
 
                     @Override
                     public void onNext(ArrayList<QBUser> qbUsers) {
-                        Log.d(TAG, "qbUsers= " + qbUsers.toString());
+                        Log.d(TAG, "onNext" + qbUsers);
                         callback.onSuccess(qbUsers, Bundle.EMPTY);
                     }
                 });
     }
 
-    public void loginToChat(final QBUser user, final QBEntityCallback<Void> callback) {
-        if (qbChatService.isLoggedIn()) {
-            Log.d(TAG, "qbChatService.isLoggedIn()");
-            callback.onSuccess(null, null);
-            return;
-        }
-
-        qbChatService.login(user, new QBEntityCallback<Void>() {
+    private Func2<Void, ArrayList<QBUser>, ArrayList<QBUser>> mergeResult() {
+        return new Func2<Void, ArrayList<QBUser>, ArrayList<QBUser>>() {
             @Override
-            public void onSuccess(Void o, Bundle bundle) {
-                callback.onSuccess(o, bundle);
+            public ArrayList<QBUser> call(Void aVoid, ArrayList<QBUser> qbUsers) {
+                return qbUsers;
             }
-
-            @Override
-            public void onError(QBResponseException e) {
-                callback.onError(e);
-            }
-        });
+        };
     }
 
     public void loadChatHistory(QBChatDialog dialog, int skipPagination,

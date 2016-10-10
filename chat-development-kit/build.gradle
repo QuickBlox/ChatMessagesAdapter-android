@@ -35,17 +35,18 @@ dependencies {
 // ChatViewController version. Update it from release to release.
 def versionName = "1.0"
 
-def gitArtifactsRepo = System.getenv('QUICKBLOX_CHATVIEWCONTROLLER_RELEASES_DIR');
+def gitArtifactsRepo = System.getenv('QUICKBLOX_ANDROID_SDK_RELEASES_DIR');
 
 task gitPush << {
-    println 'QUICKBLOX_CHATVIEWCONTROLLER_RELEASES_DIR=' + gitArtifactsRepo
-    def grGit = Grgit.open(dir: rootProject.gitArtifactsRepo)
+    println 'QUICKBLOX_ANDROID_SDK_RELEASES_DIR=' + gitArtifactsRepo
+    def grGit = Grgit.open(dir: gitArtifactsRepo)
     def status = grGit.status()
+    println "status= " + status
     if (!status.isClean()) {
         println "'git push' is executing.."
-        grGit.add(patterns: ['com/quickblox'])
-        grGit.commit(message: 'commit new version:' + rootProject.versionName + $buildFile.parentFile.name)
-        grGit.push()
+//        grGit.add(patterns: ['com/quickblox'])
+//        grGit.commit(message: 'commit new version:' + rootProject.versionName + $buildFile.parentFile.name)
+//        grGit.push()
         println "'git push' done"
     }
 }
@@ -81,4 +82,7 @@ uploadArchives {
             }
         }
     }
+
+    uploadArchives.finalizedBy gitPush
+
 }

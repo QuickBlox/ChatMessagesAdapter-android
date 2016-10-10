@@ -16,8 +16,6 @@ import java.util.ArrayList;
 public class SplashActivity extends AppCompatActivity {
     private static final String TAG = SplashActivity.class.getSimpleName();
 
-    private QBUser qbUser = new QBUser(Consts.userTwoLogin, Consts.userPassword);
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,33 +24,19 @@ public class SplashActivity extends AppCompatActivity {
         loginToQB();
     }
 
-    private void loginToQB() {
 
+    private void loginToQB() {
+        QBUser qbUser = new QBUser(Consts.userTwoLogin, Consts.userPassword);
+        qbUser.setId(Consts.userTwoID);
         ChatHelper.getInstance().loginAndGetUsers(qbUser, new QBEntityCallback<ArrayList<QBUser>>() {
             @Override
             public void onSuccess(ArrayList<QBUser> qbUsers, Bundle bundle) {
                 Log.d(TAG, "loginToQB onSuccess");
-                loginToChat(qbUsers);
-            }
-
-            @Override
-            public void onError(QBResponseException e) {
-                Log.e(TAG, "onError " + e.getMessage());
-            }
-        });
-    }
-
-    private void loginToChat(final ArrayList<QBUser> qbUsers) {
-        ChatHelper.getInstance().loginToChat(qbUser, new QBEntityCallback<Void>() {
-            @Override
-            public void onSuccess(Void aVoid, Bundle bundle) {
-                Log.d(TAG, "loginToChat onSuccess");
                 ChatActivity.start(SplashActivity.this, qbUsers);
             }
 
             @Override
             public void onError(QBResponseException e) {
-                Log.d(TAG, "onError " + e.getMessage());
             }
         });
     }
