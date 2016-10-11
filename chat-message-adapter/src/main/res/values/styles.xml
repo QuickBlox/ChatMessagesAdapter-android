@@ -20,24 +20,24 @@
 
 
 
-    <style name="WidgetTextMessage.Right" />
+    <style name="ListItemTextMessage.Right" />
 
-    <style name="WidgetTextMessage.Left" />
+    <style name="ListItemTextMessage.Left" />
 
-    <style name="WidgetTextMessage">
+    <style name="ListItemTextMessage">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
 
 
 
-    <style name="WidgetAttachMessage.Right">
+    <style name="ListItemAttachMessage.Right">
         <item name="android:gravity">right</item>
     </style>
 
-    <style name="WidgetAttachMessage.Left" />
+    <style name="ListItemAttachMessage.Left" />
 
-    <style name="WidgetAttachMessage">
+    <style name="ListItemAttachMessage">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">@dimen/padding_medium</item>
@@ -120,11 +120,11 @@
 
 
 
-    <style name="ListItemText.Right" />
+    <style name="WidgetTextMessage.Right" />
 
-    <style name="ListItemText.Left" />
+    <style name="WidgetTextMessage.Left" />
 
-    <style name="ListItemText">
+    <style name="WidgetTextMessage">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
@@ -148,15 +148,15 @@
     </style>
 
 
-    <style name="LinearListItemTextMsg.Right">
+    <style name="LinearWidgetTextMsg.Right">
         <item name="android:paddingRight">@dimen/padding_medium</item>
     </style>
 
-    <style name="LinearListItemTextMsg.Left">
+    <style name="LinearWidgetTextMsg.Left">
         <item name="android:paddingLeft">@dimen/padding_medium</item>
     </style>
 
-    <style name="LinearListItemTextMsg">
+    <style name="LinearWidgetTextMsg">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/msg_widget_attach_right"
-    style="@style/WidgetAttachMessage.Right">
+    style="@style/ListItemAttachMessage.Right">
 
     <RelativeLayout
         android:id="@+id/msg_bubble_background_attach"

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/msg_widget_attach_left"
-    style="@style/WidgetAttachMessage.Left">
+    style="@style/ListItemAttachMessage.Left">
 
 
     <de.hdodenhof.circleimageview.CircleImageView

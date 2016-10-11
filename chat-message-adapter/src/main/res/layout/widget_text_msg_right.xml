@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/msg_linear_frame_right"
-    style="@style/ListItemText.Right">
+    style="@style/WidgetTextMessage.Right">
 
     <LinearLayout
         android:id="@+id/msg_bubble_background_text"
@@ -10,7 +10,7 @@
 
         <LinearLayout
             android:id="@+id/msg_linear_list_item_right"
-            style="@style/LinearListItemTextMsg.Right">
+            style="@style/LinearWidgetTextMsg.Right">
 
             <TextView
                 android:id="@+id/msg_text_time_message"
@@ -20,7 +20,7 @@
             <TextView
                 android:id="@+id/msg_text_message"
                 style="@style/TextViewTextMsg.Right"
-                tools:text="messagertdfsscsd messagertdfsscsd " />
+                tools:text="message the long one message" />
 
             <!--LinearLayout should place its actual message widget here.-->
             <LinearLayout

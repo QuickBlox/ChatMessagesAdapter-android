@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/msg_linear_frame_left"
-    style="@style/ListItemText.Left">
+    style="@style/WidgetTextMessage.Left">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/msg_image_avatar"
@@ -15,7 +15,7 @@
 
         <LinearLayout
             android:id="@+id/msg_linear_list_item_left"
-            style="@style/LinearListItemTextMsg.Left">
+            style="@style/LinearWidgetTextMsg.Left">
 
             <TextView
                 android:id="@+id/msg_text_time_message"
