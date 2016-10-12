@@ -1,5 +1,14 @@
 # ChatMessagesAdapter-android
-QuickBlox ready-to-go chat messages adapter for Android chat applications that use Quickblox communication backend
+QuickBlox simple to use UI library for showing quickblox chat messages inside android application. 
+
+#Features
+- Ready-to-go QBChatMessage view adapter with a set of view types.
+- UI customisation  for all message types.
+- Flexibility in improving and extending functionality.
+- Easy to connect with Quickblox.
+- Optimised and performant.
+- Flexible mechainm for styling layout for chat messages.
+- Add custom widgets inside predefined layout
 
 # Screenshots
 
@@ -15,9 +24,46 @@ compile 'com.quickblox:chat-message-adapter:1.0'
 }
 ```
 # Getting started
-Example is included in repository. Try it out to see how chat message adapter works.
+Example is included in repository. Try it out to see how chat message adapter works.  
+For now QBMessagesAdapter works with [RecycleView](https://developer.android.com/reference/android/support/v7/widget/RecyclerView.html).
 
-Steps to add QBMessagesAdapter to your Chat app:
+The following code example demonstrates how to add the QBMessagesAdapter to show chat messages:
+
+ - Include [RecycleView](https://developer.android.com/reference/android/support/v7/widget/RecyclerView.html) into activity layout:
+```xml
+<!-- A RecyclerView with some commonly used attributes -->
+<android.support.v7.widget.RecyclerView
+    android:id="@+id/list_chat_messages"
+    android:scrollbars="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"/>
+```
+ - Once you have added a RecyclerView widget to your layout, get it and attach a QBMessagesAdapter for the data to be displayed:
+```java
+   public class ChatActivity extends AppCompatActivity {
+
+   private RecyclerView messagesListView;
+   private QBMessagesAdapter chatAdapter;
+
+   private List<QBChatMessage> messages = ..;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_chat);
+        
+        messagesListView = (RecyclerView) findViewById(R.id.list_chat_messages);
+
+        //retrieve messages from storage and set to adapter
+        chatAdapter = new QBMessagesAdapter(ChatActivity.this, messages);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(ChatActivity.this, VERTICAL, false);
+        messagesListView.setLayoutManager(layoutManager);
+        messagesListView.setAdapter(chatAdapter);
+    }
+```
+
+Steps to customize QBMessagesAdapter to your Chat app:
 
 1. Create a subclass of QBMessagesAdapter.
 2. In your subclass define and override methods that you need (such as displayAvatarImage() and obtainAvatarUrl()).
@@ -102,14 +148,49 @@ Then you can extends QBMessagesAdapter and define your own logic for every item 
 ```
 ```java
     @Override
-     protected void onBindViewAttachLeftHolder(ImageAttachHolder holder, QBChatMessage chatMessage, int position) {
+    protected void onBindViewAttachLeftHolder(ImageAttachHolder holder, QBChatMessage chatMessage, int position) {
         super.onBindViewAttachLeftHolder(holder, chatMessage, position);
         //update logic for showing message with image attachment from opponent
     }
 ```
 
+There are 4 predefined view types:
+ - TYPE_TEXT_RIGHT
+ - TYPE_TEXT_LEFT
+ - TYPE_ATTACH_RIGHT
+ - TYPE_ATTACH_LEFT
+
+
+To create your own non predefined view type for hat message use code:
+
+* Define custom view type for position
+```java
+    @Override
+    protected int customViewType(int position) {
+        return MY_VIEW_TYPE;
+    }
+```  
+* Create view holder for item:
+```java
+    @Override
+    protected QBMessageViewHolder onCreateCustomViewHolder(ViewGroup parent, int viewType) {
+        if (MY_VIEW_TYPE == viewType) {
+            // create ViewHolder by your own
+        }
+        return yourViewHolder;
+    }
+```  
+* Fill your own view type with chat message data use code:
+```java
+    @Override
+    protected void onBindViewCustomHolder(QBMessageViewHolder holder, QBChatMessage chatMessage, int position) {
+        // here you will receive your own ViewHolder    
+    }
+```
+
+
 Also you can override methods to display attach images
-```xml
+```java
     @Override
     public void displayAttachment(QBMessageViewHolder holder, int position) {
         int preferredImageSizePreview = (int) (80 * Resources.getSystem().getDisplayMetrics().density);
@@ -130,7 +211,7 @@ Also you can override methods to display attach images
     }
 ```
 override methods to display avatars
-```xml
+```java
     @Override
     public void displayAvatarImage(String url, ImageView imageView) {
         Glide.with(context).load(url).into(imageView);
