@@ -82,15 +82,32 @@ For example, create layout with namespace `list_item_text_right` with any layout
 
 </com.quickblox.ui.kit.chatmessage.adapter.widget.MessageTextViewRight>
 ```
-Then you can extends QBMessagesAdapter and override onBindViewMsgRightHolder and make some changes:
-```xml
+
+Then you can extends QBMessagesAdapter and define your own logic for every item view - plain text message, message with image attachment or your custom item view:
+```java
     @Override
     protected void onBindViewMsgRightHolder(TextMessageHolder holder, QBChatMessage chatMessage, int position) {
+        //update logic for showing your own plain text message
         TextView view = (TextView) holder.itemView.findViewById(R.id.custom_text_view);
         view.setText(currentUser.getFullName());
         super.onBindViewMsgRightHolder(holder, chatMessage, position);
     }
 ```
+```java
+    @Override
+    protected void onBindViewMsgLeftHolder(TextMessageHolder holder, QBChatMessage chatMessage, int position) {
+        super.onBindViewMsgLeftHolder(holder, chatMessage, position);
+        //update logic for showing plain text message from opponent
+    }
+```
+```java
+    @Override
+     protected void onBindViewAttachLeftHolder(ImageAttachHolder holder, QBChatMessage chatMessage, int position) {
+        super.onBindViewAttachLeftHolder(holder, chatMessage, position);
+        //update logic for showing message with image attachment from opponent
+    }
+```
+
 Also you can override methods to display attach images
 ```xml
     @Override
