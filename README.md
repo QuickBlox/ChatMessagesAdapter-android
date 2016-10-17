@@ -1,4 +1,4 @@
-# ChatMessagesAdapter-android
+# ChatMessagesAdapter for Android
 QuickBlox simple to use UI library for showing quickblox chat messages inside android application. 
 
 #Features
