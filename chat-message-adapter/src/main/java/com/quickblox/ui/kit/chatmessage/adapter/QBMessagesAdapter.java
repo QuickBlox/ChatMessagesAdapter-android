@@ -25,7 +25,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class QBMessagesAdapter extends RecyclerView.Adapter<QBMessagesAdapter.QBMessageViewHolder> implements QBBaseAdapter<QBChatMessage> {
+public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Adapter<QBMessagesAdapter.QBMessageViewHolder> implements QBBaseAdapter<T> {
     private static final String TAG = QBMessagesAdapter.class.getSimpleName();
 
     protected static final int TYPE_TEXT_RIGHT = 1;
@@ -44,12 +44,12 @@ public class QBMessagesAdapter extends RecyclerView.Adapter<QBMessagesAdapter.QB
 
     protected QBMessageViewHolder qbViewHolder;
 
-    protected List<QBChatMessage> chatMessages;
+    protected List<T> chatMessages;
     protected LayoutInflater inflater;
     protected Context context;
 
 
-    public QBMessagesAdapter(Context context, List<QBChatMessage> chatMessages) {
+    public QBMessagesAdapter(Context context, List<T> chatMessages) {
         this.context = context;
         this.chatMessages = chatMessages;
         this.inflater = LayoutInflater.from(context);
@@ -174,7 +174,7 @@ public class QBMessagesAdapter extends RecyclerView.Adapter<QBMessagesAdapter.QB
     }
 
     @Override
-    public QBChatMessage getItem(int position) {
+    public T getItem(int position) {
         return chatMessages.get(position);
     }
 
@@ -206,19 +206,20 @@ public class QBMessagesAdapter extends RecyclerView.Adapter<QBMessagesAdapter.QB
     }
 
     @Override
-    public void add(QBChatMessage item) {
+    public void add(T item) {
         chatMessages.add(item);
         notifyDataSetChanged();
     }
 
     @Override
-    public List<QBChatMessage> getList() {
+    public List<T> getList() {
         return chatMessages;
     }
 
     @Override
-    public void addList(List<QBChatMessage> items) {
-        chatMessages.addAll(0, items);
+    public void addList(List<T> items) {
+        chatMessages.clear();
+        chatMessages.addAll(items);
         notifyDataSetChanged();
     }
 
