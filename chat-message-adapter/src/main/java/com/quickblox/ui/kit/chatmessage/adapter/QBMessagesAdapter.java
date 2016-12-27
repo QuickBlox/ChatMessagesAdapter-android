@@ -89,7 +89,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     @Override
     public void onBindViewHolder(QBMessageViewHolder holder, int position) {
-        QBChatMessage chatMessage = getItem(position);
+        T chatMessage = getItem(position);
         int valueType = getItemViewType(position);
         switch (valueType) {
             case TYPE_TEXT_RIGHT:
@@ -113,10 +113,10 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         }
     }
 
-    protected void onBindViewCustomHolder(QBMessageViewHolder holder, QBChatMessage chatMessage, int position) {
+    protected void onBindViewCustomHolder(QBMessageViewHolder holder, T chatMessage, int position) {
     }
 
-    protected void onBindViewAttachRightHolder(ImageAttachHolder holder, QBChatMessage chatMessage, int position) {
+    protected void onBindViewAttachRightHolder(ImageAttachHolder holder, T chatMessage, int position) {
         displayAttachment(holder, position);
 
         int valueType = getItemViewType(position);
@@ -126,7 +126,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         }
     }
 
-    protected void onBindViewAttachLeftHolder(ImageAttachHolder holder, QBChatMessage chatMessage, int position) {
+    protected void onBindViewAttachLeftHolder(ImageAttachHolder holder, T chatMessage, int position) {
         displayAttachment(holder, position);
 
         int valueType = getItemViewType(position);
@@ -136,7 +136,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         }
     }
 
-    protected void onBindViewMsgLeftHolder(TextMessageHolder holder, QBChatMessage chatMessage, int position) {
+    protected void onBindViewMsgLeftHolder(TextMessageHolder holder, T chatMessage, int position) {
         holder.messageTextView.setText(chatMessage.getBody());
         holder.timeTextMessageTextView.setText(getDate(chatMessage.getDateSent() * 1000));
 
@@ -147,7 +147,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         }
     }
 
-    protected void onBindViewMsgRightHolder(TextMessageHolder holder, QBChatMessage chatMessage, int position) {
+    protected void onBindViewMsgRightHolder(TextMessageHolder holder, T chatMessage, int position) {
         holder.messageTextView.setText(chatMessage.getBody());
         holder.timeTextMessageTextView.setText(getDate(chatMessage.getDateSent() * 1000));
 
@@ -164,7 +164,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
      * @return String avatar url
      */
     @Nullable
-    public String obtainAvatarUrl(int valueType, QBChatMessage chatMessage) {
+    public String obtainAvatarUrl(int valueType, T chatMessage) {
         return null;
     }
 
@@ -185,7 +185,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     @Override
     public int getItemViewType(int position) {
-        QBChatMessage chatMessage = getItem(position);
+        T chatMessage = getItem(position);
 
         if (hasAttachments(chatMessage)) {
             QBAttachment attachment = chatMessage.getAttachments().iterator().next();
@@ -223,12 +223,12 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         notifyDataSetChanged();
     }
 
-    protected boolean isIncoming(QBChatMessage chatMessage) {
+    protected boolean isIncoming(T chatMessage) {
         QBUser currentUser = QBChatService.getInstance().getUser();
         return chatMessage.getSenderId() != null && !chatMessage.getSenderId().equals(currentUser.getId());
     }
 
-    protected boolean hasAttachments(QBChatMessage chatMessage) {
+    protected boolean hasAttachments(T chatMessage) {
         Collection<QBAttachment> attachments = chatMessage.getAttachments();
         return attachments != null && !attachments.isEmpty();
     }
