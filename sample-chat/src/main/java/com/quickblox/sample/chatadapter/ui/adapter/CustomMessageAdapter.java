@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.List;
 
 
-public class CustomMessageAdapter extends QBMessagesAdapter {
+public class CustomMessageAdapter extends QBMessagesAdapter<QBChatMessage> {
     private static final String TAG = CustomMessageAdapter.class.getSimpleName();
     private RequestListener glideRequestListener;
     protected static final int TYPE_OWN_VIDEO_ATTACH = 5;

@@ -1,7 +1,6 @@
 package com.quickblox.ui.kit.chatmessage.adapter;
 
 import android.widget.ImageView;
-import com.quickblox.chat.model.QBChatMessage;
 import java.util.List;
 
 public interface QBBaseAdapter<T> {
@@ -18,6 +17,6 @@ public interface QBBaseAdapter<T> {
 
     void displayAvatarImage (String uri, ImageView imageView);
 
-    String obtainAvatarUrl(int type, QBChatMessage chatMessage);
+    String obtainAvatarUrl(int type, T chatMessage);
 
 }
