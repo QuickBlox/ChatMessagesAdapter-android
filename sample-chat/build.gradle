@@ -23,6 +23,7 @@ dependencies {
 
     compile "com.quickblox:quickblox-android-sdk-content:$rootProject.qbSdkVersion"
     compile "com.quickblox:quickblox-android-sdk-extensions:$rootProject.qbSdkVersion"
+    compile 'io.reactivex:rxandroid:1.1.0'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile project(':chat-message-adapter')
 }
