@@ -21,6 +21,7 @@ import com.bumptech.glide.request.target.Target;
 import com.quickblox.chat.QBChatService;
 import com.quickblox.chat.model.QBAttachment;
 import com.quickblox.chat.model.QBChatMessage;
+import com.quickblox.content.model.QBFile;
 import com.quickblox.ui.kit.chatmessage.adapter.utils.LocationUtils;
 import com.quickblox.users.model.QBUser;
 
@@ -273,15 +274,12 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     protected String getImageUrl(int position) {
         QBAttachment attachment = getQBAttach(position);
-        String imageUrl = attachment.getUrl();
-        return imageUrl;
+        return QBFile.getPrivateUrlForUID(attachment.getId());
     }
 
     protected String getLocationUrl(int position) {
         QBAttachment attachment = getQBAttach(position);
-        //ToDo Is this really need
-        String locationUrl = LocationUtils.getRemoteUri(attachment.getData(), context);
-        return locationUrl;
+        return LocationUtils.getRemoteUri(attachment.getData(), context);
     }
 
     private QBAttachment getQBAttach(int position) {

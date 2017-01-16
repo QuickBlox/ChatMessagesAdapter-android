@@ -1,9 +1,10 @@
 package com.quickblox.ui.kit.chatmessage.adapter.utils;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.net.Uri;
+import android.support.v4.util.Pair;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -11,7 +12,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.quickblox.ui.kit.chatmessage.adapter.R;
 
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,48 +22,65 @@ import java.util.Set;
 
 public class LocationUtils {
 
-    private static String generateURI(double latitude, double longitude, Context context) {
-        String URI_SCHEME_MAP = context.getString(R.string.uri_scheme_map);
-        String ZOOM = context.getString(R.string.map_zoom);
-        String SIZE = context.getString(R.string.map_zize);
-        String MAPTYPE = context.getString(R.string.map_type);
-        String COLOR = context.getString(R.string.map_color);
+    public static String generateLocationJson(Pair<String, Double> latitude, Pair<String, Double> longitude) {
+        JsonObject innerObject = new JsonObject();
+        innerObject.addProperty(latitude.first, String.valueOf(latitude.second));
+        innerObject.addProperty(longitude.first, String.valueOf(longitude.second));
+
+        return innerObject.toString();
+    }
+
+    public static String generateURI(double latitude, double longitude, Context context) {
+        String uriSchemeMap = context.getString(R.string.uri_scheme_map);
+        String zoom = context.getString(R.string.map_zoom);
+        String size = context.getString(R.string.map_zize);
+        String mapType = context.getString(R.string.map_type);
+        String color = context.getString(R.string.map_color);
 
         //api static map key should be generated in developers google console
-        String KEY = Resources.getSystem().getString(R.string.google_maps_key);
+        String key = context.getString(R.string.google_static_maps_key);
+        if (TextUtils.isEmpty(key)) {
+            Log.e("LocationUtils", "You should set google_static_maps_key in resource!");
+        }
 
         Uri.Builder builder = new Uri.Builder();
-        builder.appendQueryParameter("zoom", ZOOM)
-                .appendQueryParameter("size", SIZE)
-                .appendQueryParameter("maptype", MAPTYPE)
-                .appendQueryParameter("markers", "color:" + COLOR + "%7Clabel:S%7C" + latitude + "," + longitude)
-                .appendQueryParameter("key", KEY);
+        builder.appendQueryParameter("zoom", zoom)
+                .appendQueryParameter("size", size)
+                .appendQueryParameter("maptype", mapType)
+                .appendQueryParameter("markers", "color:" + color + "%7Clabel:S%7C" + latitude + "," + longitude)
+                .appendQueryParameter("key", key);
 
-        return URI_SCHEME_MAP + builder.build().getQuery();
+        return (uriSchemeMap + builder.build().getQuery()).replaceAll("&amp;(?!&)", "&");
     }
 
     public static String getRemoteUri(String location, Context context) {
-        if (!isJSONValid(location)) {
-            return "";
-        }
+        Pair<Double, Double> latLng = getLatLngFromJson(location);
 
-        ArrayList<Double> locations = new ArrayList<>(2);
+        return generateURI(latLng.first, latLng.second, context);
+    }
+
+    public static Pair<Double, Double> getLatLngFromJson(String location) {
+        if (!isJSONValid(location)) {
+            return new Pair<>(0.0, 0.0);
+        }
 
         JsonParser jsonParser = new JsonParser();
         JsonObject jo = (JsonObject) jsonParser.parse(location);
 
-        Set<Map.Entry<String, JsonElement>> entries = jo.entrySet();
+        Iterator<Map.Entry<String, JsonElement>> iterator = jo.entrySet().iterator();
 
-        for (Map.Entry<String, JsonElement> entry: entries) {
-            JsonElement jE = jo.get(entry.getKey());
-            locations.add((jE == null) ? 0 :jE.getAsDouble());
-        }
+        JsonElement jELat = jo.get(iterator.next().getKey());
+        JsonElement jELng = jo.get(iterator.next().getKey());
 
-        return generateURI(locations.get(0), locations.get(1), context).replaceAll("&amp;(?!&)", "&");
+        double lat = (jELat == null) ? 0.0 : jELat.getAsDouble();
+        double lng = (jELng == null) ? 0.0 : jELng.getAsDouble();
+
+        return new Pair<>(lat, lng);
     }
 
     public static String getRemoteUri(String location, BuilderParams params) {
-//       the JsonParser logic
+//       another way to get url
+//       the JsonParser logic...
         return "";
     }
 
