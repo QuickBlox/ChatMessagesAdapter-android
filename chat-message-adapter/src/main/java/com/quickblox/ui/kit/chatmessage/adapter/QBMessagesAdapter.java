@@ -307,7 +307,11 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
      */
     @Override
     public void displayAvatarImage(String url, ImageView imageView) {
-        Glide.with(context).load(url).into(imageView);
+        Glide.with(context)
+                .load(url)
+                .placeholder(R.drawable.placeholder_user)
+                .dontAnimate()
+                .into(imageView);
     }
 
 
