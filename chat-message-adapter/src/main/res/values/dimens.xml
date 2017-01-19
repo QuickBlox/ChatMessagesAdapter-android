@@ -2,6 +2,7 @@
 <resources>
 
     <dimen name="padding_common">8dp</dimen>
+    <dimen name="padding_common_big">20dp</dimen>
 
     <dimen name="chat_attach_width">200dp</dimen>
     <dimen name="chat_attach_height">200dp</dimen>
@@ -13,7 +14,6 @@
 
     <dimen name="text_size_small">15sp</dimen>
     <dimen name="text_size_medium">18sp</dimen>
-
 
 
     <dimen name="corners_small_value">3dp</dimen>

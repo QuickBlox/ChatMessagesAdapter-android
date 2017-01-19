@@ -71,10 +71,12 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
                 qbViewHolder = new TextMessageHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_text_message, R.id.msg_text_time_message);
                 return qbViewHolder;
             case TYPE_ATTACH_RIGHT:
-                qbViewHolder = new ImageAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_image_attach, R.id.msg_progressbar_attach);
+                qbViewHolder = new ImageAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_image_attach, R.id.msg_progressbar_attach,
+                        R.id.msg_text_time_attach);
                 return qbViewHolder;
             case TYPE_ATTACH_LEFT:
-                qbViewHolder = new ImageAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_image_attach, R.id.msg_progressbar_attach);
+                qbViewHolder = new ImageAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_image_attach, R.id.msg_progressbar_attach,
+                        R.id.msg_text_time_attach);
                 return qbViewHolder;
 
             default:
@@ -123,6 +125,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     }
 
     protected void onBindViewAttachRightHolder(ImageAttachHolder holder, T chatMessage, int position) {
+        setDateSentAttach(holder, chatMessage);
         displayAttachment(holder, position);
 
         int valueType = getItemViewType(position);
@@ -133,6 +136,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     }
 
     protected void onBindViewAttachLeftHolder(ImageAttachHolder holder, T chatMessage, int position) {
+        setDateSentAttach(holder, chatMessage);
         displayAttachment(holder, position);
 
         int valueType = getItemViewType(position);
@@ -144,7 +148,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     protected void onBindViewMsgLeftHolder(TextMessageHolder holder, T chatMessage, int position) {
         holder.messageTextView.setText(chatMessage.getBody());
-        holder.timeTextMessageTextView.setText(getDate(chatMessage.getDateSent() * 1000));
+        holder.timeTextMessageTextView.setText(getDate(chatMessage.getDateSent()));
 
         int valueType = getItemViewType(position);
         String avatarUrl = obtainAvatarUrl(valueType, chatMessage);
@@ -155,13 +159,17 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     protected void onBindViewMsgRightHolder(TextMessageHolder holder, T chatMessage, int position) {
         holder.messageTextView.setText(chatMessage.getBody());
-        holder.timeTextMessageTextView.setText(getDate(chatMessage.getDateSent() * 1000));
+        holder.timeTextMessageTextView.setText(getDate(chatMessage.getDateSent()));
 
         int valueType = getItemViewType(position);
         String avatarUrl = obtainAvatarUrl(valueType, chatMessage);
         if (avatarUrl != null) {
             displayAvatarImage(avatarUrl, holder.avatar);
         }
+    }
+
+    protected void setDateSentAttach(ImageAttachHolder holder, T chatMessage) {
+        holder.attachTextTime.setText(getDate(chatMessage.getDateSent()));
     }
 
     /**
@@ -245,10 +253,12 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         return attachments != null && !attachments.isEmpty();
     }
 
-
-    protected String getDate(long milliseconds) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd", Locale.getDefault());
-        return dateFormat.format(new Date(milliseconds));
+    /**
+     * @return string in "Hours:Minutes" format, i.e. <b>10:15</b>
+     */
+    protected String getDate(long seconds) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        return dateFormat.format(new Date(seconds * 1000));
     }
 
     /**
@@ -329,11 +339,13 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     protected static class ImageAttachHolder extends QBMessageViewHolder {
         public ImageView attachImageView;
         public ProgressBar attachmentProgressBar;
+        public TextView attachTextTime;
 
-        public ImageAttachHolder(View itemView, @IdRes int attachId, @IdRes int progressBarId) {
+        public ImageAttachHolder(View itemView, @IdRes int attachId, @IdRes int progressBarId, @IdRes int timeId) {
             super(itemView);
             attachImageView = (ImageView) itemView.findViewById(attachId);
             attachmentProgressBar = (ProgressBar) itemView.findViewById(progressBarId);
+            attachTextTime = (TextView) itemView.findViewById(timeId);
         }
     }
 

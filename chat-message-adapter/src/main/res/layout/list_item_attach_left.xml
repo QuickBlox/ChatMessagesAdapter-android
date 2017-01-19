@@ -20,10 +20,8 @@
             android:id="@+id/msg_image_attach"
             style="@style/ImageViewAttach.Left" />
 
-        <TextView
-            android:id="@+id/msg_text_time_attach"
-            style="@style/TextViewAttach.Left"
-            android:text="time" />
+        <include layout="@layout/widget_item_attach_left" />
+
 
     </RelativeLayout>
 

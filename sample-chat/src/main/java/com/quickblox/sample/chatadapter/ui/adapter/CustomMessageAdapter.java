@@ -76,7 +76,7 @@ public class CustomMessageAdapter extends QBMessagesAdapter<QBChatMessage> {
     protected QBMessageViewHolder onCreateCustomViewHolder(ViewGroup parent, int viewType) {
         Log.d(TAG, "onCreateCustomViewHolder viewType= " + viewType);
         return viewType == TYPE_OWN_VIDEO_ATTACH ? new ImageAttachHolder(inflater.inflate(R.layout.list_item_attach_right, parent, false),
-                R.id.msg_image_attach, R.id.msg_progressbar_attach) : null;
+                R.id.msg_image_attach, R.id.msg_progressbar_attach, R.id.msg_text_time_attach) : null;
     }
 
 
