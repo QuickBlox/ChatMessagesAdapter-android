@@ -292,7 +292,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         return LocationUtils.getRemoteUri(attachment.getData(), context);
     }
 
-    private QBAttachment getQBAttach(int position) {
+    protected QBAttachment getQBAttach(int position) {
         T chatMessage = getItem(position);
         return chatMessage.getAttachments().iterator().next();
     }
@@ -367,7 +367,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
         @Override
         public boolean onException(Exception e, Object model, Target target, boolean isFirstResource) {
-            e.printStackTrace();
+            Log.e(TAG, "ImageLoadListener Exception= " + e);
             holder.attachImageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
             holder.attachmentProgressBar.setVisibility(View.GONE);
             return false;
