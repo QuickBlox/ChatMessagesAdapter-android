@@ -1,6 +1,7 @@
 package com.quickblox.ui.kit.chatmessage.adapter;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
@@ -14,9 +15,14 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.quickblox.chat.QBChatService;
 import com.quickblox.chat.model.QBAttachment;
 import com.quickblox.chat.model.QBChatMessage;
+import com.quickblox.content.model.QBFile;
+import com.quickblox.ui.kit.chatmessage.adapter.utils.LocationUtils;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatMessageLinkClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.utils.QBChatMessageClickMovement;
 import com.quickblox.users.model.QBUser;
@@ -84,10 +90,12 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
                 qbViewHolder = new TextMessageHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_text_message, R.id.msg_text_time_message);
                 return qbViewHolder;
             case TYPE_ATTACH_RIGHT:
-                qbViewHolder = new ImageAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_image_attach, R.id.msg_progressbar_attach);
+                qbViewHolder = new ImageAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_image_attach, R.id.msg_progressbar_attach,
+                        R.id.msg_text_time_attach);
                 return qbViewHolder;
             case TYPE_ATTACH_LEFT:
-                qbViewHolder = new ImageAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_image_attach, R.id.msg_progressbar_attach);
+                qbViewHolder = new ImageAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_image_attach, R.id.msg_progressbar_attach,
+                        R.id.msg_text_time_attach);
                 return qbViewHolder;
 
             default:
@@ -136,6 +144,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     }
 
     protected void onBindViewAttachRightHolder(ImageAttachHolder holder, T chatMessage, int position) {
+        setDateSentAttach(holder, chatMessage);
         displayAttachment(holder, position);
 
         int valueType = getItemViewType(position);
@@ -146,6 +155,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     }
 
     protected void onBindViewAttachLeftHolder(ImageAttachHolder holder, T chatMessage, int position) {
+        setDateSentAttach(holder, chatMessage);
         displayAttachment(holder, position);
 
         int valueType = getItemViewType(position);
@@ -157,6 +167,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     protected void onBindViewMsgLeftHolder(TextMessageHolder holder, T chatMessage, int position) {
         holder.messageTextView.setText(chatMessage.getBody());
+        holder.timeTextMessageTextView.setText(getDate(chatMessage.getDateSent()));
         if (holder.getCustomMovementMethod() != null){
             holder.getCustomMovementMethod().setPositionInAdapter(position);
         }
@@ -172,6 +183,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     protected void onBindViewMsgRightHolder(TextMessageHolder holder, T chatMessage, int position) {
         holder.messageTextView.setText(chatMessage.getBody());
+        holder.timeTextMessageTextView.setText(getDate(chatMessage.getDateSent()));
         if (holder.getCustomMovementMethod() != null){
             holder.getCustomMovementMethod().setPositionInAdapter(position);
         }
@@ -182,6 +194,10 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         if (avatarUrl != null) {
             displayAvatarImage(avatarUrl, holder.avatar);
         }
+    }
+
+    protected void setDateSentAttach(ImageAttachHolder holder, T chatMessage) {
+        holder.attachTextTime.setText(getDate(chatMessage.getDateSent()));
     }
 
     /**
@@ -214,17 +230,23 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         T chatMessage = getItem(position);
 
         if (hasAttachments(chatMessage)) {
-            QBAttachment attachment = chatMessage.getAttachments().iterator().next();
+            QBAttachment attachment = getQBAttach(position);
             Log.d("QBMessagesAdapter", "attachment.getType= " + attachment.getType());
 
-            if (QBAttachment.PHOTO_TYPE.equals(attachment.getType())) {
+            if (QBAttachment.PHOTO_TYPE.equalsIgnoreCase(attachment.getType())) {
                 return isIncoming(chatMessage) ? TYPE_ATTACH_LEFT : TYPE_ATTACH_RIGHT;
+            } else if (QBAttachment.LOCATION_TYPE.equalsIgnoreCase(attachment.getType())) {
+                return getLocationView(chatMessage);
             }
 
         } else {
             return isIncoming(chatMessage) ? TYPE_TEXT_LEFT : TYPE_TEXT_RIGHT;
         }
         return customViewType(position);
+    }
+
+    protected int getLocationView(T chatMessage) {
+        return isIncoming(chatMessage) ? TYPE_ATTACH_LEFT : TYPE_ATTACH_RIGHT;
     }
 
     protected int customViewType(int position) {
@@ -259,23 +281,75 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         return attachments != null && !attachments.isEmpty();
     }
 
-
-    protected String getDate(long milliseconds) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd", Locale.getDefault());
-        return dateFormat.format(new Date(milliseconds));
+    /**
+     * @return string in "Hours:Minutes" format, i.e. <b>10:15</b>
+     */
+    protected String getDate(long seconds) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        return dateFormat.format(new Date(seconds * 1000));
     }
 
     /**
      * displayAttachment must be implemented in derived class
      */
     protected void displayAttachment(QBMessageViewHolder holder, int position) {
+        QBAttachment attachment = getQBAttach(position);
+
+        if (QBAttachment.PHOTO_TYPE.equalsIgnoreCase(attachment.getType())) {
+            showPhotoAttach(holder, position);
+        } else if (QBAttachment.LOCATION_TYPE.equalsIgnoreCase(attachment.getType())) {
+            showLocationAttach(holder, position);
+        }
+    }
+
+    protected void showPhotoAttach(QBMessageViewHolder holder, int position) {
+        showImageByURL(holder, getImageUrl(position), position);
+    }
+
+    protected void showLocationAttach(QBMessageViewHolder holder, int position) {
+        showImageByURL(holder, getLocationUrl(position), position);
+    }
+
+    protected String getImageUrl(int position) {
+        QBAttachment attachment = getQBAttach(position);
+        return QBFile.getPrivateUrlForUID(attachment.getId());
+    }
+
+    protected String getLocationUrl(int position) {
+        QBAttachment attachment = getQBAttach(position);
+        return LocationUtils.getRemoteUri(attachment.getData(), context);
+    }
+
+    protected QBAttachment getQBAttach(int position) {
+        T chatMessage = getItem(position);
+        return chatMessage.getAttachments().iterator().next();
+    }
+
+    private void showImageByURL(QBMessageViewHolder holder, String url, int position) {
+        int preferredImageSizePreview = (int) (80 * Resources.getSystem().getDisplayMetrics().density);
+        Glide.with(context)
+                .load(url)
+                .listener(getRequestListener(holder, position))
+                .override(preferredImageSizePreview, preferredImageSizePreview)
+                .dontTransform()
+                .error(R.drawable.ic_error)
+                .into(((ImageAttachHolder) holder).attachImageView);
+    }
+
+    protected RequestListener getRequestListener(QBMessageViewHolder holder, int position) {
+        return new ImageLoadListener((ImageAttachHolder) holder);
     }
 
     /**
      * displayAvatarImage must be implemented in derived class
      */
     @Override
-    public void displayAvatarImage(String uri, ImageView imageView) {
+    public void displayAvatarImage(String url, ImageView imageView) {
+        Glide.with(context)
+                .load(url)
+                .placeholder(R.drawable.placeholder_user)
+                .dontAnimate()
+                .into(imageView);
     }
 
 
@@ -307,11 +381,13 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     protected static class ImageAttachHolder extends QBMessageViewHolder {
         public ImageView attachImageView;
         public ProgressBar attachmentProgressBar;
+        public TextView attachTextTime;
 
-        public ImageAttachHolder(View itemView, @IdRes int attachId, @IdRes int progressBarId) {
+        public ImageAttachHolder(View itemView, @IdRes int attachId, @IdRes int progressBarId, @IdRes int timeId) {
             super(itemView);
             attachImageView = (ImageView) itemView.findViewById(attachId);
             attachmentProgressBar = (ProgressBar) itemView.findViewById(progressBarId);
+            attachTextTime = (TextView) itemView.findViewById(timeId);
         }
     }
 
@@ -321,6 +397,29 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         public QBMessageViewHolder(View itemView) {
             super(itemView);
             avatar = (ImageView) itemView.findViewById(R.id.msg_image_avatar);
+        }
+    }
+
+    protected static class ImageLoadListener implements RequestListener {
+        private ImageAttachHolder holder;
+
+        protected ImageLoadListener(ImageAttachHolder holder) {
+            this.holder = holder;
+        }
+
+        @Override
+        public boolean onException(Exception e, Object model, Target target, boolean isFirstResource) {
+            Log.e(TAG, "ImageLoadListener Exception= " + e);
+            holder.attachImageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            holder.attachmentProgressBar.setVisibility(View.GONE);
+            return false;
+        }
+
+        @Override
+        public boolean onResourceReady(Object resource, Object model, Target target, boolean isFromMemoryCache, boolean isFirstResource) {
+            holder.attachImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            holder.attachmentProgressBar.setVisibility(View.GONE);
+            return false;
         }
     }
 }
