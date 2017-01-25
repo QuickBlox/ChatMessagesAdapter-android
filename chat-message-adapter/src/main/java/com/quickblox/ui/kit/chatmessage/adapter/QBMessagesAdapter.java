@@ -24,7 +24,7 @@ import com.quickblox.chat.model.QBChatMessage;
 import com.quickblox.content.model.QBFile;
 import com.quickblox.ui.kit.chatmessage.adapter.utils.LocationUtils;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatMessageLinkClickListener;
-import com.quickblox.ui.kit.chatmessage.adapter.utils.QBChatMessageClickMovement;
+import com.quickblox.ui.kit.chatmessage.adapter.utils.QBMessageTextClickMovement;
 import com.quickblox.users.model.QBUser;
 
 import java.text.SimpleDateFormat;
@@ -41,8 +41,11 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     protected static final int TYPE_ATTACH_RIGHT = 3;
     protected static final int TYPE_ATTACH_LEFT = 4;
 
-    private static QBChatMessageLinkClickListener textViewLinkClickListener;
-    private static boolean overrideOnClick;
+    //Message TextView click listener
+    //
+    private QBChatMessageLinkClickListener messageTextViewLinkClickListener;
+    private boolean overrideOnClick;
+    private InnerMessageTextViewLinkClickListener innerMessageTextViewLinkClickListener = new InnerMessageTextViewLinkClickListener();
 
     private SparseIntArray containerLayoutRes = new SparseIntArray() {
         {
@@ -57,7 +60,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     protected List<T> chatMessages;
     protected LayoutInflater inflater;
-    protected static Context context;
+    protected Context context;
 
 
     public QBMessagesAdapter(Context context, List<T> chatMessages) {
@@ -66,17 +69,27 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         this.inflater = LayoutInflater.from(context);
     }
 
-    public static QBChatMessageLinkClickListener getTextViewLinkClickListener() {
-        return textViewLinkClickListener;
+    public QBChatMessageLinkClickListener getMessageTextViewLinkClickListener() {
+        return messageTextViewLinkClickListener;
     }
 
-    public void setTextViewLinkClickListener(QBChatMessageLinkClickListener textViewLinkClickListener, boolean overrideOnClick) {
-        this.textViewLinkClickListener = textViewLinkClickListener;
+    /**
+     * Sets listener for handling pressed links on message text.
+     *
+     * @param textViewLinkClickListener listener to set. Must to implement {@link QBChatMessageLinkClickListener}
+     * @param overrideOnClick           set 'true' if have to himself manage onLinkClick event or set 'false' for delegate
+     *                                  onLinkClick event to {@link android.text.util.Linkify}
+     */
+    public void setMessageTextViewLinkClickListener(QBChatMessageLinkClickListener textViewLinkClickListener, boolean overrideOnClick) {
+        this.messageTextViewLinkClickListener = textViewLinkClickListener;
         this.overrideOnClick = overrideOnClick;
     }
 
-    public void removeTextViewLinkClickListener(){
-        this.textViewLinkClickListener = null;
+    /**
+     * Removes listener for handling onLinkClick event on message text.
+     */
+    public void removeMessageTextViewLinkClickListener() {
+        this.messageTextViewLinkClickListener = null;
         this.overrideOnClick = false;
     }
 
@@ -168,11 +181,8 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     protected void onBindViewMsgLeftHolder(TextMessageHolder holder, T chatMessage, int position) {
         holder.messageTextView.setText(chatMessage.getBody());
         holder.timeTextMessageTextView.setText(getDate(chatMessage.getDateSent()));
-        if (holder.getCustomMovementMethod() != null){
-            holder.getCustomMovementMethod().setPositionInAdapter(position);
-        }
 
-        holder.timeTextMessageTextView.setText(getDate(chatMessage.getDateSent() * 1000));
+        setMessageTextViewLinkClickListener(holder, position);
 
         int valueType = getItemViewType(position);
         String avatarUrl = obtainAvatarUrl(valueType, chatMessage);
@@ -184,16 +194,22 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     protected void onBindViewMsgRightHolder(TextMessageHolder holder, T chatMessage, int position) {
         holder.messageTextView.setText(chatMessage.getBody());
         holder.timeTextMessageTextView.setText(getDate(chatMessage.getDateSent()));
-        if (holder.getCustomMovementMethod() != null){
-            holder.getCustomMovementMethod().setPositionInAdapter(position);
-        }
-        holder.timeTextMessageTextView.setText(getDate(chatMessage.getDateSent() * 1000));
+
+        setMessageTextViewLinkClickListener(holder, position);
 
         int valueType = getItemViewType(position);
         String avatarUrl = obtainAvatarUrl(valueType, chatMessage);
         if (avatarUrl != null) {
             displayAvatarImage(avatarUrl, holder.avatar);
         }
+    }
+
+    private void setMessageTextViewLinkClickListener(TextMessageHolder holder, int position){
+        QBMessageTextClickMovement customClickMovement =
+                new QBMessageTextClickMovement(innerMessageTextViewLinkClickListener, overrideOnClick, context);
+        customClickMovement.setPositionInAdapter(position);
+
+        holder.messageTextView.setMovementMethod(customClickMovement);
     }
 
     protected void setDateSentAttach(ImageAttachHolder holder, T chatMessage) {
@@ -356,25 +372,11 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     protected static class TextMessageHolder extends QBMessageViewHolder {
         public TextView messageTextView;
         public TextView timeTextMessageTextView;
-        private QBChatMessageClickMovement movementMethod;
 
         public TextMessageHolder(View itemView, @IdRes int msgId, @IdRes int timeId) {
             super(itemView);
             messageTextView = (TextView) itemView.findViewById(msgId);
             timeTextMessageTextView = (TextView) itemView.findViewById(timeId);
-
-            createAndSetCustomMovementMethodIfNeed();
-        }
-
-        private void createAndSetCustomMovementMethodIfNeed(){
-            if (getTextViewLinkClickListener() != null) {
-                this.movementMethod = new QBChatMessageClickMovement(getTextViewLinkClickListener(), overrideOnClick, context);
-                messageTextView.setMovementMethod(movementMethod);
-            }
-        }
-
-        public QBChatMessageClickMovement getCustomMovementMethod() {
-            return movementMethod;
         }
     }
 
@@ -420,6 +422,19 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
             holder.attachImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             holder.attachmentProgressBar.setVisibility(View.GONE);
             return false;
+        }
+    }
+
+    private class InnerMessageTextViewLinkClickListener implements QBChatMessageLinkClickListener{
+
+        @Override
+        public void onLinkClicked(String linkText, QBMessageTextClickMovement.QBLinkType linkType, int positionInAdapter) {
+            getMessageTextViewLinkClickListener().onLinkClicked(linkText, linkType, positionInAdapter);
+        }
+
+        @Override
+        public void onLongClick(String text) {
+            getMessageTextViewLinkClickListener().onLongClick(text);
         }
     }
 }

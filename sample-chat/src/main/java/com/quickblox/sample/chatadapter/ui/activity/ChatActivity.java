@@ -19,6 +19,8 @@ import com.quickblox.sample.chatadapter.utils.ChatHelper;
 import com.quickblox.ui.kit.chatmessage.adapter.QBMessagesAdapter;
 import com.quickblox.core.QBEntityCallback;
 import com.quickblox.core.exception.QBResponseException;
+import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatMessageLinkClickListener;
+import com.quickblox.ui.kit.chatmessage.adapter.utils.QBMessageTextClickMovement;
 import com.quickblox.users.model.QBUser;
 
 import java.util.ArrayList;
@@ -65,6 +67,19 @@ public class ChatActivity extends AppCompatActivity {
                 Collections.reverse(messages);
 
                 chatAdapter = new CustomMessageAdapter(ChatActivity.this, messages, qbUsers);
+                chatAdapter.setMessageTextViewLinkClickListener(new QBChatMessageLinkClickListener() {
+                    @Override
+                    public void onLinkClicked(String linkText, QBMessageTextClickMovement.QBLinkType linkType, int positionInAdapter) {
+                        Log.d(TAG, "onLinkClicked: linkText - " + linkText
+                                + " linkType - " + linkType
+                                + " positionInAdapter - " + positionInAdapter);
+                    }
+
+                    @Override
+                    public void onLongClick(String text) {
+                        Log.d(TAG, "onLongClick: linkText - " + text);
+                    }
+                }, false);
 
                 LinearLayoutManager layoutManager = new LinearLayoutManager(ChatActivity.this, VERTICAL, false);
                 messagesListView.setLayoutManager(layoutManager);

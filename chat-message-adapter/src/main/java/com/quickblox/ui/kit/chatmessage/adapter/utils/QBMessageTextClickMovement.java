@@ -14,7 +14,7 @@ import com.quickblox.core.helper.Lo;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatMessageLinkClickListener;
 
 //TODO VT maybe need move to package core for hide logic from users
-public class QBChatMessageClickMovement extends LinkMovementMethod {
+public class QBMessageTextClickMovement extends LinkMovementMethod {
 
     private final GestureDetector gestureDetector;
     private final boolean overrideOnLinkClick;
@@ -23,11 +23,10 @@ public class QBChatMessageClickMovement extends LinkMovementMethod {
     private int positionInAdapter = -1;
 
 
-    public QBChatMessageClickMovement(final QBChatMessageLinkClickListener listener, boolean overrideOnClick, final Context context) {
+    public QBMessageTextClickMovement(final QBChatMessageLinkClickListener listener, boolean overrideOnClick, final Context context) {
         this.overrideOnLinkClick = overrideOnClick;
         this.gestureDetector = new GestureDetector(context, new SimpleOnGestureListener(listener));
     }
-
 
     public void setPositionInAdapter(int positionInAdapter) {
         this.positionInAdapter = positionInAdapter;
@@ -77,7 +76,7 @@ public class QBChatMessageClickMovement extends LinkMovementMethod {
 
             if (linkClickListener != null) {
                 Lo.g("Long Click Occurs on TextView with ID: " + textView.getId() +
-                        "Text: " + text);
+                        " Text: " + text);
 
                 linkClickListener.onLongClick(text);
             }
@@ -100,9 +99,9 @@ public class QBChatMessageClickMovement extends LinkMovementMethod {
 
             if (linkClickListener != null) {
                 Lo.g("Tap Occurs on TextView with ID: " + textView.getId() +
-                        "Link Text: " + linkText +
-                        "Link Type: " + linkType +
-                        "Position: " + getPositionInAdapter());
+                        " Link Text: " + linkText +
+                        " Link Type: " + linkType +
+                        " Position: " + getPositionInAdapter());
 
                 linkClickListener.onLinkClicked(linkText, linkType, getPositionInAdapter());
             }
@@ -132,7 +131,7 @@ public class QBChatMessageClickMovement extends LinkMovementMethod {
                         buffer.getSpanEnd(link[0])).toString();
             }
 
-            return "";
+            return buffer.toString();
         }
     }
 
