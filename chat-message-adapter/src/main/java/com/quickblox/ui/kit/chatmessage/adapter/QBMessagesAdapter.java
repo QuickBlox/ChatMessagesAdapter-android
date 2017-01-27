@@ -289,7 +289,20 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     protected String getLocationUrl(int position) {
         QBAttachment attachment = getQBAttach(position);
-        return LocationUtils.getRemoteUri(attachment.getData(), context);
+
+        LocationUtils.BuilderParams params = buildUrlLocationParams();
+
+        return LocationUtils.getRemoteUri(attachment.getData(), params);
+    }
+
+    protected LocationUtils.BuilderParams buildUrlLocationParams() {
+        return new LocationUtils.BuilderParams()
+                .setUriSchemeMap(context.getString(R.string.uri_scheme_map))
+                .setZoom(context.getString(R.string.map_zoom))
+                .setSize(context.getString(R.string.map_size))
+                .setMapType(context.getString(R.string.map_type))
+                .setColor(context.getString(R.string.map_color))
+                .setKey(context.getString(R.string.google_static_maps_key));
     }
 
     protected QBAttachment getQBAttach(int position) {

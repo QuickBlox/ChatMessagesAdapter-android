@@ -1,6 +1,5 @@
 package com.quickblox.ui.kit.chatmessage.adapter.utils;
 
-import android.content.Context;
 import android.net.Uri;
 import android.support.v4.util.Pair;
 import android.text.TextUtils;
@@ -10,11 +9,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.quickblox.ui.kit.chatmessage.adapter.R;
 
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by Roman on 14.01.2017.
@@ -30,33 +27,31 @@ public class LocationUtils {
         return innerObject.toString();
     }
 
-    public static String generateURI(double latitude, double longitude, Context context) {
-        String uriSchemeMap = context.getString(R.string.uri_scheme_map);
-        String zoom = context.getString(R.string.map_zoom);
-        String size = context.getString(R.string.map_zize);
-        String mapType = context.getString(R.string.map_type);
-        String color = context.getString(R.string.map_color);
-
-        //api static map key should be generated in developers google console
-        String key = context.getString(R.string.google_static_maps_key);
-        if (TextUtils.isEmpty(key)) {
-            Log.e("LocationUtils", "You should set google_static_maps_key in resource!");
+    public static String generateURI(BuilderParams params) {
+        if (TextUtils.isEmpty(params.key)) {
+            Log.e("LocationUtils", "You should set google_static_maps_key in string resource!");
         }
 
         Uri.Builder builder = new Uri.Builder();
-        builder.appendQueryParameter("zoom", zoom)
-                .appendQueryParameter("size", size)
-                .appendQueryParameter("maptype", mapType)
-                .appendQueryParameter("markers", "color:" + color + "%7Clabel:S%7C" + latitude + "," + longitude)
-                .appendQueryParameter("key", key);
+        builder.appendQueryParameter("zoom", params.zoom)
+                .appendQueryParameter("size", params.size)
+                .appendQueryParameter("maptype", params.mapType)
+                .appendQueryParameter("markers", "color:" + params.color + "%7Clabel:S%7C" + params.latitude + "," + params.longitude)
+                .appendQueryParameter("key", params.key);
 
-        return (uriSchemeMap + builder.build().getQuery()).replaceAll("&amp;(?!&)", "&");
+        return (params.uriSchemeMap + builder.build().getQuery()).replaceAll("&amp;(?!&)", "&");
     }
 
-    public static String getRemoteUri(String location, Context context) {
+    public static String getRemoteUri(String location, BuilderParams params) {
         Pair<Double, Double> latLng = getLatLngFromJson(location);
+        if (params.latitude == null) {
+            params.setLatitude(latLng.first);
+        }
+        if (params.longitude == null) {
+            params.setLongitude(latLng.second);
+        }
 
-        return generateURI(latLng.first, latLng.second, context);
+        return generateURI(params);
     }
 
     public static Pair<Double, Double> getLatLngFromJson(String location) {
@@ -76,12 +71,6 @@ public class LocationUtils {
         double lng = (jELng == null) ? 0.0 : jELng.getAsDouble();
 
         return new Pair<>(lat, lng);
-    }
-
-    public static String getRemoteUri(String location, BuilderParams params) {
-//       another way to get url
-//       the JsonParser logic...
-        return "";
     }
 
     private static boolean isJSONValid(String jsonInString) {
@@ -104,7 +93,10 @@ public class LocationUtils {
         String size;
         String mapType;
         String color;
+        //api static map key should be generated in developers google console
         String key;
+        Double latitude;
+        Double longitude;
 
 
         public BuilderParams setUriSchemeMap(String uriSchemeMap) {
@@ -134,6 +126,16 @@ public class LocationUtils {
 
         public BuilderParams setKey(String key) {
             this.key = key;
+            return this;
+        }
+
+        public BuilderParams setLatitude(double longitude) {
+            this.longitude = longitude;
+            return this;
+        }
+
+        public BuilderParams setLongitude(double latitude) {
+            this.latitude = latitude;
             return this;
         }
     }
