@@ -298,11 +298,13 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     }
 
     private void showImageByURL(QBMessageViewHolder holder, String url, int position) {
-        int preferredImageSizePreview = (int) (80 * Resources.getSystem().getDisplayMetrics().density);
+        int preferredImageWidth = (int) context.getResources().getDimension(R.dimen.attach_image_width_preview);
+        int preferredImageHeight = (int) context.getResources().getDimension(R.dimen.attach_image_height_preview);
+
         Glide.with(context)
                 .load(url)
                 .listener(getRequestListener(holder, position))
-                .override(preferredImageSizePreview, preferredImageSizePreview)
+                .override(preferredImageWidth, preferredImageHeight)
                 .dontTransform()
                 .error(R.drawable.ic_error)
                 .into(((ImageAttachHolder) holder).attachImageView);
@@ -363,6 +365,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
         protected ImageLoadListener(ImageAttachHolder holder) {
             this.holder = holder;
+            holder.attachmentProgressBar.setVisibility(View.VISIBLE);
         }
 
         @Override
