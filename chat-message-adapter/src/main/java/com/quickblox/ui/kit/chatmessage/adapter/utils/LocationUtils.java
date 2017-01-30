@@ -55,12 +55,16 @@ public class LocationUtils {
     }
 
     public static Pair<Double, Double> getLatLngFromJson(String location) {
-        if (!isJSONValid(location)) {
-            return new Pair<>(0.0, 0.0);
-        }
 
         JsonParser jsonParser = new JsonParser();
-        JsonObject jo = (JsonObject) jsonParser.parse(location);
+        JsonObject jo;
+
+        try {
+            jo = (JsonObject) jsonParser.parse(location);
+        } catch (Exception ex) {
+            Log.e("LocationUtils", "Can't parse JsonObject: " + ex.getMessage());
+            return new Pair<>(0.0, 0.0);
+        }
 
         Iterator<Map.Entry<String, JsonElement>> iterator = jo.entrySet().iterator();
 
@@ -71,19 +75,6 @@ public class LocationUtils {
         double lng = (jELng == null) ? 0.0 : jELng.getAsDouble();
 
         return new Pair<>(lat, lng);
-    }
-
-    private static boolean isJSONValid(String jsonInString) {
-        if (TextUtils.isEmpty(jsonInString)) {
-            return false;
-        }
-        Gson gson = new Gson();
-        try {
-            gson.fromJson(jsonInString, JsonObject.class);
-            return true;
-        } catch (Exception ex) {
-            return false;
-        }
     }
 
 
