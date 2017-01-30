@@ -1,14 +1,15 @@
 package com.quickblox.ui.kit.chatmessage.adapter.utils;
 
+import android.content.Context;
 import android.net.Uri;
 import android.support.v4.util.Pair;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.quickblox.ui.kit.chatmessage.adapter.R;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -120,14 +121,24 @@ public class LocationUtils {
             return this;
         }
 
-        public BuilderParams setLatitude(double longitude) {
-            this.longitude = longitude;
-            return this;
-        }
-
-        public BuilderParams setLongitude(double latitude) {
+        public BuilderParams setLatitude(double latitude) {
             this.latitude = latitude;
             return this;
         }
+
+        public BuilderParams setLongitude(double longitude) {
+            this.longitude = longitude;
+            return this;
+        }
+    }
+
+    public static LocationUtils.BuilderParams defaultUrlLocationParams(Context context) {
+        return new LocationUtils.BuilderParams()
+                .setUriSchemeMap(context.getString(R.string.uri_scheme_map))
+                .setZoom(context.getString(R.string.map_zoom))
+                .setSize(context.getString(R.string.map_size))
+                .setMapType(context.getString(R.string.map_type))
+                .setColor(context.getString(R.string.map_color))
+                .setKey(context.getString(R.string.google_static_maps_key));
     }
 }

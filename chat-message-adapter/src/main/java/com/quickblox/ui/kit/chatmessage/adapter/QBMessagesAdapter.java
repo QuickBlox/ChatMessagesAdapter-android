@@ -1,7 +1,6 @@
 package com.quickblox.ui.kit.chatmessage.adapter;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
@@ -155,6 +154,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         if (avatarUrl != null) {
             displayAvatarImage(avatarUrl, holder.avatar);
         }
+        setMessageTextClickListener(holder, position);
     }
 
     protected void onBindViewMsgRightHolder(TextMessageHolder holder, T chatMessage, int position) {
@@ -166,6 +166,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         if (avatarUrl != null) {
             displayAvatarImage(avatarUrl, holder.avatar);
         }
+        setMessageTextClickListener(holder, position);
     }
 
     protected void setDateSentAttach(ImageAttachHolder holder, T chatMessage) {
@@ -275,11 +276,15 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     }
 
     protected void showPhotoAttach(QBMessageViewHolder holder, int position) {
-        showImageByURL(holder, getImageUrl(position), position);
+        String imageUrl = getImageUrl(position);
+        showImageByURL(holder, imageUrl, position);
+        setAttachImageClickListener(holder, imageUrl, position);
     }
 
     protected void showLocationAttach(QBMessageViewHolder holder, int position) {
-        showImageByURL(holder, getLocationUrl(position), position);
+        String locationUrl = getLocationUrl(position);
+        showImageByURL(holder, locationUrl, position);
+        setAttachLocationClickListener(holder, locationUrl, position);
     }
 
     protected String getImageUrl(int position) {
@@ -290,19 +295,9 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     protected String getLocationUrl(int position) {
         QBAttachment attachment = getQBAttach(position);
 
-        LocationUtils.BuilderParams params = buildUrlLocationParams();
+        LocationUtils.BuilderParams params = LocationUtils.defaultUrlLocationParams(context);
 
         return LocationUtils.getRemoteUri(attachment.getData(), params);
-    }
-
-    protected LocationUtils.BuilderParams buildUrlLocationParams() {
-        return new LocationUtils.BuilderParams()
-                .setUriSchemeMap(context.getString(R.string.uri_scheme_map))
-                .setZoom(context.getString(R.string.map_zoom))
-                .setSize(context.getString(R.string.map_size))
-                .setMapType(context.getString(R.string.map_type))
-                .setColor(context.getString(R.string.map_color))
-                .setKey(context.getString(R.string.google_static_maps_key));
     }
 
     protected QBAttachment getQBAttach(int position) {
@@ -339,6 +334,43 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
                 .into(imageView);
     }
 
+    protected void setMessageTextClickListener(final QBMessageViewHolder viewHolder, final int position) {
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getMessageTextClickItem(view, viewHolder, position);
+            }
+        });
+    }
+
+    protected void setAttachImageClickListener(final QBMessageViewHolder viewHolder, final String imageUrl, final int position) {
+
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getAttachImageClickItem(view, viewHolder, imageUrl, position);
+            }
+        });
+    }
+
+    protected void setAttachLocationClickListener(final QBMessageViewHolder viewHolder, final String locationUrl, final int position) {
+
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getAttachLocationClickItem(view, viewHolder, locationUrl, position);
+            }
+        });
+    }
+
+    protected void getMessageTextClickItem(View view, QBMessageViewHolder viewHolder, int position) {
+    }
+
+    protected void getAttachImageClickItem(View view, QBMessageViewHolder viewHolder, String url, int position) {
+    }
+
+    protected void getAttachLocationClickItem(View view, QBMessageViewHolder viewHolder, String url, int position) {
+    }
 
     protected static class TextMessageHolder extends QBMessageViewHolder {
         public TextView messageTextView;
