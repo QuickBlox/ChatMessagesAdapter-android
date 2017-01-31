@@ -11,7 +11,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.quickblox.ui.kit.chatmessage.adapter.R;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -21,11 +23,10 @@ import java.util.Map;
 public class LocationUtils {
 
     public static String generateLocationJson(Pair<String, Double> latitude, Pair<String, Double> longitude) {
-        JsonObject innerObject = new JsonObject();
-        innerObject.addProperty(latitude.first, String.valueOf(latitude.second));
-        innerObject.addProperty(longitude.first, String.valueOf(longitude.second));
-
-        return innerObject.toString();
+        Map<String, String> latLng = new HashMap<>();
+        latLng.put(latitude.first, String.valueOf(latitude.second));
+        latLng.put(longitude.first, String.valueOf(longitude.second));
+        return JsonParserBase.serialize(latLng);
     }
 
     public static String generateURI(BuilderParams params) {
@@ -55,26 +56,17 @@ public class LocationUtils {
         return generateURI(params);
     }
 
-    public static Pair<Double, Double> getLatLngFromJson(String location) {
-
-        JsonParser jsonParser = new JsonParser();
-        JsonObject jo;
-
+    public static Pair<Double, Double> getLatLngFromJson(String jsonLocation) {
+        double lat = 0.0;
+        double lng = 0.0;
         try {
-            jo = (JsonObject) jsonParser.parse(location);
+            Map<String, Object> latLng = JsonParserBase.deserialize(jsonLocation);
+            Iterator<Map.Entry<String, Object>> it = latLng.entrySet().iterator();
+            lat = Double.parseDouble(String.valueOf(it.next().getValue()));
+            lng = Double.parseDouble(String.valueOf(it.next().getValue()));
         } catch (Exception ex) {
             Log.e("LocationUtils", "Can't parse JsonObject: " + ex.getMessage());
-            return new Pair<>(0.0, 0.0);
         }
-
-        Iterator<Map.Entry<String, JsonElement>> iterator = jo.entrySet().iterator();
-
-        JsonElement jELat = jo.get(iterator.next().getKey());
-        JsonElement jELng = jo.get(iterator.next().getKey());
-
-        double lat = (jELat == null) ? 0.0 : jELat.getAsDouble();
-        double lng = (jELng == null) ? 0.0 : jELng.getAsDouble();
-
         return new Pair<>(lat, lng);
     }
 
