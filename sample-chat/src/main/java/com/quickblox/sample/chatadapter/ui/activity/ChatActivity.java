@@ -76,8 +76,8 @@ public class ChatActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onLongClick(String text) {
-                        Log.d(TAG, "onLongClick: linkText - " + text);
+                    public void onLongClick(String text, int positionInAdapter) {
+                        Log.d(TAG, "onLongClick: linkText - " + text + " positionInAdapter = " + positionInAdapter);
                     }
                 }, false);
 
