@@ -21,8 +21,12 @@ import com.quickblox.chat.QBChatService;
 import com.quickblox.chat.model.QBAttachment;
 import com.quickblox.chat.model.QBChatMessage;
 import com.quickblox.content.model.QBFile;
+import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachClickListener;
+import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachImageClickListener;
+import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachLocationClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.utils.LocationUtils;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatMessageLinkClickListener;
+import com.quickblox.ui.kit.chatmessage.adapter.utils.QBItemClickObserver;
 import com.quickblox.ui.kit.chatmessage.adapter.utils.QBMessageTextClickMovement;
 import com.quickblox.users.model.QBUser;
 
@@ -43,6 +47,8 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     //Message TextView click listener
     //
     private QBChatMessageLinkClickListener messageTextViewLinkClickListener;
+    private QBChatAttachImageClickListener attachImageClickListener;
+    private QBChatAttachLocationClickListener attachLocationClickListener;
     private boolean overrideOnClick;
 
     private SparseIntArray containerLayoutRes = new SparseIntArray() {
@@ -81,6 +87,22 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     public void setMessageTextViewLinkClickListener(QBChatMessageLinkClickListener textViewLinkClickListener, boolean overrideOnClick) {
         this.messageTextViewLinkClickListener = textViewLinkClickListener;
         this.overrideOnClick = overrideOnClick;
+    }
+
+    public void setAttachImageClickListener(QBChatAttachImageClickListener clickListener) {
+        attachImageClickListener = clickListener;
+    }
+
+    public void setAttachLocationClickListener(QBChatAttachLocationClickListener clickListener) {
+        attachLocationClickListener = clickListener;
+    }
+
+    public void removeAttachImageClickListener(QBChatAttachImageClickListener clickListener) {
+        attachImageClickListener = null;
+    }
+
+    public void removeLocationImageClickListener(QBChatAttachLocationClickListener clickListener) {
+        attachLocationClickListener = null;
     }
 
     /**
@@ -152,7 +174,6 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     }
 
     protected void onBindViewCustomHolder(QBMessageViewHolder holder, T chatMessage, int position) {
-        setItemClickListener(holder, position, getItemViewType(position));
     }
 
     protected void onBindViewAttachRightHolder(ImageAttachHolder holder, T chatMessage, int position) {
@@ -164,7 +185,8 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         if (avatarUrl != null) {
             displayAvatarImage(avatarUrl, holder.avatar);
         }
-        setItemClickListener(holder, position, valueType);
+
+        setItemClickListener(getAttachListenerByType(position), holder, getQBAttach(position), position);
     }
 
     protected void onBindViewAttachLeftHolder(ImageAttachHolder holder, T chatMessage, int position) {
@@ -176,7 +198,8 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         if (avatarUrl != null) {
             displayAvatarImage(avatarUrl, holder.avatar);
         }
-        setItemClickListener(holder, position, valueType);
+
+        setItemClickListener(getAttachListenerByType(position), holder, getQBAttach(position), position);
     }
 
     protected void onBindViewMsgLeftHolder(TextMessageHolder holder, T chatMessage, int position) {
@@ -190,7 +213,6 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         if (avatarUrl != null) {
             displayAvatarImage(avatarUrl, holder.avatar);
         }
-        setItemClickListener(holder, position, valueType);
     }
 
     protected void onBindViewMsgRightHolder(TextMessageHolder holder, T chatMessage, int position) {
@@ -204,10 +226,9 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         if (avatarUrl != null) {
             displayAvatarImage(avatarUrl, holder.avatar);
         }
-        setItemClickListener(holder, position, valueType);
     }
 
-    private void setMessageTextViewLinkClickListener(TextMessageHolder holder, int position){
+    private void setMessageTextViewLinkClickListener(TextMessageHolder holder, int position) {
         if (messageTextViewLinkClickListener != null) {
             QBMessageTextClickMovement customClickMovement =
                     new QBMessageTextClickMovement(messageTextViewLinkClickListener, overrideOnClick, context);
@@ -215,6 +236,17 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
             holder.messageTextView.setMovementMethod(customClickMovement);
         }
+    }
+
+    private QBChatAttachClickListener getAttachListenerByType(int position) {
+        QBAttachment attachment = getQBAttach(position);
+
+        if (QBAttachment.PHOTO_TYPE.equalsIgnoreCase(attachment.getType())) {
+            return attachImageClickListener;
+        } else if (QBAttachment.LOCATION_TYPE.equalsIgnoreCase(attachment.getType())) {
+            return attachLocationClickListener;
+        }
+        return null;
     }
 
     protected void setDateSentAttach(ImageAttachHolder holder, T chatMessage) {
@@ -333,12 +365,12 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         showImageByURL(holder, locationUrl, position);
     }
 
-    protected String getImageUrl(int position) {
+    public String getImageUrl(int position) {
         QBAttachment attachment = getQBAttach(position);
         return QBFile.getPrivateUrlForUID(attachment.getId());
     }
 
-    protected String getLocationUrl(int position) {
+    public String getLocationUrl(int position) {
         QBAttachment attachment = getQBAttach(position);
 
         LocationUtils.BuilderParams params = LocationUtils.defaultUrlLocationParams(context);
@@ -380,23 +412,11 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
                 .into(imageView);
     }
 
-    protected void setItemClickListener(QBMessageViewHolder holder, int position, int valueType) {
-        holder.itemView.setOnClickListener(new QBItemClickListener(holder, position, valueType));
+    protected void setItemClickListener(QBChatAttachClickListener listener, QBMessageViewHolder holder, QBAttachment qbAttachment, int position) {
+        if (listener != null) {
+            holder.itemView.setOnClickListener(new QBItemClickObserver(listener, qbAttachment, position));
+        }
     }
-
-
-    protected void notifyMessageTextClickItem(View view, QBMessageViewHolder viewHolder, int position) {
-    }
-
-    protected void notifyAttachImageClickItem(View view, QBMessageViewHolder viewHolder, int position) {
-    }
-
-    protected void notifyAttachLocationClickItem(View view, QBMessageViewHolder viewHolder, int position) {
-    }
-
-    protected void notifyCustomTypeClickItem(View view, QBMessageViewHolder viewHolder, int position) {
-    }
-
 
     protected static class TextMessageHolder extends QBMessageViewHolder {
         public TextView messageTextView;
@@ -452,42 +472,6 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
             holder.attachImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             holder.attachmentProgressBar.setVisibility(View.GONE);
             return false;
-        }
-    }
-
-    protected void notifyItemClick(View view, QBMessageViewHolder viewHolder, int position, int valueType) {
-
-        if (valueType == TYPE_TEXT_LEFT || valueType == TYPE_TEXT_RIGHT) {
-            notifyMessageTextClickItem(view, viewHolder, position);
-
-        } else if (valueType == TYPE_ATTACH_LEFT || valueType == TYPE_ATTACH_RIGHT) {
-            QBAttachment attachment = getQBAttach(position);
-
-            if (QBAttachment.PHOTO_TYPE.equalsIgnoreCase(attachment.getType())) {
-                notifyAttachImageClickItem(view, viewHolder, position);
-            } else if (QBAttachment.LOCATION_TYPE.equalsIgnoreCase(attachment.getType())) {
-                notifyAttachLocationClickItem(view, viewHolder, position);
-            }
-
-        } else {
-            notifyCustomTypeClickItem(view, viewHolder, position);
-        }
-    }
-
-    protected class QBItemClickListener implements View.OnClickListener {
-        private int position;
-        private QBMessageViewHolder viewHolder;
-        private int valueType;
-
-        QBItemClickListener(QBMessageViewHolder viewHolder, int position, int valueType) {
-            this.position = position;
-            this.viewHolder = viewHolder;
-            this.valueType = valueType;
-        }
-
-        @Override
-        public void onClick(View view) {
-            notifyItemClick(view, viewHolder, position, valueType);
         }
     }
 }
