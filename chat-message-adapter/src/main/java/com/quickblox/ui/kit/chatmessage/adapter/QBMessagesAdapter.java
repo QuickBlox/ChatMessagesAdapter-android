@@ -45,7 +45,6 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     //
     private QBChatMessageLinkClickListener messageTextViewLinkClickListener;
     private boolean overrideOnClick;
-    private InnerMessageTextViewLinkClickListener innerMessageTextViewLinkClickListener = new InnerMessageTextViewLinkClickListener();
 
     private SparseIntArray containerLayoutRes = new SparseIntArray() {
         {
@@ -205,11 +204,13 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     }
 
     private void setMessageTextViewLinkClickListener(TextMessageHolder holder, int position){
-        QBMessageTextClickMovement customClickMovement =
-                new QBMessageTextClickMovement(innerMessageTextViewLinkClickListener, overrideOnClick, context);
-        customClickMovement.setPositionInAdapter(position);
+        if (messageTextViewLinkClickListener != null) {
+            QBMessageTextClickMovement customClickMovement =
+                    new QBMessageTextClickMovement(messageTextViewLinkClickListener, overrideOnClick, context);
+            customClickMovement.setPositionInAdapter(position);
 
-        holder.messageTextView.setMovementMethod(customClickMovement);
+            holder.messageTextView.setMovementMethod(customClickMovement);
+        }
     }
 
     protected void setDateSentAttach(ImageAttachHolder holder, T chatMessage) {
@@ -422,19 +423,6 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
             holder.attachImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             holder.attachmentProgressBar.setVisibility(View.GONE);
             return false;
-        }
-    }
-
-    private class InnerMessageTextViewLinkClickListener implements QBChatMessageLinkClickListener{
-
-        @Override
-        public void onLinkClicked(String linkText, QBMessageTextClickMovement.QBLinkType linkType, int positionInAdapter) {
-            getMessageTextViewLinkClickListener().onLinkClicked(linkText, linkType, positionInAdapter);
-        }
-
-        @Override
-        public void onLongClick(String text) {
-            getMessageTextViewLinkClickListener().onLongClick(text);
         }
     }
 }

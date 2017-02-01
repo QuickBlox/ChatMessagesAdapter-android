@@ -78,7 +78,7 @@ public class QBMessageTextClickMovement extends LinkMovementMethod {
                 Lo.g("Long Click Occurs on TextView with ID: " + textView.getId() +
                         " Text: " + text);
 
-                linkClickListener.onLongClick(text);
+                linkClickListener.onLongClick(text, getPositionInAdapter());
             }
         }
 
