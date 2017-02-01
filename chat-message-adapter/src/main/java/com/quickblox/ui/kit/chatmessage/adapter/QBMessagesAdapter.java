@@ -22,6 +22,8 @@ import com.quickblox.chat.model.QBAttachment;
 import com.quickblox.chat.model.QBChatMessage;
 import com.quickblox.content.model.QBFile;
 import com.quickblox.ui.kit.chatmessage.adapter.utils.LocationUtils;
+import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatMessageLinkClickListener;
+import com.quickblox.ui.kit.chatmessage.adapter.utils.QBMessageTextClickMovement;
 import com.quickblox.users.model.QBUser;
 
 import java.text.SimpleDateFormat;
@@ -37,6 +39,11 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     protected static final int TYPE_TEXT_LEFT = 2;
     protected static final int TYPE_ATTACH_RIGHT = 3;
     protected static final int TYPE_ATTACH_LEFT = 4;
+
+    //Message TextView click listener
+    //
+    private QBChatMessageLinkClickListener messageTextViewLinkClickListener;
+    private boolean overrideOnClick;
 
     private SparseIntArray containerLayoutRes = new SparseIntArray() {
         {
@@ -58,6 +65,30 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         this.context = context;
         this.chatMessages = chatMessages;
         this.inflater = LayoutInflater.from(context);
+    }
+
+    public QBChatMessageLinkClickListener getMessageTextViewLinkClickListener() {
+        return messageTextViewLinkClickListener;
+    }
+
+    /**
+     * Sets listener for handling pressed links on message text.
+     *
+     * @param textViewLinkClickListener listener to set. Must to implement {@link QBChatMessageLinkClickListener}
+     * @param overrideOnClick           set 'true' if have to himself manage onLinkClick event or set 'false' for delegate
+     *                                  onLinkClick event to {@link android.text.util.Linkify}
+     */
+    public void setMessageTextViewLinkClickListener(QBChatMessageLinkClickListener textViewLinkClickListener, boolean overrideOnClick) {
+        this.messageTextViewLinkClickListener = textViewLinkClickListener;
+        this.overrideOnClick = overrideOnClick;
+    }
+
+    /**
+     * Removes listener for handling onLinkClick event on message text.
+     */
+    public void removeMessageTextViewLinkClickListener() {
+        this.messageTextViewLinkClickListener = null;
+        this.overrideOnClick = false;
     }
 
     @Override
@@ -152,6 +183,8 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         holder.messageTextView.setText(chatMessage.getBody());
         holder.timeTextMessageTextView.setText(getDate(chatMessage.getDateSent()));
 
+        setMessageTextViewLinkClickListener(holder, position);
+
         int valueType = getItemViewType(position);
         String avatarUrl = obtainAvatarUrl(valueType, chatMessage);
         if (avatarUrl != null) {
@@ -164,12 +197,24 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         holder.messageTextView.setText(chatMessage.getBody());
         holder.timeTextMessageTextView.setText(getDate(chatMessage.getDateSent()));
 
+        setMessageTextViewLinkClickListener(holder, position);
+
         int valueType = getItemViewType(position);
         String avatarUrl = obtainAvatarUrl(valueType, chatMessage);
         if (avatarUrl != null) {
             displayAvatarImage(avatarUrl, holder.avatar);
         }
         setItemClickListener(holder, position, valueType);
+    }
+
+    private void setMessageTextViewLinkClickListener(TextMessageHolder holder, int position){
+        if (messageTextViewLinkClickListener != null) {
+            QBMessageTextClickMovement customClickMovement =
+                    new QBMessageTextClickMovement(messageTextViewLinkClickListener, overrideOnClick, context);
+            customClickMovement.setPositionInAdapter(position);
+
+            holder.messageTextView.setMovementMethod(customClickMovement);
+        }
     }
 
     protected void setDateSentAttach(ImageAttachHolder holder, T chatMessage) {
