@@ -8,4 +8,7 @@ import com.quickblox.chat.model.QBAttachment;
 
 public interface QBChatAttachImageClickListener extends QBChatAttachClickListener{
 
+    @Override
+    void onLinkClicked(QBAttachment imageAttach, int positionInAdapter);
+
 }

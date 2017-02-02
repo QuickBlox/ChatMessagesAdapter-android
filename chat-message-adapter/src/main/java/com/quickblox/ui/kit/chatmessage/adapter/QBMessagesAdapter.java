@@ -26,7 +26,6 @@ import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachImageClick
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachLocationClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.utils.LocationUtils;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatMessageLinkClickListener;
-import com.quickblox.ui.kit.chatmessage.adapter.utils.QBItemClickObserver;
 import com.quickblox.ui.kit.chatmessage.adapter.utils.QBMessageTextClickMovement;
 import com.quickblox.users.model.QBUser;
 
@@ -284,7 +283,6 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
         if (hasAttachments(chatMessage)) {
             QBAttachment attachment = getQBAttach(position);
-            Log.d("QBMessagesAdapter", "attachment.getType= " + attachment.getType());
 
             if (QBAttachment.PHOTO_TYPE.equalsIgnoreCase(attachment.getType())) {
                 return isIncoming(chatMessage) ? TYPE_ATTACH_LEFT : TYPE_ATTACH_RIGHT;
@@ -414,7 +412,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     protected void setItemClickListener(QBChatAttachClickListener listener, QBMessageViewHolder holder, QBAttachment qbAttachment, int position) {
         if (listener != null) {
-            holder.itemView.setOnClickListener(new QBItemClickObserver(listener, qbAttachment, position));
+            holder.itemView.setOnClickListener(new QBItemClickListenerFilter(listener, qbAttachment, position));
         }
     }
 
@@ -472,6 +470,23 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
             holder.attachImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             holder.attachmentProgressBar.setVisibility(View.GONE);
             return false;
+        }
+    }
+
+    private class QBItemClickListenerFilter implements View.OnClickListener {
+        private int position;
+        private QBAttachment attachment;
+        private QBChatAttachClickListener chatAttachClickListener;
+
+        QBItemClickListenerFilter(QBChatAttachClickListener qbChatAttachClickListener, QBAttachment attachment, int position) {
+            this.position = position;
+            this.attachment = attachment;
+            this.chatAttachClickListener = qbChatAttachClickListener;
+        }
+
+        @Override
+        public void onClick(View view) {
+            chatAttachClickListener.onLinkClicked(attachment, position);
         }
     }
 }

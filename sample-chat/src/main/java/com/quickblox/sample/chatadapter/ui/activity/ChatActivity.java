@@ -85,9 +85,9 @@ public class ChatActivity extends AppCompatActivity {
                 }, false);
                 chatAdapter.setAttachImageClickListener(new QBChatAttachImageClickListener() {
                     @Override
-                    public void onLinkClicked(QBAttachment attachment, int positionInAdapter) {
+                    public void onLinkClicked(QBAttachment imageAttach, int positionInAdapter) {
                         Log.d(TAG, "setAttachImageClickListener: positionInAdapter - " + positionInAdapter);
-                        Log.d(TAG, "setAttachImageClickListener: attachment - " + attachment.getUrl());
+                        Log.d(TAG, "setAttachImageClickListener: attachment - " + imageAttach.getUrl());
                     }
                 });
 

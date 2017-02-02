@@ -20,9 +20,10 @@ public class JsonParserBase {
         return gson.toJson(map);
     }
 
-    public static Map<String, Object> deserialize(String jsonString) throws Exception {
+    public static Map<String, Object> deserialize(String jsonString) {
 
-        Type type = new TypeToken<Map<String, String>>(){}.getType();
+        Type type = new TypeToken<Map<String, String>>() {
+        }.getType();
         Map<String, Object> jsonMap = new Gson().fromJson(jsonString, type);
 
         return jsonMap;
