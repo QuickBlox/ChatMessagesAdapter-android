@@ -88,7 +88,7 @@ public class CustomMessageAdapter extends QBMessagesAdapter<QBChatMessage> {
     }
 
     @Override
-    protected String getImageUrl(int position) {
+    public String getImageUrl(int position) {
         QBAttachment attachment = getQBAttach(position);
         return attachment.getUrl();
     }
