@@ -2,6 +2,13 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 
+group = 'com.quickblox'
+
+def sharedManifest = manifest {
+    attributes("Implementation-Version": versionName,
+            "Created-By": "QuickBlox")
+}
+
 android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
@@ -20,6 +27,47 @@ android {
         }
     }
 }
+
+uploadArchives {
+
+    repositories.mavenDeployer {
+        repository(url: rootProject.mainRepository) {
+            if (hasProperty('qbRepository')) {
+                authentication(
+                    userName: qbUser,
+                    password: qbPassword
+                )
+            }
+        }
+
+        pom.project {
+            name 'QuickBlox'
+            packaging 'aar'
+            version = rootProject.versionName
+            inceptionYear '2016'
+            url 'https://quickblox.com'
+
+            developers {
+                developer {
+                    id 'vadimfite'
+                    name 'Vadim Fite'
+                    organizationUrl 'https://quickblox.com'
+                }
+
+                developer {
+                    id 'romanpronin'
+                    name 'Roman Pronin'
+                    organizationUrl 'https://quickblox.com'
+                }
+            }
+
+            dependencies {
+                version = rootProject.versionName
+            }
+        }
+    }
+}
+
 
 dependencies {
     compile "com.quickblox:quickblox-android-sdk-chat:$rootProject.qbSdkVersion"
