@@ -36,7 +36,7 @@ uploadArchives {
 
     repositories.mavenDeployer {
         repository(url: rootProject.mainRepository) {
-            if (hasProperty('qbRepository')) {
+            if (rootProject.qbCredentialsAvailable) {
                 authentication(
                     userName: qbUser,
                     password: qbPassword
