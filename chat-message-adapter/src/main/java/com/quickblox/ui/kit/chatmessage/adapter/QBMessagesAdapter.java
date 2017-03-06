@@ -284,10 +284,11 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         if (hasAttachments(chatMessage)) {
             QBAttachment attachment = getQBAttach(position);
 
-            if (QBAttachment.PHOTO_TYPE.equalsIgnoreCase(attachment.getType())) {
-                return isIncoming(chatMessage) ? TYPE_ATTACH_LEFT : TYPE_ATTACH_RIGHT;
+            if (QBAttachment.PHOTO_TYPE.equalsIgnoreCase(attachment.getType()) ||
+                QBAttachment.IMAGE_TYPE.equalsIgnoreCase(attachment.getType())) {
+                  return isIncoming(chatMessage) ? TYPE_ATTACH_LEFT : TYPE_ATTACH_RIGHT;
             } else if (QBAttachment.LOCATION_TYPE.equalsIgnoreCase(attachment.getType())) {
-                return getLocationView(chatMessage);
+                  return getLocationView(chatMessage);
             }
 
         } else {
