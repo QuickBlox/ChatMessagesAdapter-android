@@ -56,9 +56,12 @@ public abstract class MessageTextView extends FrameLayout {
 
     protected void setCustomWidget(@LayoutRes int widgetId) {
         if (widgetId != 0) {
-            final ViewGroup widgetFrame = (ViewGroup) findViewById(R.id.msg_custom_widget_frame);
-            View view = inflater.inflate(widgetId, widgetFrame);
-            Log.d(TAG, "view=null? " + (view == null));
+            final ViewGroup widgetFrameBottom = (ViewGroup) findViewById(R.id.msg_custom_widget_frame_bottom);
+            final ViewGroup widgetFrameTop = (ViewGroup) findViewById(R.id.msg_custom_widget_frame_top);
+            View customViewBottom = inflater.inflate(widgetId, widgetFrameBottom);
+            View customViewTop = inflater.inflate(widgetId, widgetFrameTop);
+            Log.d(TAG, "customViewBottom = null ? " + (customViewBottom == null));
+            Log.d(TAG, "customViewBottom = null ? " + (customViewTop == null));
         }
     }
 
