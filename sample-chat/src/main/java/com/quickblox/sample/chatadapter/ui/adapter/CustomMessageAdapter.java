@@ -82,8 +82,10 @@ public class CustomMessageAdapter extends QBMessagesAdapter<QBChatMessage> {
 
     @Override
     protected void onBindViewMsgRightHolder(TextMessageHolder holder, QBChatMessage chatMessage, int position) {
-        TextView view = (TextView) holder.itemView.findViewById(R.id.custom_text_view);
-        view.setText(currentUser.getFullName());
+        ViewGroup view = (ViewGroup) holder.itemView.findViewById(R.id.custom_view_top);
+        TextView textView = (TextView) view.findViewById(R.id.custom_text_view);
+        textView.setText(currentUser.getFullName());
+//        holder.timeTextMessageTextView.setVisibility(View.GONE);
         super.onBindViewMsgRightHolder(holder, chatMessage, position);
     }
 

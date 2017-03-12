@@ -61,7 +61,7 @@ public abstract class MessageTextView extends FrameLayout {
             View customViewBottom = inflater.inflate(widgetId, widgetFrameBottom);
             View customViewTop = inflater.inflate(widgetId, widgetFrameTop);
             Log.d(TAG, "customViewBottom = null ? " + (customViewBottom == null));
-            Log.d(TAG, "customViewBottom = null ? " + (customViewTop == null));
+            Log.d(TAG, "customViewTop = null ? " + (customViewTop == null));
         }
     }
 
