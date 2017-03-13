@@ -82,11 +82,22 @@ public class CustomMessageAdapter extends QBMessagesAdapter<QBChatMessage> {
 
     @Override
     protected void onBindViewMsgRightHolder(TextMessageHolder holder, QBChatMessage chatMessage, int position) {
-        ViewGroup view = (ViewGroup) holder.itemView.findViewById(R.id.custom_view_top);
-        TextView textView = (TextView) view.findViewById(R.id.custom_text_view);
-        textView.setText(currentUser.getFullName());
-//        holder.timeTextMessageTextView.setVisibility(View.GONE);
+        TextView view = (TextView) holder.itemView.findViewById(R.id.custom_text_view);
+        view.setText(currentUser.getFullName());
         super.onBindViewMsgRightHolder(holder, chatMessage, position);
+    }
+
+    @Override
+    protected void onBindViewMsgLeftHolder(TextMessageHolder holder, QBChatMessage chatMessage, int position) {
+        holder.timeTextMessageTextView.setVisibility(View.GONE);
+
+        TextView textView = (TextView) holder.itemView.findViewById(R.id.opponent_name_text_view);
+        textView.setText(opponentUser.getFullName());
+
+        TextView customMessageTimeTextView = (TextView) holder.itemView.findViewById(R.id.custom_msg_text_time_message);
+        customMessageTimeTextView.setText(getDate(chatMessage.getDateSent()));
+
+        super.onBindViewMsgLeftHolder(holder, chatMessage, position);
     }
 
     @Override
