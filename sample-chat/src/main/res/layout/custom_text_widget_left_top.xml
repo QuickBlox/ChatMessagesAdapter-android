@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/custom_view_top"
     style="@style/MatchWidth"
     android:orientation="horizontal">
@@ -8,7 +9,7 @@
         android:id="@+id/opponent_name_text_view"
         style="@style/WrapContent"
         android:paddingRight="8dp"
-        android:text="Oppponent Name"
+        tools:text="Oppponent Name"
         android:textStyle="bold" />
 
     <TextView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -19,5 +20,5 @@
     <TextView
         android:id="@+id/custom_msg_text_time_message"
         style="@style/WrapContent"
-        android:text="12:42"/>
+        tools:text="12:42"/>
 </LinearLayout>
