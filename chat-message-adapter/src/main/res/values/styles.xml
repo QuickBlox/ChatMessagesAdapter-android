@@ -212,6 +212,7 @@
         <item name="android:paddingRight">@dimen/padding_small</item>
         <item name="android:autoLink">all</item>
         <item name="android:textColorLink">@color/text_color_link</item>
+        <item name="android:textIsSelectable">true</item>
     </style>
 
 

@@ -88,6 +88,19 @@ public class CustomMessageAdapter extends QBMessagesAdapter<QBChatMessage> {
     }
 
     @Override
+    protected void onBindViewMsgLeftHolder(TextMessageHolder holder, QBChatMessage chatMessage, int position) {
+        holder.timeTextMessageTextView.setVisibility(View.GONE);
+
+        TextView textView = (TextView) holder.itemView.findViewById(R.id.opponent_name_text_view);
+        textView.setText(opponentUser.getFullName());
+
+        TextView customMessageTimeTextView = (TextView) holder.itemView.findViewById(R.id.custom_msg_text_time_message);
+        customMessageTimeTextView.setText(getDate(chatMessage.getDateSent()));
+
+        super.onBindViewMsgLeftHolder(holder, chatMessage, position);
+    }
+
+    @Override
     public String getImageUrl(int position) {
         QBAttachment attachment = getQBAttach(position);
         return attachment.getUrl();

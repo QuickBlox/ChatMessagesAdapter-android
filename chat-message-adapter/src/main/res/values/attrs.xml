@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="MessageTextView">
-
-        <attr name="widget_id" format="integer" />
-
+        <attr name="widget_id_top" format="integer" />
+        <attr name="widget_id_bottom" format="integer" />
     </declare-styleable>
 </resources>
