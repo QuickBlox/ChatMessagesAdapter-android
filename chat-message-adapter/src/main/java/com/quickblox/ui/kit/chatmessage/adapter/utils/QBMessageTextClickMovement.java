@@ -3,6 +3,7 @@ package com.quickblox.ui.kit.chatmessage.adapter.utils;
 import android.content.Context;
 import android.text.Layout;
 import android.text.Spannable;
+import android.text.method.ArrowKeyMovementMethod;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Patterns;
@@ -14,7 +15,7 @@ import com.quickblox.core.helper.Lo;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatMessageLinkClickListener;
 
 //TODO VT maybe need move to package core for hide logic from users
-public class QBMessageTextClickMovement extends LinkMovementMethod {
+public class QBMessageTextClickMovement extends ArrowKeyMovementMethod {
 
     private final GestureDetector gestureDetector;
     private final boolean overrideOnLinkClick;

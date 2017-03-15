@@ -35,7 +35,7 @@ allprojects {
 
 ext.compileSdkVersion = 24
 ext.buildToolsVersion = "24.0.1"
-ext.versionName = '1.1.0-alpha2'
+ext.versionName = '1.1.0-alpha3'
 
 ext.supportAnnotationsVersion = '24.0.1'
 
@@ -45,7 +45,7 @@ ext.targetSdkVersion = 24
 ext.sourceCompatibility = JavaVersion.VERSION_1_7
 ext.targetCompatibility = JavaVersion.VERSION_1_7
 
-ext.qbSdkVersion = "3.3.1-alpha5"
+ext.qbSdkVersion = "3.3.1-alpha7"
 ext.recycleVersion = "25.1.0"
 ext.circleImageVersion = "2.1.0"
 ext.glideVersion = "3.7.0"
