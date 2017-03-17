@@ -240,10 +240,11 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     private QBChatAttachClickListener getAttachListenerByType(int position) {
         QBAttachment attachment = getQBAttach(position);
 
-        if (QBAttachment.PHOTO_TYPE.equalsIgnoreCase(attachment.getType())) {
-            return attachImageClickListener;
+        if (QBAttachment.PHOTO_TYPE.equalsIgnoreCase(attachment.getType())||
+            QBAttachment.IMAGE_TYPE.equalsIgnoreCase(attachment.getType())) {
+              return attachImageClickListener;
         } else if (QBAttachment.LOCATION_TYPE.equalsIgnoreCase(attachment.getType())) {
-            return attachLocationClickListener;
+              return attachLocationClickListener;
         }
         return null;
     }
@@ -347,10 +348,11 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     protected void displayAttachment(QBMessageViewHolder holder, int position) {
         QBAttachment attachment = getQBAttach(position);
 
-        if (QBAttachment.PHOTO_TYPE.equalsIgnoreCase(attachment.getType())) {
-            showPhotoAttach(holder, position);
+        if (QBAttachment.PHOTO_TYPE.equalsIgnoreCase(attachment.getType())||
+            QBAttachment.IMAGE_TYPE.equalsIgnoreCase(attachment.getType())) {
+              showPhotoAttach(holder, position);
         } else if (QBAttachment.LOCATION_TYPE.equalsIgnoreCase(attachment.getType())) {
-            showLocationAttach(holder, position);
+              showLocationAttach(holder, position);
         }
     }
 
