@@ -83,6 +83,7 @@
         <item name="android:layout_width">@dimen/chat_attach_width</item>
         <item name="android:layout_height">@dimen/chat_attach_height</item>
         <item name="android:layout_gravity">center</item>
+        <item name="android:layout_centerVertical">true</item>
         <item name="android:scaleType">centerCrop</item>
     </style>
 

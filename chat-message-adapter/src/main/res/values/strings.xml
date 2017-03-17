@@ -7,6 +7,10 @@
     <string name="map_type">roadmap</string>
     <string name="map_color">blue</string>
 
+    <string name="video_attachment">Video attachment</string>
+    <string name="voice_message">Voice message</string>
+
+
     <string name="google_static_maps_key" translatable="false" templateMergeStrategy="preserve">
         YOUR_KEY
     </string>

@@ -1,6 +1,8 @@
 package com.quickblox.ui.kit.chatmessage.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
@@ -24,6 +26,7 @@ import com.quickblox.content.model.QBFile;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachImageClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachLocationClickListener;
+import com.quickblox.ui.kit.chatmessage.adapter.utils.Utils;
 import com.quickblox.ui.kit.chatmessage.adapter.utils.LocationUtils;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatMessageLinkClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.utils.QBMessageTextClickMovement;
@@ -290,6 +293,10 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
                   return isIncoming(chatMessage) ? TYPE_ATTACH_LEFT : TYPE_ATTACH_RIGHT;
             } else if (QBAttachment.LOCATION_TYPE.equalsIgnoreCase(attachment.getType())) {
                   return getLocationView(chatMessage);
+            } else if (QBAttachment.AUDIO_TYPE.equalsIgnoreCase(attachment.getType())){
+                return isIncoming(chatMessage) ? TYPE_ATTACH_LEFT : TYPE_ATTACH_RIGHT;
+            }else if (QBAttachment.VIDEO_TYPE.equalsIgnoreCase(attachment.getType())){
+                return isIncoming(chatMessage) ? TYPE_ATTACH_LEFT : TYPE_ATTACH_RIGHT;
             }
 
         } else {
@@ -350,9 +357,13 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
         if (QBAttachment.PHOTO_TYPE.equalsIgnoreCase(attachment.getType())||
             QBAttachment.IMAGE_TYPE.equalsIgnoreCase(attachment.getType())) {
-              showPhotoAttach(holder, position);
+               showPhotoAttach(holder, position);
         } else if (QBAttachment.LOCATION_TYPE.equalsIgnoreCase(attachment.getType())) {
               showLocationAttach(holder, position);
+        } else if (QBAttachment.AUDIO_TYPE.equalsIgnoreCase(attachment.getType())) {
+              showAudioAttach(holder, position);
+        } else if (QBAttachment.VIDEO_TYPE.equalsIgnoreCase(attachment.getType())) {
+              showVideoAttach(holder, position);
         }
     }
 
@@ -364,6 +375,18 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     protected void showLocationAttach(QBMessageViewHolder holder, int position) {
         String locationUrl = getLocationUrl(position);
         showImageByURL(holder, locationUrl, position);
+    }
+
+    protected void showAudioAttach(QBMessageViewHolder holder, int position) {
+        float textSize = context.getResources().getDimension(R.dimen.text_size_medium);
+        Bitmap bitmap = Utils.textAsBitmap(context.getString(R.string.voice_message), textSize, Color.BLACK);
+        showImage(holder, bitmap);
+    }
+
+    protected void showVideoAttach(QBMessageViewHolder holder, int position) {
+        float textSize = context.getResources().getDimension(R.dimen.text_size_medium);
+        Bitmap bitmap = Utils.textAsBitmap(context.getString(R.string.video_attachment), textSize, Color.BLACK);
+        showImage(holder, bitmap);
     }
 
     public String getImageUrl(int position) {
@@ -395,6 +418,15 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
                 .dontTransform()
                 .error(R.drawable.ic_error)
                 .into(((ImageAttachHolder) holder).attachImageView);
+    }
+
+    private void showImage(QBMessageViewHolder holder, Bitmap bitmap) {
+        ((ImageAttachHolder) holder).attachmentProgressBar.setVisibility(View.GONE);
+
+        ((ImageAttachHolder) holder).attachImageView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        ((ImageAttachHolder) holder).attachImageView.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
+        ((ImageAttachHolder) holder).attachImageView.setScaleType(ImageView.ScaleType.CENTER);
+        ((ImageAttachHolder) holder).attachImageView.setImageBitmap(bitmap);
     }
 
     protected RequestListener getRequestListener(QBMessageViewHolder holder, int position) {
