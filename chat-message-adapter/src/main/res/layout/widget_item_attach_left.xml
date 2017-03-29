@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/LinearAttachWidgetFrame.Left">
+
+    <TextView
+        android:id="@+id/msg_text_time_attach"
+        style="@style/TextViewAttach.Right"
+        tools:text="time" />
+
+</LinearLayout>

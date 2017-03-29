@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.quickblox.chat.model.QBAttachment;
 import com.quickblox.chat.model.QBChatDialog;
 import com.quickblox.chat.model.QBChatMessage;
 import com.quickblox.sample.chatadapter.R;
@@ -19,6 +20,9 @@ import com.quickblox.sample.chatadapter.utils.ChatHelper;
 import com.quickblox.ui.kit.chatmessage.adapter.QBMessagesAdapter;
 import com.quickblox.core.QBEntityCallback;
 import com.quickblox.core.exception.QBResponseException;
+import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachImageClickListener;
+import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatMessageLinkClickListener;
+import com.quickblox.ui.kit.chatmessage.adapter.utils.QBMessageTextClickMovement;
 import com.quickblox.users.model.QBUser;
 
 import java.util.ArrayList;
@@ -65,6 +69,28 @@ public class ChatActivity extends AppCompatActivity {
                 Collections.reverse(messages);
 
                 chatAdapter = new CustomMessageAdapter(ChatActivity.this, messages, qbUsers);
+                chatAdapter.setMessageTextViewLinkClickListener(new QBChatMessageLinkClickListener() {
+                    @Override
+                    public void onLinkClicked(String linkText, QBMessageTextClickMovement.QBLinkType linkType, int positionInAdapter) {
+                        Log.d(TAG, "onLinkClicked: linkText - " + linkText
+                                + " linkType - " + linkType
+                                + " positionInAdapter - " + positionInAdapter);
+                    }
+
+                    @Override
+                    public void onLongClick(String text, int positionInAdapter) {
+                        Log.d(TAG, "onLongClick: linkText - " + text + " positionInAdapter = " + positionInAdapter);
+                    }
+
+                }, false);
+                chatAdapter.setAttachImageClickListener(new QBChatAttachImageClickListener() {
+                    @Override
+                    public void onLinkClicked(QBAttachment imageAttach, int positionInAdapter) {
+                        Log.d(TAG, "setAttachImageClickListener: positionInAdapter - " + positionInAdapter);
+                        Log.d(TAG, "setAttachImageClickListener: attachment - " + imageAttach.getUrl());
+                    }
+                });
+
 
                 LinearLayoutManager layoutManager = new LinearLayoutManager(ChatActivity.this, VERTICAL, false);
                 messagesListView.setLayoutManager(layoutManager);

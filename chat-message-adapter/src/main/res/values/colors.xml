@@ -5,6 +5,7 @@
     <color name="grey">#d3d3d3</color>
     <color name="green">#4ad24d</color>
     <color name="white">#ffffff</color>
+    <color name="blue">#007FFF</color>
 
     <color name="text_color_primary">#212121</color>
     <color name="text_color_white">#ffffff</color>
@@ -14,5 +15,7 @@
     <color name="text_color_medium_dark_grey">#747474</color>
     <color name="text_color_dark_grey">#6e6e6e</color>
     <color name="text_color_green">@color/green</color>
+
+    <color name="text_color_link">@color/blue</color>
 
 </resources>

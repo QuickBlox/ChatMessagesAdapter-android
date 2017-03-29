@@ -1,6 +1,12 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
+group = 'com.quickblox'
+
+def sharedManifest = manifest {
+    attributes("Implementation-Version": versionName,
+            "Created-By": "QuickBlox")
+}
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -19,11 +25,60 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
+
+uploadArchives {
+
+    repositories.mavenDeployer {
+        repository(url: rootProject.mainRepository) {
+            if (rootProject.qbCredentialsAvailable) {
+                authentication(
+                    userName: qbUser,
+                    password: qbPassword
+                )
+            }
+        }
+
+        pom.project {
+            name 'QuickBlox'
+            packaging 'aar'
+            version = rootProject.versionName
+            inceptionYear '2016'
+            url 'https://quickblox.com'
+
+            developers {
+                developer {
+                    id 'vadimfite'
+                    name 'Vadim Fite'
+                    organizationUrl 'https://quickblox.com'
+                }
+
+                developer {
+                    id 'romanpronin'
+                    name 'Roman Pronin'
+                    organizationUrl 'https://quickblox.com'
+                }
+            }
+
+            dependencies {
+                version = rootProject.versionName
+            }
+        }
+    }
+}
+
 
 dependencies {
     compile "com.quickblox:quickblox-android-sdk-chat:$rootProject.qbSdkVersion"
-    compile 'com.android.support:recyclerview-v7:24.2.1'
-    compile 'de.hdodenhof:circleimageview:2.1.0'
+    compile "com.quickblox:quickblox-android-sdk-content:$rootProject.qbSdkVersion"
 
+    compile "com.android.support:recyclerview-v7:$rootProject.recycleVersion"
+    compile "de.hdodenhof:circleimageview:$rootProject.circleImageVersion"
+
+    compile "com.github.bumptech.glide:glide:$rootProject.glideVersion"
+    compile "com.android.support:support-v4:$rootProject.supportV4Version"
 }

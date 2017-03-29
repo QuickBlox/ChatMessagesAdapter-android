@@ -38,11 +38,13 @@ public abstract class MessageTextView extends FrameLayout {
 
     protected void applyAttributes(AttributeSet attrs) {
         TypedArray array = null;
-        int widgetId;
+        int widgetIdBottom;
+        int widgetIdTop;
 
         try {
             array = getContext().obtainStyledAttributes(attrs, R.styleable.MessageTextView);
-            widgetId = array.getResourceId(R.styleable.MessageTextView_widget_id, 0);
+            widgetIdBottom = array.getResourceId(R.styleable.MessageTextView_widget_id_bottom, 0);
+            widgetIdTop = array.getResourceId(R.styleable.MessageTextView_widget_id_top, 0);
         } finally {
             if (array != null) {
                 array.recycle();
@@ -51,14 +53,20 @@ public abstract class MessageTextView extends FrameLayout {
 
         setLinearSide();
         setTextLayout();
-        setCustomWidget(widgetId);
+        setCustomWidgets(widgetIdBottom, widgetIdTop);
     }
 
-    protected void setCustomWidget(@LayoutRes int widgetId) {
-        if (widgetId != 0) {
-            final ViewGroup widgetFrame = (ViewGroup) findViewById(R.id.msg_custom_widget_frame);
-            View view = inflater.inflate(widgetId, widgetFrame);
-            Log.d(TAG, "view=null? " + (view == null));
+    protected void setCustomWidgets(@LayoutRes int widgetIdBottom, @LayoutRes int widgetIdTop) {
+        if (widgetIdBottom != 0) {
+            final ViewGroup widgetFrameBottom = (ViewGroup) findViewById(R.id.msg_custom_widget_frame_bottom);
+            View customViewBottom = inflater.inflate(widgetIdBottom, widgetFrameBottom);
+            Log.d(TAG, "customViewBottom = null ? " + (customViewBottom == null));
+        }
+
+        if (widgetIdTop != 0){
+            final ViewGroup widgetFrameTop = (ViewGroup) findViewById(R.id.msg_custom_widget_frame_top);
+            View customViewTop = inflater.inflate(widgetIdTop, widgetFrameTop);
+            Log.d(TAG, "customViewTop = null ? " + (customViewTop == null));
         }
     }
 

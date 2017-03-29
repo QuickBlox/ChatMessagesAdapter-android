@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">ChatDevelopmentKit</string>
+
+    <string name="uri_scheme_map">https://maps.googleapis.com/maps/api/staticmap?</string>
+    <string name="map_zoom">15</string>
+    <string name="map_size">600x300</string>
+    <string name="map_type">roadmap</string>
+    <string name="map_color">blue</string>
+
+    <string name="google_static_maps_key" translatable="false" templateMergeStrategy="preserve">
+        YOUR_KEY
+    </string>
 </resources>

@@ -12,6 +12,11 @@
             android:id="@+id/msg_linear_list_item_right"
             style="@style/LinearWidgetTextMsg.Right">
 
+            <!--LinearLayout should place its actual message widget here.-->
+            <LinearLayout
+                android:id="@+id/msg_custom_widget_frame_top"
+                style="@style/CustomWidgetFrame.Right" />
+
             <TextView
                 android:id="@+id/msg_text_time_message"
                 style="@style/TextViewTimeMsg.Right"
@@ -24,7 +29,7 @@
 
             <!--LinearLayout should place its actual message widget here.-->
             <LinearLayout
-                android:id="@+id/msg_custom_widget_frame"
+                android:id="@+id/msg_custom_widget_frame_bottom"
                 style="@style/CustomWidgetFrame.Right" />
 
         </LinearLayout>

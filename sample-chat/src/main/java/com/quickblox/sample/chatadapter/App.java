@@ -2,7 +2,7 @@ package com.quickblox.sample.chatadapter;
 
 import android.app.Application;
 
-import com.quickblox.core.QBSettings;
+import com.quickblox.auth.session.QBSettings;
 import com.quickblox.sample.chatadapter.utils.Consts;
 
 
