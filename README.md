@@ -19,7 +19,7 @@ Just add to your build.gradle
 ```xml
 dependencies {
 
-compile 'com.quickblox:chat-message-adapter:1.0'
+compile 'com.quickblox:chat-message-adapter:1.1.0'
 
 }
 ```
