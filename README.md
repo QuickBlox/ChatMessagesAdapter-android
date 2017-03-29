@@ -75,6 +75,29 @@ Steps to customize QBMessagesAdapter to your Chat app:
   * bubble background for message
   * for all layouts and views set paddings, margins, etc.
 ```
+
+## Main listeners
+
+Chat Adapter main event listeners.
+```java
+QBChatMessageLinkClickListener - interface used to handle Clicks and Long clicks on the TextView and taps on the phone, web, mail links inside of TextView.
+QBChatAttachImageClickListener - interface used to handle Clicks on image attachments.
+QBChatAttachLocationClickListener - interface used to handle Clicks on location attachments.
+```  
+Usage:
+```java
+messagesAdapter.setAttachLocationClickListener(new QBChatAttachLocationClickListener{
+
+        @Override
+        public void onLinkClicked(QBAttachment qbAttachment, int i) {
+            MapsActivity.start(context, qbAttachment.getData());
+        }
+    });
+
+messagesAdapter.setMessageTextViewLinkClickListener(messagesTextViewLinkClickListener, false);
+messagesAdapter.setAttachImageClickListener(imageAttachClickListener);
+```  
+
 ## Style configuration
   
 **ChatMessagesAdapter** has a flexible configuration system for displaying any view elements. For example:
@@ -192,29 +215,16 @@ To create your own non predefined view type for hat message use code:
 Also you can override methods to display attach images
 ```java
     @Override
-    public void displayAttachment(QBMessageViewHolder holder, int position) {
-        int preferredImageSizePreview = (int) (80 * Resources.getSystem().getDisplayMetrics().density);
-        int valueType = getItemViewType(position);
-        initGlideRequestListener((ImageAttachHolder) holder);
-
-        QBChatMessage chatMessage = getItem(position);
-
-        Collection<QBAttachment> attachments = chatMessage.getAttachments();
-        QBAttachment attachment = attachments.iterator().next();
-        Glide.with(context)
-                .load(attachment.getUrl())
-                .listener(glideRequestListener)
-                .override(preferredImageSizePreview, preferredImageSizePreview)
-                .dontTransform()
-                .error(R.drawable.ic_error)
-                .into(((ImageAttachHolder) holder).attachImageView);
+    protected void displayAttachment(QBMessageViewHolder holder, int position) {
+       super.displayAttachment(holder, position);
+       ...add own logic
     }
 ```
 override methods to display avatars
 ```java
     @Override
     public void displayAvatarImage(String url, ImageView imageView) {
-        Glide.with(context).load(url).into(imageView);
+       ...
     }
 
     @Override
@@ -224,5 +234,56 @@ override methods to display avatars
     }
 ```
 and etc.
+
+## Location attachment integration.
+
+Starting from version 1.1.0 ***ChatAdapter*** has ability to create location JSON, that represents such fields as lat and lng:
+```java
+	"attachments":[  
+            {  
+               "type":"location",
+               "data":"{\"lat\":\"50.014141\",\"lng\":\"36.229058\"}"
+            }
+         ]
+```
+This means you can generate json location like this:
+```java
+double latitude = 50.014141;
+double longitude = 36.229058;
+String location = LocationUtils.generateLocationJson(new Pair<>("lat", latitude),
+                            new Pair<>("lng", longitude));
+```
+And then create attachment:
+```java
+QBAttachment attachment = new QBAttachment("location");
+attachment.setData(location);
+...
+chatMessage.addAttachment(attachment);
+```
+
+After receiving message with location ***ChatAdapter*** generates locationUrl type of google static maps api, to show it like an image.
+
+***Note, you should set google_static_maps_key in string resource(https://developers.google.com/maps/documentation/static-maps/) like this:***
+```java
+    <string name="google_static_maps_key" templateMergeStrategy="preserve" translatable="false">
+        YOUR_KEY
+    </string>
+```
+
+Then by clicking this item, using ***QBChatAttachLocationClickListener***, you can get latitude and longitude to show it in your MapActivity:
+```java
+	String receivedLocation = attachment.getData();
+	// latitude - latLngPair.first, longitude - latLngPair.second
+	Pair<Double, Double> latLngPair = LocationUtils.getLatLngFromJson(receivedLocation);
+```
+
+Besides, ***LocationUtils*** has defaultUrlLocationParams for location URI and it can be customized with ***LocationUtils.BuilderParams()***, or can be changed just some parameters in string resource:
+```java
+    <string name="map_zoom">15</string>
+    <string name="map_size">600x300</string>
+    <string name="map_type">roadmap</string>
+    <string name="map_color">blue</string>
+```
+
 # License
 See [LICENSE](LICENSE)
