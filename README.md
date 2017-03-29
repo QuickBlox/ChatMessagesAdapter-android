@@ -277,7 +277,7 @@ Then by clicking this item, using ***QBChatAttachLocationClickListener***, you c
 	Pair<Double, Double> latLngPair = LocationUtils.getLatLngFromJson(receivedLocation);
 ```
 
-Besides, ***LocationUtils*** has defaultUrlLocationParams for location URI and it can be customized with ***LocationUtils.BuilderParams()***, or can be changed just some parameters in string resource:
+Besides, ***LocationUtils*** has defaultUrlLocationParams for location URI and it can be customized with LocationUtils.BuilderParams(), or can be changed just some parameters in string resource:
 ```java
     <string name="map_zoom">15</string>
     <string name="map_size">600x300</string>
