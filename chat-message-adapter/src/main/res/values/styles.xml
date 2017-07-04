@@ -19,7 +19,6 @@
     </style>
 
 
-
     <style name="ListItemTextMessage.Right" />
 
     <style name="ListItemTextMessage.Left" />
@@ -270,6 +269,75 @@
         <item name="android:orientation">vertical</item>
     </style>
 
+    <style name="LinkPreviewFrame">
+        <item name="android:layout_width">@dimen/link_preview_width</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="LinkPreviewFrame.Right"/>
+
+    <style name="LinkPreviewFrame.Left" />
+
+    <style name="LinkPreviewVerticalLine">
+        <item name="android:layout_width">2dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/grey</item>
+    </style>
+
+    <style name="LinkPreviewTitle" parent="MatchParent">
+        <item name="android:singleLine">true</item>
+        <item name="android:textSize">@dimen/text_size_link_preview_title</item>
+        <item name="android:textColor">@color/text_color_link_preview_title</item>
+    </style>
+
+    <style name="LinkPreviewImage">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:scaleType">centerCrop</item>
+        <item name="android:minHeight">@dimen/link_preview_imaga_min_height</item>
+        <item name="android:minWidth">@dimen/link_preview_width</item>
+        <item name="android:maxHeight">@dimen/chat_attach_height</item>
+    </style>
+
+    <style name="LinkPreviewDescription" parent="MatchParent">
+        <item name="android:layout_gravity">left|bottom</item>
+        <item name="android:maxLines">3</item>
+        <item name="android:textSize">@dimen/text_size_link_preview_description</item>
+        <item name="android:textColor">@color/text_color_link_preview_description</item>
+    </style>
+
+    <style name="HostView" parent="MatchWidth">
+        <item name="android:layout_gravity">left</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:paddingTop">@dimen/padding_small</item>
+    </style>
+
+    <style name="HostViewIcon">
+        <item name="android:layout_width">@dimen/host_icon_width</item>
+        <item name="android:layout_height">@dimen/host_icon_height</item>
+    </style>
+
+    <style name="HostViewUrl" parent="WrapContent">
+        <item name="android:textSize">@dimen/text_size_link_preview_host</item>
+        <item name="android:layout_marginLeft">@dimen/padding_small</item>
+    </style>
+
+    <style name="WrapContent">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="MatchParent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="MatchWidth">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
 
     <style name="ExoPlaybackControlView">
         <item name="android:layout_width">wrap_content</item>
@@ -322,5 +390,4 @@
         <item name="android:textSize">@dimen/text_size_small</item>
         <item name="android:textStyle">bold</item>
     </style>
-
 </resources>

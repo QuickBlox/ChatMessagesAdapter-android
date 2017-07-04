@@ -31,6 +31,10 @@ allprojects {
                 url "https://github.com/QuickBlox/quickblox-android-sdk-releases/raw/master/"
             }
         }
+
+        maven {
+            url "https://maven.google.com"
+        }
     }
 }
 
@@ -46,10 +50,10 @@ ext.targetSdkVersion = 24
 ext.sourceCompatibility = JavaVersion.VERSION_1_7
 ext.targetCompatibility = JavaVersion.VERSION_1_7
 
-ext.qbSdkVersion = "3.3.1"
+ext.qbSdkVersion = "3.3.4"
 ext.recycleVersion = "25.3.1"
 ext.circleImageVersion = "2.1.0"
-ext.glideVersion = "3.7.0"
+ext.glideVersion = "3.8.0"
 ext.exoPlayerVersion = "r2.4.0"
 ext.supportV4Version = "25.3.1"
 

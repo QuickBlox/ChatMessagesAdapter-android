@@ -1,11 +1,14 @@
 package com.quickblox.ui.kit.chatmessage.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
@@ -23,16 +26,25 @@ import com.quickblox.chat.QBChatService;
 import com.quickblox.chat.model.QBAttachment;
 import com.quickblox.chat.model.QBChatMessage;
 import com.quickblox.content.model.QBFile;
+import com.quickblox.core.QBEntityCallback;
+import com.quickblox.core.exception.QBResponseException;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBMediaPlayerListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachClickListener;
+import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachImageClickListener;
+import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachLocationClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatMessageLinkClickListener;
+import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBLinkPreviewClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.media.AudioController;
 import com.quickblox.ui.kit.chatmessage.adapter.media.MediaController;
 import com.quickblox.ui.kit.chatmessage.adapter.media.SingleMediaManager;
 import com.quickblox.ui.kit.chatmessage.adapter.media.utils.Utils;
 import com.quickblox.ui.kit.chatmessage.adapter.media.video.thumbnails.VideoThumbnail;
 import com.quickblox.ui.kit.chatmessage.adapter.media.view.QBPlaybackControlView;
+import com.quickblox.ui.kit.chatmessage.adapter.models.QBLinkPreview;
+import com.quickblox.ui.kit.chatmessage.adapter.utils.AnimationsUtils;
+import com.quickblox.ui.kit.chatmessage.adapter.utils.LinkUtils;
 import com.quickblox.ui.kit.chatmessage.adapter.utils.LocationUtils;
+import com.quickblox.ui.kit.chatmessage.adapter.utils.QBLinkPreviewCashService;
 import com.quickblox.ui.kit.chatmessage.adapter.utils.QBMessageTextClickMovement;
 import com.quickblox.users.model.QBUser;
 
@@ -47,6 +59,8 @@ import java.util.WeakHashMap;
 public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Adapter<QBMessagesAdapter.QBMessageViewHolder> implements QBBaseAdapter<T> {
     private static final String TAG = QBMessagesAdapter.class.getSimpleName();
 
+    protected static final long SHOW_VIEW_ANIMATION_DURATION = 500;
+
     protected static final int TYPE_TEXT_RIGHT = 1;
     protected static final int TYPE_TEXT_LEFT = 2;
     protected static final int TYPE_ATTACH_RIGHT = 3;
@@ -59,11 +73,15 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     //Message TextView click listener
     //
     private QBChatMessageLinkClickListener messageTextViewLinkClickListener;
+    private boolean overrideOnClick;
+
     private QBChatAttachClickListener attachImageClickListener;
     private QBChatAttachClickListener attachLocationClickListener;
     private QBChatAttachClickListener attachAudioClickListener;
 
-    private boolean overrideOnClick;
+    private QBLinkPreviewClickListener linkPreviewClickListener;
+    private boolean overrideOnLinkPreviewClick;
+
 
     private SparseIntArray containerLayoutRes = new SparseIntArray() {
         {
@@ -121,11 +139,16 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         attachLocationClickListener = clickListener;
     }
 
+    public void setLinkPreviewClickListener(QBLinkPreviewClickListener linkPreviewClickListener, boolean overrideOnLinkpreviewClick) {
+        this.linkPreviewClickListener = linkPreviewClickListener;
+        this.overrideOnLinkPreviewClick = overrideOnLinkpreviewClick;
+    }
+
     public void setAttachAudioClickListener(QBChatAttachClickListener clickListener) {
         this.attachAudioClickListener = clickListener;
     }
 
-    public void removeAttachImageClickListener(QBChatAttachClickListener clickListener) {
+    public void removeAttachImageClickListener(QBChatAttachImageClickListener clickListener) {
         attachImageClickListener = null;
     }
 
@@ -153,14 +176,21 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         getMediaManagerInstance().removeListener(listener);
     }
 
+    public void removeLinkPreviewClickListener() {
+        this.linkPreviewClickListener = null;
+        this.overrideOnLinkPreviewClick = false;
+    }
+
     @Override
     public QBMessageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
             case TYPE_TEXT_RIGHT:
-                qbViewHolder = new TextMessageHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_text_message, R.id.msg_text_time_message);
+                qbViewHolder = new TextMessageHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_text_message,
+                        R.id.msg_text_time_message, R.id.msg_link_preview);
                 return qbViewHolder;
             case TYPE_TEXT_LEFT:
-                qbViewHolder = new TextMessageHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_text_message, R.id.msg_text_time_message);
+                qbViewHolder = new TextMessageHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_text_message,
+                        R.id.msg_text_time_message, R.id.msg_link_preview);
                 return qbViewHolder;
             case TYPE_ATTACH_RIGHT:
                 qbViewHolder = new ImageAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_image_attach, R.id.msg_progressbar_attach,
@@ -322,19 +352,15 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     }
 
     protected void onBindViewMsgLeftHolder(TextMessageHolder holder, T chatMessage, int position) {
-        holder.messageTextView.setText(chatMessage.getBody());
-        holder.timeTextMessageTextView.setText(getDate(chatMessage.getDateSent()));
-
-        setMessageTextViewLinkClickListener(holder, position);
-
-        int valueType = getItemViewType(position);
-        String avatarUrl = obtainAvatarUrl(valueType, chatMessage);
-        if (avatarUrl != null) {
-            displayAvatarImage(avatarUrl, holder.avatar);
-        }
+        fillTextMessageHolder(holder, chatMessage, position, true);
     }
 
     protected void onBindViewMsgRightHolder(TextMessageHolder holder, T chatMessage, int position) {
+        fillTextMessageHolder(holder, chatMessage, position, false);
+    }
+
+    protected void fillTextMessageHolder(TextMessageHolder holder, T chatMessage, int position, boolean isLeftMessage){
+        holder.linkPreviewLayout.setVisibility(View.GONE);
         holder.messageTextView.setText(chatMessage.getBody());
         holder.timeTextMessageTextView.setText(getDate(chatMessage.getDateSent()));
 
@@ -345,6 +371,84 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         if (avatarUrl != null) {
             displayAvatarImage(avatarUrl, holder.avatar);
         }
+
+        final List<String> urlsList = LinkUtils.extractUrls(chatMessage.getBody());
+        if (!urlsList.isEmpty()) {
+            holder.messageTextView.setMaxWidth((int) context.getResources().getDimension(R.dimen.link_preview_width));
+            if (isLeftMessage){
+                processLinksFromLeftMessage(holder, urlsList, position);
+            } else {
+                processLinksFromRightMessage(holder, urlsList, position);
+            }
+        } else {
+            holder.messageTextView.setMaxWidth(context.getResources().getDisplayMetrics().widthPixels);
+        }
+    }
+
+    protected void processLinksFromLeftMessage(TextMessageHolder holder, List<String> urlsList, int position){
+        processLinksFromMessage(holder, urlsList, position);
+    }
+
+    protected void processLinksFromRightMessage(TextMessageHolder holder, List<String> urlsList, int position){
+        processLinksFromMessage(holder, urlsList, position);
+    }
+
+    protected void processLinksFromMessage(TextMessageHolder holder, final List<String> urlsList, final int position) {
+        final String firstLink = LinkUtils.getLinkWithProtocol(urlsList.get(0));
+
+        QBLinkPreviewCashService.getInstance().getLinkPreview(firstLink, null, false, new LoadLinkPreviewHandler(holder, urlsList, position));
+    }
+
+    protected void fillLinkPreviewLayout(final View linkPreviewLayout, final QBLinkPreview linkPreview, String link) {
+        TextView linkTitle = (TextView) linkPreviewLayout.findViewById(R.id.link_preview_title);
+        TextView linkDescription = (TextView) linkPreviewLayout.findViewById(R.id.link_preview_description);
+        ImageView linkImage = (ImageView) linkPreviewLayout.findViewById(R.id.link_preview_image);
+        ImageView linkHostIcon = (ImageView) linkPreviewLayout.findViewById(R.id.link_host_icon);
+        TextView linkHost = (TextView) linkPreviewLayout.findViewById(R.id.link_host_url);
+
+        linkTitle.setText(linkPreview.getTitle());
+
+        if (!TextUtils.isEmpty(linkPreview.getDescription())) {
+            linkDescription.setText(linkPreview.getDescription());
+            linkDescription.setVisibility(View.VISIBLE);
+        } else {
+            linkDescription.setVisibility(View.GONE);
+        }
+
+        linkHost.setText(LinkUtils.getHostFromLink(link));
+
+        linkImage.setVisibility(View.GONE);
+        if (linkPreview.getImage() != null && linkPreview.getImage().getImageUrl() != null) {
+            loadImageOrHideView(LinkUtils.prepareCorrectLink(linkPreview.getImage().getImageUrl()), linkImage);
+        }
+
+        linkHostIcon.setVisibility(View.GONE);
+        if (LinkUtils.getLinkForHostIcon(link) != null) {
+            loadImageOrHideView(LinkUtils.getLinkForHostIcon(link), linkHostIcon);
+        }
+    }
+
+    protected void loadImageOrHideView(final String imageUrl, final ImageView imageView){
+        int preferredImageWidth = (int) context.getResources().getDimension(R.dimen.attach_image_width_preview);
+        int preferredImageHeight = (int) context.getResources().getDimension(R.dimen.attach_image_height_preview);
+
+        Glide.with(context)
+                .load(imageUrl)
+                .listener(new RequestListener<String, GlideDrawable>() {
+                    @Override
+                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        AnimationsUtils.showView(imageView, SHOW_VIEW_ANIMATION_DURATION);
+                        return false;
+                    }
+                })
+                .override(preferredImageWidth, preferredImageHeight)
+                .dontTransform()
+                .into(imageView);
     }
 
     private void setMessageTextViewLinkClickListener(TextMessageHolder holder, int position) {
@@ -650,14 +754,17 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         holder.bubbleFrame.setOnClickListener(new QBItemAudioClickListener(listener, qbAttachment, position, controlView));
     }
 
+
     protected static class TextMessageHolder extends QBMessageViewHolder {
+        public View linkPreviewLayout;
         public TextView messageTextView;
         public TextView timeTextMessageTextView;
 
-        public TextMessageHolder(View itemView, @IdRes int msgId, @IdRes int timeId) {
+        public TextMessageHolder(View itemView, @IdRes int msgId, @IdRes int timeId, @IdRes int linkPreviewLayoutId) {
             super(itemView);
             messageTextView = (TextView) itemView.findViewById(msgId);
             timeTextMessageTextView = (TextView) itemView.findViewById(timeId);
+            linkPreviewLayout = itemView.findViewById(linkPreviewLayoutId);
         }
     }
 
@@ -780,6 +887,73 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         @Override
         public void onPlayerInViewInit(QBPlaybackControlView view) {
             setPlayerViewActivePosition(getPlayerViewPosition(view));
+        }
+    }
+
+    private class QBLinkPreviewClickListenerFilter implements View.OnClickListener, View.OnLongClickListener {
+        private final QBLinkPreviewClickListener linkPreviewClickListener;
+        private final QBLinkPreview linkPreview;
+        private final int position;
+        private final String link;
+
+        public QBLinkPreviewClickListenerFilter(QBLinkPreviewClickListener linkPreviewClickListener, String link, QBLinkPreview linkPreview, int position) {
+            this.linkPreviewClickListener = linkPreviewClickListener;
+            this.link = link;
+            this.linkPreview = linkPreview;
+            this.position = position;
+        }
+
+        @Override
+        public void onClick(View view) {
+            if (linkPreviewClickListener != null) {
+                linkPreviewClickListener.onLinkPreviewClicked(link, linkPreview, position);
+            }
+
+            if (!overrideOnLinkPreviewClick) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+            }
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            if (linkPreviewClickListener != null){
+                linkPreviewClickListener.onLinkPreviewLongClicked(link, linkPreview, position);
+            }
+
+            return true;
+        }
+    }
+
+    private class LoadLinkPreviewHandler implements QBEntityCallback<QBLinkPreview> {
+        private TextMessageHolder holder;
+        private int position;
+        private String firstLink;
+        private List<String> urlsList;
+
+        public LoadLinkPreviewHandler(TextMessageHolder holder, List<String> urlsList, int position) {
+            this.holder = holder;
+            this.urlsList = urlsList;
+            this.position = position;
+            this.firstLink = LinkUtils.getLinkWithProtocol(urlsList.get(0));
+        }
+
+        @Override
+        public void onSuccess(QBLinkPreview linkPreview, Bundle bundle) {
+            if (linkPreview != null && holder.getAdapterPosition() == position) {
+                holder.linkPreviewLayout.setOnClickListener(new QBLinkPreviewClickListenerFilter(linkPreviewClickListener, firstLink, linkPreview, position));
+                holder.linkPreviewLayout.setOnLongClickListener(new QBLinkPreviewClickListenerFilter(linkPreviewClickListener, firstLink, linkPreview, position));
+
+                fillLinkPreviewLayout(holder.linkPreviewLayout, linkPreview, firstLink);
+
+                AnimationsUtils.showView(holder.linkPreviewLayout, SHOW_VIEW_ANIMATION_DURATION);
+            }
+        }
+
+        @Override
+        public void onError(QBResponseException e) {
+            //ignore error
         }
     }
 }

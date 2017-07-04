@@ -3,5 +3,6 @@
     <declare-styleable name="MessageTextView">
         <attr name="widget_id_top" format="integer" />
         <attr name="widget_id_bottom" format="integer" />
+        <attr name="widget_id_link_preview" format="integer" />
     </declare-styleable>
 </resources>
