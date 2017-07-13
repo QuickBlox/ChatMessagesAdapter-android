@@ -33,7 +33,7 @@ import static android.widget.LinearLayout.VERTICAL;
 public class ChatActivity extends AppCompatActivity {
     private static final String TAG = ChatActivity.class.getSimpleName();
     private static final String EXTRA_QB_USERS = "qb_user_list";
-    private static final String DIALOG_ID = "57b701e8a0eb472505000039";
+    private static final String DIALOG_ID = "58219cc7a0eb4715f8000052";
 
     private int skipPagination = 0;
     private QBChatDialog chatDialog;
