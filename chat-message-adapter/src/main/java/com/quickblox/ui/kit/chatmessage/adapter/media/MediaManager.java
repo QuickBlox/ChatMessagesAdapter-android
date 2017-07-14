@@ -11,7 +11,7 @@ import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 
 public interface MediaManager {
 
-    void playMedia(MediaSource metaData, SimpleExoPlayerView playerView, Uri uri);
+    void playMedia(SimpleExoPlayerView playerView, Uri uri);
 
     void stopAnyPlayback();
 

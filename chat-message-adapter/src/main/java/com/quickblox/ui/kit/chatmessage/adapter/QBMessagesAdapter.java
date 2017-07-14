@@ -479,7 +479,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     }
 
     private void showAudioAttach(SimpleExoPlayerView playerView, Uri uri) {
-        MediaManager.getInstance(context).setMediaContent(playerView, uri);
+        getMediaManager().playMedia(playerView, uri);
     }
 
     private void showVideoAttach(SimpleExoPlayerView playerView, Uri uri) {
@@ -487,7 +487,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     }
 
     private SingleMediaManager getMediaManager() {
-       return mediaManager == null ? new SingleMediaManager() : mediaManager;
+       return mediaManager == null ? new SingleMediaManager(context) : mediaManager;
     }
 
     protected void showPhotoAttach(QBMessageViewHolder holder, int position) {
