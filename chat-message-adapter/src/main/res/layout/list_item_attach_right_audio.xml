@@ -5,11 +5,14 @@
 
     <RelativeLayout
         android:id="@+id/msg_bubble_background_attach"
-        style="@style/BubbleAttachFrame.Right">
+        style="@style/BubbleAttachFrame.Right"
+        android:layout_height="72dp">
 
-    <com.google.android.exoplayer2.ui.SimpleExoPlayerView
-        android:id="@+id/msg_audio_attach"
-        style="@style/ImageViewAttach.Right" />
+        <com.quickblox.ui.kit.chatmessage.adapter.media.view.PlayerViewController
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/msg_audio_attach"/>
+
 
     </RelativeLayout>
 </LinearLayout>

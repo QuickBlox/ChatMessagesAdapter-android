@@ -7,6 +7,7 @@ import android.util.Log;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.quickblox.ui.kit.chatmessage.adapter.media.utils.SimpleExoPlayerInitializer;
+import com.quickblox.ui.kit.chatmessage.adapter.media.view.PlayerViewController;
 
 /**
  * Created by roman on 7/14/17.
@@ -15,7 +16,7 @@ import com.quickblox.ui.kit.chatmessage.adapter.media.utils.SimpleExoPlayerIniti
 public class SingleMediaManager implements MediaManager {
     private static String TAG = SingleMediaManager.class.getSimpleName();
 
-    private SimpleExoPlayerView playerView;
+    private PlayerViewController playerView;
     private Context context;
 
     public SingleMediaManager(Context context) {
@@ -23,7 +24,7 @@ public class SingleMediaManager implements MediaManager {
     }
 
     @Override
-    public void playMedia(SimpleExoPlayerView playerView, Uri uri) {
+    public void playMedia(PlayerViewController playerView, Uri uri) {
         if(isPlayerViewCurrent(playerView)){
             Log.v(TAG, "playMedia: already playing");
             return;
@@ -44,24 +45,24 @@ public class SingleMediaManager implements MediaManager {
 
     }
 
-    private boolean isPlayerViewCurrent(SimpleExoPlayerView playerView) {
+    private boolean isPlayerViewCurrent(PlayerViewController playerView) {
         return this.playerView == playerView;
     }
 
     private void stopResetCurrentPlayer() {
         Log.v(TAG, "stopResetCurrentPlayer");
         if(playerView != null) {
-            playerView.getPlayer().release();
+            player().release();
         }
     }
 
-    private void setViewPlayback(SimpleExoPlayerView playerView) {
+    private void setViewPlayback(PlayerViewController playerView) {
         this.playerView = playerView;
         Log.v(TAG, "setViewPlayback");
     }
 
-    private void startPlayback(SimpleExoPlayerView playerView, Uri uri) {
+    private void startPlayback(PlayerViewController playerView, Uri uri) {
         Log.v(TAG, "startPlayback");
-        SimpleExoPlayerInitializer.play(context, uri);
+//        SimpleExoPlayerInitializer.play(context, uri);
     }
 }

@@ -11,7 +11,9 @@ import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -26,7 +28,10 @@ import com.quickblox.content.model.QBFile;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachImageClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachLocationClickListener;
+import com.quickblox.ui.kit.chatmessage.adapter.media.AudioController;
+import com.quickblox.ui.kit.chatmessage.adapter.media.MediaController;
 import com.quickblox.ui.kit.chatmessage.adapter.media.SingleMediaManager;
+import com.quickblox.ui.kit.chatmessage.adapter.media.view.PlayerViewController;
 import com.quickblox.ui.kit.chatmessage.adapter.utils.LocationUtils;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatMessageLinkClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.utils.MediaManager;
@@ -251,9 +256,8 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         if (avatarUrl != null) {
             displayAvatarImage(avatarUrl, holder.avatar);
         }
-
-        setItemClickListener(getAttachListenerByType(position), holder, getQBAttach(position), position);
     }
+
 
     protected void onBindViewAttachLeftAudioHolder(AudioAttachHolder holder, T chatMessage, int position) {
         displayAttachmentAudio(holder, position);
@@ -463,23 +467,32 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         QBAttachment attachment = getQBAttach(position);
         Log.d(TAG, "displayAttachmentAudio blob ID= " + attachment.getId() + ", URL= " + attachment.getUrl());
 
-        Uri uri = Uri.parse(attachment.getUrl());
-        SimpleExoPlayerView playerView = ((AudioAttachHolder) holder).playerView;
-
+        Uri uri = getUriFromAttach(attachment);
+        PlayerViewController playerView = ((AudioAttachHolder) holder).playerView;
         showAudioAttach(playerView, uri);
     }
+
 
     protected void displayAttachmentVideo(QBMessageViewHolder holder, int position) {
         QBAttachment attachment = getQBAttach(position);
         Log.d(TAG, "AMBRA displayAttachmentVideo blob ID= " + attachment.getId() + ", URL= " + attachment.getUrl());
-        Uri uri = Uri.parse(attachment.getUrl());
+        Uri uri = getUriFromAttach(attachment);
         SimpleExoPlayerView playerView = ((VideoAttachHolder) holder).playerView;
 
         showVideoAttach(playerView, uri);
     }
 
-    private void showAudioAttach(SimpleExoPlayerView playerView, Uri uri) {
-        getMediaManager().playMedia(playerView, uri);
+    protected Uri getUriFromAttach(QBAttachment attachment) {
+        return Uri.parse(attachment.getUrl());
+    }
+
+    private void showAudioAttach(PlayerViewController playerView, Uri uri) {
+        // и по событию инициализировать player
+        setMediaController(playerView, uri);
+    }
+
+    private void setMediaController(PlayerViewController playerView, Uri uri) {
+        playerView.setMediaController(new AudioController(getMediaManager(), uri));
     }
 
     private void showVideoAttach(SimpleExoPlayerView playerView, Uri uri) {
@@ -487,7 +500,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     }
 
     private SingleMediaManager getMediaManager() {
-       return mediaManager == null ? new SingleMediaManager(context) : mediaManager;
+       return  mediaManager == null ? mediaManager = new SingleMediaManager(context) : mediaManager;
     }
 
     protected void showPhotoAttach(QBMessageViewHolder holder, int position) {
@@ -578,17 +591,15 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     }
 
     protected static class AudioAttachHolder extends QBMessageViewHolder {
-        public SimpleExoPlayerView playerView;
-        public ImageView attachImageView;
-        public ProgressBar attachmentProgressBar;
-        public TextView attachTextTime;
+        public PlayerViewController playerView;
+        public ImageButton playBtn;
+        public ImageButton pauseBtn;
 
         public AudioAttachHolder(View itemView, @IdRes int attachId) {
             super(itemView);
-            playerView = (SimpleExoPlayerView) itemView.findViewById(R.id.msg_audio_attach);
-//            attachImageView = (ImageView) itemView.findViewById(attachId);
-//            attachmentProgressBar = (ProgressBar) itemView.findViewById(progressBarId);
-//            attachTextTime = (TextView) itemView.findViewById(timeId);
+            playerView = (PlayerViewController) itemView.findViewById(attachId);
+            playBtn = (ImageButton) playerView.findViewById(R.id.player_play);
+            pauseBtn = (ImageButton) playerView.findViewById(R.id.player_pause);
         }
     }
 

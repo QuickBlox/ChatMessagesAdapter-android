@@ -18,7 +18,7 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
  */
 
 public class SimpleExoPlayerInitializer {
-
+//TEMPORARILY
     public static void play(Context context, Uri uri) {
         initializePlayer(context, uri);
     }
