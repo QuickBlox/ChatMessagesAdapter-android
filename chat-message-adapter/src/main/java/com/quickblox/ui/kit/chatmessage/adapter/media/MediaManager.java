@@ -2,9 +2,7 @@ package com.quickblox.ui.kit.chatmessage.adapter.media;
 
 import android.net.Uri;
 
-import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
-import com.quickblox.ui.kit.chatmessage.adapter.media.view.PlayerViewController;
+import com.quickblox.ui.kit.chatmessage.adapter.media.view.PlayerControllerView;
 
 /**
  * Created by roman on 7/14/17.
@@ -12,7 +10,11 @@ import com.quickblox.ui.kit.chatmessage.adapter.media.view.PlayerViewController;
 
 public interface MediaManager {
 
-    void playMedia(PlayerViewController playerView, Uri uri);
+    void playMedia(PlayerControllerView playerView, Uri uri);
+
+    void pauseMedia();
+
+    void fastForward(int windowIndex, long positionMs);
 
     void stopAnyPlayback();
 

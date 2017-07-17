@@ -1,7 +1,8 @@
 package com.quickblox.ui.kit.chatmessage.adapter.media;
 
 import android.view.View;
-import android.widget.LinearLayout;
+
+import com.quickblox.ui.kit.chatmessage.adapter.media.view.PlayerControllerView;
 
 /**
  * Created by Roman on 16.07.2017.
@@ -9,7 +10,11 @@ import android.widget.LinearLayout;
 
 public interface MediaController {
 
-    void onPlayClicked(View view);
+    void onPlayClicked(PlayerControllerView view);
 
     void onPauseClicked(View view);
+
+    void onFastForward(int windowIndex, long positionMs);
+
+    void onRewind(View view);
 }

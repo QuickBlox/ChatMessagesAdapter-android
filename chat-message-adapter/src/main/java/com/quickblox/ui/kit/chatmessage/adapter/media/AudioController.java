@@ -4,29 +4,41 @@ import android.net.Uri;
 import android.util.Log;
 import android.view.View;
 
+import com.quickblox.ui.kit.chatmessage.adapter.media.view.PlayerControllerView;
+
 /**
  * Created by Roman on 16.07.2017.
  */
 
 public class AudioController implements MediaController {
     private Uri uri;
-    private MediaManager mediaManager;
+    private SingleMediaManager mediaManager;
 
-    public AudioController(MediaManager mediaManager, Uri uri) {
+    public AudioController(SingleMediaManager mediaManager, Uri uri) {
         this.mediaManager = mediaManager;
         this.uri = uri;
     }
 
     @Override
-    public void onPlayClicked(View view) {
+    public void onPlayClicked(PlayerControllerView view) {
         Log.d("Tempos", "AudioController playButton clicked uri= " + uri);
         Log.d("Tempos", "AudioController playButton clicked mediaManager= " + mediaManager.hashCode());
-        mediaManager.playMedia(null, uri);
+        mediaManager.playMedia(view, uri);
     }
 
     @Override
     public void onPauseClicked(View view) {
         Log.d("Tempos", "AudioController pauseButton clicked uri= " + uri);
+        mediaManager.pauseMedia();
+    }
+
+    @Override
+    public void onFastForward(int windowIndex, long positionMs) {
+        mediaManager.fastForward(windowIndex, positionMs);
+    }
+
+    @Override
+    public void onRewind(View view) {
 
     }
 }

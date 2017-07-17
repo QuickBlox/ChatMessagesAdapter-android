@@ -8,7 +8,7 @@
         style="@style/BubbleAttachFrame.Right"
         android:layout_height="72dp">
 
-        <com.quickblox.ui.kit.chatmessage.adapter.media.view.PlayerViewController
+        <com.quickblox.ui.kit.chatmessage.adapter.media.view.PlayerControllerView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/msg_audio_attach"/>

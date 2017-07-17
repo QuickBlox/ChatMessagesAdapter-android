@@ -18,26 +18,15 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
  */
 
 public class SimpleExoPlayerInitializer {
-//TEMPORARILY
-    public static void play(Context context, Uri uri) {
-        initializePlayer(context, uri);
-    }
 
-    public static void initializePlayer(Context context, Uri uri) {
-        SimpleExoPlayer player = ExoPlayerFactory.newSimpleInstance(
+
+    public static SimpleExoPlayer initializeAudioPlayer(Context context) {
+        return ExoPlayerFactory.newSimpleInstance(
                 new DefaultRenderersFactory(context),
                 new DefaultTrackSelector(), new DefaultLoadControl());
-
-//        playerView.setPlayer(player);
-//        player.setPlayWhenReady(playWhenReady);
-//        player.seekTo(currentWindow, playbackPosition);
-
-
-        MediaSource mediaSource = buildMediaSource(uri);
-        player.prepare(mediaSource, true, false);
     }
 
-    private static MediaSource buildMediaSource(Uri uri) {
+    public static MediaSource buildMediaSource(Uri uri) {
         return new ExtractorMediaSource(uri,
                 new DefaultHttpDataSourceFactory("ua"),
                 new DefaultExtractorsFactory(), null, null);
