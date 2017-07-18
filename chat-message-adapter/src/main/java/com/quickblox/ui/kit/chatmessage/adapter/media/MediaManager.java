@@ -16,6 +16,8 @@ public interface MediaManager {
 
     void fastForward(int windowIndex, long positionMs);
 
+    void rewind(int windowIndex, long positionMs);
+
     void stopAnyPlayback();
 
     void resetMediaPlayer();

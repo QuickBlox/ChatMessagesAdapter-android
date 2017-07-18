@@ -375,6 +375,19 @@ public class PlayerControllerView extends LinearLayout {
         }
     }
 
+
+    private long rewindPositionMs() {
+        return Math.max(player.getCurrentPosition() - rewindMs, 0);
+    }
+
+    private long fastForwardPositionMs() {
+        return Math.min(player.getCurrentPosition() + fastForwardMs, player.getDuration());
+    }
+
+    private int windowsIndex() {
+        return player.getCurrentWindowIndex();
+    }
+
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
@@ -462,9 +475,15 @@ public class PlayerControllerView extends LinearLayout {
                 mediaController.onPauseClicked(view);
             }
             else if (fastForwardButton == view) {
-                mediaController.onFastForward(0, 0);
+                if (fastForwardMs <= 0) {
+                    return;
+                }
+                mediaController.onFastForward(windowsIndex(), fastForwardPositionMs());
             } else if (rewindButton == view) {
-                mediaController.onRewind(view);
+                if (rewindMs <= 0) {
+                    return;
+                }
+                mediaController.onRewind(windowsIndex(), rewindPositionMs());
             }
         }
     }

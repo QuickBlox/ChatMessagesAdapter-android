@@ -16,5 +16,5 @@ public interface MediaController {
 
     void onFastForward(int windowIndex, long positionMs);
 
-    void onRewind(View view);
+    void onRewind(int windowIndex, long positionMs);
 }

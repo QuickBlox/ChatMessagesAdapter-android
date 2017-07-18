@@ -38,7 +38,7 @@ public class AudioController implements MediaController {
     }
 
     @Override
-    public void onRewind(View view) {
-
+    public void onRewind(int windowIndex, long positionMs) {
+        mediaManager.rewind(windowIndex, positionMs);
     }
 }
