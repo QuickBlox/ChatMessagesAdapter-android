@@ -17,9 +17,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.quickblox.chat.QBChatService;
 import com.quickblox.chat.model.QBAttachment;
 import com.quickblox.chat.model.QBChatMessage;
@@ -27,12 +27,12 @@ import com.quickblox.content.model.QBFile;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachImageClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachLocationClickListener;
+import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatMessageLinkClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.media.AudioController;
 import com.quickblox.ui.kit.chatmessage.adapter.media.SingleMediaManager;
+import com.quickblox.ui.kit.chatmessage.adapter.media.video.thumbnails.VideoCover;
 import com.quickblox.ui.kit.chatmessage.adapter.media.view.PlayerControllerView;
 import com.quickblox.ui.kit.chatmessage.adapter.utils.LocationUtils;
-import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatMessageLinkClickListener;
-import com.quickblox.ui.kit.chatmessage.adapter.utils.MediaManager;
 import com.quickblox.ui.kit.chatmessage.adapter.utils.QBMessageTextClickMovement;
 import com.quickblox.users.model.QBUser;
 
@@ -153,10 +153,12 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
                 qbViewHolder = new AudioAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_audio_attach);
                 return qbViewHolder;
             case TYPE_ATTACH_RIGHT_VIDEO:
-                qbViewHolder = new VideoAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_video_attach);
+                qbViewHolder = new VideoAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_video_attach, R.id.msg_progressbar_attach,
+                        R.id.msg_text_time_attach);
                 return qbViewHolder;
             case TYPE_ATTACH_LEFT_VIDEO:
-                qbViewHolder = new VideoAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_video_attach);
+                qbViewHolder = new VideoAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_video_attach, R.id.msg_progressbar_attach,
+                        R.id.msg_text_time_attach);
                 return qbViewHolder;
 
             default:
@@ -248,7 +250,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     protected void onBindViewAttachRightAudioHolder(AudioAttachHolder holder, T chatMessage, int position) {
         displayAttachmentAudio(holder, position);
-        Log.d("TEMPOS", "onBindViewAttachRightAudioHolder");
+        Log.d(TAG, "onBindViewAttachRightAudioHolder");
         int valueType = getItemViewType(position);
         String avatarUrl = obtainAvatarUrl(valueType, chatMessage);
         if (avatarUrl != null) {
@@ -467,34 +469,40 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
         Uri uri = getUriFromAttach(attachment);
         PlayerControllerView playerView = ((AudioAttachHolder) holder).playerView;
-        showAudioAttach(playerView, uri);
+        setMediaController(playerView, uri);
     }
 
 
     protected void displayAttachmentVideo(QBMessageViewHolder holder, int position) {
         QBAttachment attachment = getQBAttach(position);
-        Log.d(TAG, "AMBRA displayAttachmentVideo blob ID= " + attachment.getId() + ", URL= " + attachment.getUrl());
-        Uri uri = getUriFromAttach(attachment);
-        SimpleExoPlayerView playerView = ((VideoAttachHolder) holder).playerView;
+        Log.d(TAG, "displayAttachmentVideo blob ID= " + attachment.getId() + ", URL= " + attachment.getUrl());
+        String url = attachment.getUrl();
 
-        showVideoAttach(playerView, uri);
+        showVideoThumbnail(holder, url, position);
     }
+
 
     protected Uri getUriFromAttach(QBAttachment attachment) {
         return Uri.parse(attachment.getUrl());
-    }
-
-    private void showAudioAttach(PlayerControllerView playerView, Uri uri) {
-        // и по событию инициализировать player
-        setMediaController(playerView, uri);
     }
 
     private void setMediaController(PlayerControllerView playerView, Uri uri) {
         playerView.setMediaController(new AudioController(getMediaManager(), uri));
     }
 
-    private void showVideoAttach(SimpleExoPlayerView playerView, Uri uri) {
-        MediaManager.getInstance(context).setMediaContent(playerView, uri);
+    private void showVideoThumbnail(final QBMessageViewHolder holder, String url, int position) {
+
+        int preferredImageWidth = (int) context.getResources().getDimension(R.dimen.attach_image_width_preview);
+        int preferredImageHeight = (int) context.getResources().getDimension(R.dimen.attach_image_height_preview);
+
+        VideoCover model = new VideoCover(url);
+        Glide.with(context)
+                .load(model)
+                .listener(this.<VideoCover, GlideDrawable>getRequestListener(holder, position))
+                .override(preferredImageWidth, preferredImageHeight)
+                .dontTransform()
+                .error(R.drawable.ic_error)
+                .into(((VideoAttachHolder) holder).attachImageView);
     }
 
     private SingleMediaManager getMediaManager() {
@@ -535,15 +543,16 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
         Glide.with(context)
                 .load(url)
-                .listener(getRequestListener(holder, position))
+                .listener(this.<String, GlideDrawable> getRequestListener(holder, position))
                 .override(preferredImageWidth, preferredImageHeight)
                 .dontTransform()
                 .error(R.drawable.ic_error)
-                .into(((ImageAttachHolder) holder).attachImageView);
+                .into(((BaseImageAttachHolder) holder).attachImageView);
     }
 
-    protected RequestListener getRequestListener(QBMessageViewHolder holder, int position) {
-        return new ImageLoadListener((ImageAttachHolder) holder);
+
+    protected <M, P> RequestListener<M, P> getRequestListener(QBMessageViewHolder holder, int position) {
+        return new ImageLoadListener<>((BaseImageAttachHolder) holder);
     }
 
     /**
@@ -575,16 +584,23 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         }
     }
 
-    protected static class ImageAttachHolder extends QBMessageViewHolder {
+    protected static class BaseImageAttachHolder extends QBMessageViewHolder {
         public ImageView attachImageView;
         public ProgressBar attachmentProgressBar;
         public TextView attachTextTime;
 
-        public ImageAttachHolder(View itemView, @IdRes int attachId, @IdRes int progressBarId, @IdRes int timeId) {
+        public BaseImageAttachHolder(View itemView, @IdRes int attachId, @IdRes int progressBarId, @IdRes int timeId) {
             super(itemView);
             attachImageView = (ImageView) itemView.findViewById(attachId);
             attachmentProgressBar = (ProgressBar) itemView.findViewById(progressBarId);
             attachTextTime = (TextView) itemView.findViewById(timeId);
+        }
+    }
+
+    protected static class ImageAttachHolder extends BaseImageAttachHolder {
+
+        public ImageAttachHolder(View itemView, @IdRes int attachId, @IdRes int progressBarId, @IdRes int timeId) {
+            super(itemView, attachId, progressBarId, timeId);
         }
     }
 
@@ -601,18 +617,10 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         }
     }
 
-    protected static class VideoAttachHolder extends QBMessageViewHolder {
-        public SimpleExoPlayerView playerView;
-        public ImageView attachImageView;
-        public ProgressBar attachmentProgressBar;
-        public TextView attachTextTime;
+    protected static class VideoAttachHolder extends BaseImageAttachHolder {
 
-        public VideoAttachHolder(View itemView, @IdRes int attachId) {
-            super(itemView);
-            playerView = (SimpleExoPlayerView) itemView.findViewById(R.id.msg_video_attach);
-//            attachImageView = (ImageView) itemView.findViewById(attachId);
-//            attachmentProgressBar = (ProgressBar) itemView.findViewById(progressBarId);
-//            attachTextTime = (TextView) itemView.findViewById(timeId);
+        public VideoAttachHolder(View itemView, @IdRes int attachId, @IdRes int progressBarId, @IdRes int timeId) {
+            super(itemView, attachId, progressBarId, timeId);
         }
     }
 
@@ -625,16 +633,16 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         }
     }
 
-    protected static class ImageLoadListener implements RequestListener {
-        private ImageAttachHolder holder;
+    protected static class ImageLoadListener<M, P> implements RequestListener<M, P> {
+        private BaseImageAttachHolder holder;
 
-        protected ImageLoadListener(ImageAttachHolder holder) {
+        protected ImageLoadListener(BaseImageAttachHolder holder) {
             this.holder = holder;
             holder.attachmentProgressBar.setVisibility(View.VISIBLE);
         }
 
         @Override
-        public boolean onException(Exception e, Object model, Target target, boolean isFirstResource) {
+        public boolean onException(Exception e, M model, Target<P> target, boolean isFirstResource) {
             Log.e(TAG, "ImageLoadListener Exception= " + e);
             holder.attachImageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
             holder.attachmentProgressBar.setVisibility(View.GONE);
@@ -642,7 +650,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         }
 
         @Override
-        public boolean onResourceReady(Object resource, Object model, Target target, boolean isFromMemoryCache, boolean isFirstResource) {
+        public boolean onResourceReady(P resource, M model, Target<P> target, boolean isFromMemoryCache, boolean isFirstResource) {
             holder.attachImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             holder.attachmentProgressBar.setVisibility(View.GONE);
             return false;

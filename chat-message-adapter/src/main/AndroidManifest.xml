@@ -6,6 +6,9 @@
         android:label="@string/app_name"
         android:supportsRtl="true">
 
+        <meta-data
+            android:name="com.quickblox.ui.kit.chatmessage.adapter.media.video.thumbnails.VideoCoverModule"
+            android:value="GlideModule" />
     </application>
 
 </manifest>
