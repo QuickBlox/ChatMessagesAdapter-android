@@ -70,7 +70,7 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
     @Override
     public void resetMediaPlayer() {
         Log.v(TAG, "resetMediaPlayer: should clear clearPlayerInstance");
-
+        releasePlayer();
     }
 
     private boolean isPlayerViewCurrent(PlayerControllerView playerView) {

@@ -388,10 +388,16 @@ public class PlayerControllerView extends LinearLayout {
         return player.getCurrentWindowIndex();
     }
 
+    private void suspendPlayingIfPossible() {
+        if(player != null) {
+            mediaController.onPauseClicked(this);
+        }
+    }
+
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
-        Log.d("MORADIN", "onAttachedToWindow");
+        Log.d(TAG, "onAttachedToWindow");
         isAttachedToWindow = true;
         updateAll();
     }
@@ -399,7 +405,9 @@ public class PlayerControllerView extends LinearLayout {
     @Override
     public void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        Log.d("MORADIN", "onDetachedFromWindow");
+        Log.d(TAG, "onDetachedFromWindow");
+//        fire callback
+//        suspendPlayingIfPossible();
         isAttachedToWindow = false;
         removeCallbacks(updateProgressAction);
     }
@@ -485,6 +493,16 @@ public class PlayerControllerView extends LinearLayout {
                 }
                 mediaController.onRewind(windowsIndex(), rewindPositionMs());
             }
+        }
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasWindowFocus) {
+        super.onWindowFocusChanged(hasWindowFocus);
+        Log.d(TAG, "onWindowFocusChanged hasWindowFocus= " + hasWindowFocus);
+        if(!hasWindowFocus) {
+//            fire callback
+//            suspendPlayingIfPossible();
         }
     }
 }

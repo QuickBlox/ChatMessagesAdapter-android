@@ -399,6 +399,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     @Override
     public void onViewRecycled(QBMessageViewHolder holder) {
         super.onViewRecycled(holder);
+        Log.d("TEMPOS", "onViewRecycled");
         if (holder instanceof VideoAttachHolder) {
             Log.d("TEMPOS", "onViewRecycled VideoAttachHolder release");
 
