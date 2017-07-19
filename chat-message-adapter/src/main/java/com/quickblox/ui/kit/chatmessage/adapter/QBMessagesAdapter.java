@@ -488,7 +488,9 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     }
 
     private void setMediaController(PlayerControllerView playerView, Uri uri) {
-        playerView.setMediaController(new AudioController(getMediaManager(), uri));
+        AudioController audioController = new AudioController(getMediaManager(), uri);
+
+        playerView.initMediaController(audioController, audioController.new EventListener());
     }
 
     private void showVideoThumbnail(final QBMessageViewHolder holder, String url, int position) {

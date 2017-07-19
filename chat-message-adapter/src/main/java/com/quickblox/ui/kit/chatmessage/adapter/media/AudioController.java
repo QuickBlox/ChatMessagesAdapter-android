@@ -41,4 +41,12 @@ public class AudioController implements MediaController {
     public void onRewind(int windowIndex, long positionMs) {
         mediaManager.rewind(windowIndex, positionMs);
     }
+
+    public final class EventListener implements PlayerControllerView.EventListener {
+
+        @Override
+        public void hideView() {
+            mediaManager.pauseMedia();
+        }
+    }
 }

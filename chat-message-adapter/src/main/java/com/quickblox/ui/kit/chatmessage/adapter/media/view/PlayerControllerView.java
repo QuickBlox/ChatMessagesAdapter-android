@@ -20,6 +20,7 @@ import com.google.android.exoplayer2.ui.TimeBar;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.Util;
 import com.quickblox.ui.kit.chatmessage.adapter.R;
+import com.quickblox.ui.kit.chatmessage.adapter.media.AudioController;
 import com.quickblox.ui.kit.chatmessage.adapter.media.MediaController;
 
 import java.util.Arrays;
@@ -57,6 +58,7 @@ public class PlayerControllerView extends LinearLayout {
 
     private MediaController mediaController;
     private final ComponentListener componentListener;
+    private EventListener eventListener;
 
     private boolean isAttachedToWindow;
 
@@ -76,6 +78,10 @@ public class PlayerControllerView extends LinearLayout {
 //            hide();
         }
     };
+
+    public interface EventListener {
+        void hideView();
+    }
 
     public PlayerControllerView(Context context) {
         this(context, null);
@@ -127,8 +133,17 @@ public class PlayerControllerView extends LinearLayout {
         }
     }
 
-    public void setMediaController(MediaController mediaController) {
+    public void initMediaController(MediaController mediaController) {
         this.mediaController = mediaController;
+    }
+
+    public void initMediaController(MediaController mediaController, AudioController.EventListener eventListener) {
+        this.mediaController = mediaController;
+        setEventListener(eventListener);
+    }
+
+    private void setEventListener(PlayerControllerView.EventListener eventListener) {
+        this.eventListener = eventListener;
     }
 
     public void initPlayer(ExoPlayer player) {
@@ -500,7 +515,8 @@ public class PlayerControllerView extends LinearLayout {
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         super.onWindowFocusChanged(hasWindowFocus);
         Log.d(TAG, "onWindowFocusChanged hasWindowFocus= " + hasWindowFocus);
-        if(!hasWindowFocus) {
+        if(!hasWindowFocus && eventListener != null) {
+            eventListener.hideView();
 //            fire callback
 //            suspendPlayingIfPossible();
         }
