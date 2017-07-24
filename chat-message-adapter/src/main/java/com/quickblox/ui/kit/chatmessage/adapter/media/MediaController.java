@@ -17,4 +17,6 @@ public interface MediaController {
     void onFastForward(int windowIndex, long positionMs);
 
     void onRewind(int windowIndex, long positionMs);
+
+    void stopAnyPlayback();
 }

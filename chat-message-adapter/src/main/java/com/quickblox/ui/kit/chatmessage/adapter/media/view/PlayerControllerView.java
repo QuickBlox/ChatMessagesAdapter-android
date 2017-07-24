@@ -81,6 +81,8 @@ public class PlayerControllerView extends LinearLayout {
 
     public interface EventListener {
         void hideView();
+
+        void showView();
     }
 
     public PlayerControllerView(Context context) {
@@ -160,12 +162,19 @@ public class PlayerControllerView extends LinearLayout {
         updateAll();
     }
 
-    public void release() {
-        Log.d(TAG, "release");
+    public void releaseView() {
+        Log.d(TAG, "releaseView view");
         if (this.player != null) {
             this.player.removeListener(componentListener);
             player = null;
             updateAll();
+        }
+    }
+
+    public void releaseController() {
+        Log.d(TAG, "releaseView mediaController");
+        if (this.mediaController != null) {
+            mediaController.stopAnyPlayback();
         }
     }
 
@@ -421,7 +430,6 @@ public class PlayerControllerView extends LinearLayout {
     public void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         Log.d(TAG, "onDetachedFromWindow");
-//        fire callback
 //        suspendPlayingIfPossible();
         isAttachedToWindow = false;
         removeCallbacks(updateProgressAction);
@@ -515,10 +523,12 @@ public class PlayerControllerView extends LinearLayout {
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         super.onWindowFocusChanged(hasWindowFocus);
         Log.d(TAG, "onWindowFocusChanged hasWindowFocus= " + hasWindowFocus);
-        if(!hasWindowFocus && eventListener != null) {
-            eventListener.hideView();
-//            fire callback
-//            suspendPlayingIfPossible();
+        if(player != null && eventListener != null) {
+            if(hasWindowFocus) {
+                eventListener.showView();
+            } else {
+                eventListener.hideView();
+            }
         }
     }
 }

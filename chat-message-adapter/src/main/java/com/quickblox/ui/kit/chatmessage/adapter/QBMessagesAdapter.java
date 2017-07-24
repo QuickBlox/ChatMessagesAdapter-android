@@ -401,7 +401,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         super.onViewRecycled(holder);
         Log.d("TEMPOS", "onViewRecycled");
         if (holder instanceof VideoAttachHolder) {
-            Log.d("TEMPOS", "onViewRecycled VideoAttachHolder release");
+            Log.d("TEMPOS", "onViewRecycled VideoAttachHolder releaseView");
 
         }
     }
@@ -470,6 +470,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
         Uri uri = getUriFromAttach(attachment);
         PlayerControllerView playerView = ((AudioAttachHolder) holder).playerView;
+        Log.d("AMBRA", "displayAttachmentAudio playerView.hashCode()" + playerView.hashCode());
         setMediaController(playerView, uri);
     }
 
@@ -488,9 +489,15 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     }
 
     private void setMediaController(PlayerControllerView playerView, Uri uri) {
-        AudioController audioController = new AudioController(getMediaManager(), uri);
+        Log.d("AMBRA", "getMediaManager().isPlaying()= " + getMediaManager().isPlaying());
+        if(!getMediaManager().isPlaying()) {
+            playerView.releaseController();
 
-        playerView.initMediaController(audioController, audioController.new EventListener());
+            AudioController audioController = new AudioController(getMediaManager(), uri);
+            playerView.initMediaController(audioController, audioController.new EventListener());
+        } else {
+
+        }
     }
 
     private void showVideoThumbnail(final QBMessageViewHolder holder, String url, int position) {

@@ -74,13 +74,13 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
     }
 
     private boolean isPlayerViewCurrent(PlayerControllerView playerView) {
-        return this.playerView != null && this.playerView == playerView;
+        return  exoPlayer != null && this.playerView != null && this.playerView == playerView;
     }
 
-    private boolean isPlaying() {
+    public boolean isPlaying() {
         if(exoPlayer != null) {
             Log.d(TAG, "isPlaying playbackState= " + exoPlayer.getPlaybackState());
-            return ExoPlayer.STATE_IDLE == exoPlayer.getPlaybackState();
+            return exoPlayer.getPlayWhenReady();
         } return false;
     }
 
@@ -88,7 +88,7 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
         Log.v(TAG, "stopResetCurrentPlayer");
         if(playerView != null) {
             releasePlayer();
-            playerView.release();
+            playerView.releaseView();
         }
     }
 
