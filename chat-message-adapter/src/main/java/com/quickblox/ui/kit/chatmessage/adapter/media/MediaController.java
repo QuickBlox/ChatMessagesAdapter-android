@@ -10,6 +10,10 @@ import com.quickblox.ui.kit.chatmessage.adapter.media.view.PlayerControllerView;
 
 public interface MediaController {
 
+    interface EventMediaController {
+        void onPlayerInViewInit(PlayerControllerView view);
+    }
+
     void onPlayClicked(PlayerControllerView view);
 
     void onPauseClicked(View view);

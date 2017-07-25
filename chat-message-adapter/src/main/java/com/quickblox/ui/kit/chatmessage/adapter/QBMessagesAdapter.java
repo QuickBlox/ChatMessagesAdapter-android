@@ -29,6 +29,7 @@ import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachImageClick
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachLocationClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatMessageLinkClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.media.AudioController;
+import com.quickblox.ui.kit.chatmessage.adapter.media.MediaController;
 import com.quickblox.ui.kit.chatmessage.adapter.media.SingleMediaManager;
 import com.quickblox.ui.kit.chatmessage.adapter.media.video.thumbnails.VideoCover;
 import com.quickblox.ui.kit.chatmessage.adapter.media.view.PlayerControllerView;
@@ -39,6 +40,7 @@ import com.quickblox.users.model.QBUser;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -81,6 +83,9 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     protected Context context;
 
     private SingleMediaManager mediaManager;
+    private MediaControllerEventListener mediaControllerEventListener;
+    private HashMap<PlayerControllerView, Integer> playerViewHashMap;
+    private int activePlayerViewPosition;
 
 
     public QBMessagesAdapter(Context context, List<T> chatMessages) {
@@ -250,7 +255,6 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     protected void onBindViewAttachRightAudioHolder(AudioAttachHolder holder, T chatMessage, int position) {
         displayAttachmentAudio(holder, position);
-        Log.d(TAG, "onBindViewAttachRightAudioHolder");
         int valueType = getItemViewType(position);
         String avatarUrl = obtainAvatarUrl(valueType, chatMessage);
         if (avatarUrl != null) {
@@ -261,14 +265,11 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     protected void onBindViewAttachLeftAudioHolder(AudioAttachHolder holder, T chatMessage, int position) {
         displayAttachmentAudio(holder, position);
-
         int valueType = getItemViewType(position);
         String avatarUrl = obtainAvatarUrl(valueType, chatMessage);
         if (avatarUrl != null) {
             displayAvatarImage(avatarUrl, holder.avatar);
         }
-
-        setItemClickListener(getAttachListenerByType(position), holder, getQBAttach(position), position);
     }
 
     protected void onBindViewAttachRightVideoHolder(VideoAttachHolder holder, T chatMessage, int position) {
@@ -475,7 +476,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         Uri uri = getUriFromAttach(attachment);
         PlayerControllerView playerView = ((AudioAttachHolder) holder).playerView;
         Log.d("TEMPOS", "displayAttachmentAudio playerView.hashCode()" + playerView.hashCode());
-        setMediaController(playerView, uri, position);
+        showAudioView(playerView, uri, position);
     }
 
 
@@ -492,49 +493,40 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         return Uri.parse(attachment.getUrl());
     }
 
-    private void setMediaController(PlayerControllerView playerView, Uri uri, int position) {
-        Log.d(TAG, "POLL playerView.isPlaying()= " + isPlaying(playerView));
+    private void showAudioView(PlayerControllerView playerView, Uri uri, int position) {
+        initPlayerView(playerView, uri, position);
 
-        if(isViewBusy(playerView)) {
-            Log.d(TAG, "POLL setMediaController isViewBusy= true");
-            if(isCurrentViewBusy(position)) {
-                Log.d(TAG, "POLL setMediaController isCurrentViewBusy= true");
-                playerView.releaseView();
-                playerView.setPosition(position);
-                playerView.initMediaController(new AudioController(getMediaManager(), uri));
-                playerView.restoreState(getMediaManager().getExoPlayer());
-
-            } else {
-                Log.d(TAG, "POLL setMediaController isCurrentViewBusy= false");
-                playerView.releaseView();
-                playerView.setPosition(position);
-                AudioController audioController = new AudioController(getMediaManager(), uri);
-                playerView.initMediaController(audioController, audioController.new EventListener());
-            }
-
-        } else {
-            Log.d(TAG, "POLL setMediaController isViewBusy= false");
-            AudioController audioController = new AudioController(getMediaManager(), uri);
-            playerView.setPosition(position);
-            playerView.initMediaController(audioController, audioController.new EventListener());
+        if (isCurrentViewActive(position)) {
+            Log.d(TAG, "showAudioView isCurrentViewActive");
+            playerView.restoreState(getMediaManagerInstance().getExoPlayer());
         }
-
     }
 
-    private boolean isPlaying(PlayerControllerView playerView) {
-        if(getMediaManager().isPlaying()) {
-            if( getMediaManager().getPlayerView().hashCode() == playerView.hashCode()) {
-                return true;
-            }
-        } return false;
+    private void initPlayerView(PlayerControllerView playerView, Uri uri, int position) {
+        playerView.releaseView();
+        AudioController audioController = new AudioController(getMediaManagerInstance(), uri);
+        audioController.setEventMediaController(getMediaControllerEventListenerInstance());
+        setViewPosition(playerView, position);
+        playerView.initMediaController(audioController);
     }
 
-    private boolean isViewBusy(PlayerControllerView playerView) {
-        return getMediaManager().getPlayerView() != null && getMediaManager().getPlayerView().hashCode() == playerView.hashCode();
+    private boolean isCurrentViewActive(int position) {
+        return activePlayerViewPosition == position;
     }
 
-    private boolean isCurrentViewBusy(int position) {
-        return getMediaManager().getPlayerView() != null && getMediaManager().getPlayerView().getPosition() == position;
+    private void setPlayerViewActivePosition(int activeViewPosition) {
+        this.activePlayerViewPosition = activeViewPosition;
+    }
+
+    private void setViewPosition(PlayerControllerView view, int position) {
+        if(playerViewHashMap == null) {
+            playerViewHashMap = new HashMap<>();
+        }
+        playerViewHashMap.put(view, position);
+    }
+
+    private int getPlayerViewPosition(PlayerControllerView view) {
+        return playerViewHashMap.get(view);
     }
 
     private void showVideoThumbnail(final QBMessageViewHolder holder, String url, int position) {
@@ -552,8 +544,12 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
                 .into(((VideoAttachHolder) holder).attachImageView);
     }
 
-    private SingleMediaManager getMediaManager() {
-       return  mediaManager == null ? mediaManager = new SingleMediaManager(context) : mediaManager;
+    private SingleMediaManager getMediaManagerInstance() {
+       return mediaManager == null ? mediaManager = new SingleMediaManager(context) : mediaManager;
+    }
+
+    private MediaControllerEventListener getMediaControllerEventListenerInstance() {
+        return mediaControllerEventListener == null ? mediaControllerEventListener = new MediaControllerEventListener() : mediaControllerEventListener;
     }
 
     protected void showPhotoAttach(QBMessageViewHolder holder, int position) {
@@ -719,6 +715,14 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         @Override
         public void onClick(View view) {
             chatAttachClickListener.onLinkClicked(attachment, position);
+        }
+    }
+
+    private class MediaControllerEventListener implements MediaController.EventMediaController {
+
+        @Override
+        public void onPlayerInViewInit(PlayerControllerView view) {
+            setPlayerViewActivePosition(getPlayerViewPosition(view));
         }
     }
 }

@@ -43,6 +43,19 @@
     </style>
 
 
+    <style name="ListItemAudioMessage">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_medium</item>
+    </style>
+
+    <style name="ListItemAudioMessage.Right">
+        <item name="android:gravity">right</item>
+    </style>
+
+    <style name="ListItemAudioMessage.Left" />
+
+
     <style name="BubbleAttachFrame.Right">
         <item name="android:background">@drawable/right_bubble</item>
     </style>
@@ -54,6 +67,21 @@
     <style name="BubbleAttachFrame">
         <item name="android:layout_width">@dimen/chat_attach_width</item>
         <item name="android:layout_height">@dimen/chat_attach_height</item>
+        <item name="android:padding">@dimen/padding_small</item>
+    </style>
+
+
+    <style name="BubbleAttachAudioFrame.Right">
+        <item name="android:background">@drawable/right_bubble</item>
+    </style>
+
+    <style name="BubbleAttachAudioFrame.Left">
+        <item name="android:background">@drawable/left_bubble</item>
+    </style>
+
+    <style name="BubbleAttachAudioFrame">
+        <item name="android:layout_width">@dimen/chat_attach_width</item>
+        <item name="android:layout_height">@dimen/chat_attach_audio_height</item>
         <item name="android:padding">@dimen/padding_small</item>
     </style>
 
@@ -84,6 +112,20 @@
         <item name="android:layout_height">@dimen/chat_attach_height</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:scaleType">centerCrop</item>
+    </style>
+
+
+    <style name="AudioViewAttach">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="AudioViewAttach.Right">
+        <item name="android:layout_marginRight">@dimen/padding_common</item>
+    </style>
+
+    <style name="AudioViewAttach.Left">
+        <item name="android:layout_marginLeft">@dimen/padding_common</item>
     </style>
 
 

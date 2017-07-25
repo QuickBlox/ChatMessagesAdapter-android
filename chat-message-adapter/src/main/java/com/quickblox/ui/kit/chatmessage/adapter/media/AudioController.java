@@ -13,16 +13,22 @@ import com.quickblox.ui.kit.chatmessage.adapter.media.view.PlayerControllerView;
 public class AudioController implements MediaController {
     private Uri uri;
     private SingleMediaManager mediaManager;
+    private EventMediaController eventMediaController;
 
     public AudioController(SingleMediaManager mediaManager, Uri uri) {
         this.mediaManager = mediaManager;
         this.uri = uri;
     }
 
+    public void setEventMediaController(EventMediaController eventMediaController) {
+        this.eventMediaController = eventMediaController;
+    }
+
     @Override
     public void onPlayClicked(PlayerControllerView view) {
         Log.d("Tempos", "AudioController playButton clicked uri= " + uri);
         Log.d("Tempos", "AudioController playButton clicked mediaManager= " + mediaManager.hashCode());
+        eventMediaController.onPlayerInViewInit(view);
         mediaManager.playMedia(view, uri);
     }
 
@@ -45,19 +51,5 @@ public class AudioController implements MediaController {
     @Override
     public void stopAnyPlayback() {
         mediaManager.stopAnyPlayback();
-    }
-
-
-    public final class EventListener implements PlayerControllerView.EventListener {
-
-        @Override
-        public void hideView() {
-            mediaManager.pauseMedia();
-        }
-
-        @Override
-        public void showView() {
-
-        }
     }
 }

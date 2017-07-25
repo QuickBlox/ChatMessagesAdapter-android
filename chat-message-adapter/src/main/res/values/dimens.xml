@@ -8,6 +8,8 @@
     <dimen name="chat_attach_height">200dp</dimen>
     <dimen name="chat_babble_margin">4dp</dimen>
 
+    <dimen name="chat_attach_audio_height">72dp</dimen>
+
     <dimen name="padding_small">4dp</dimen>
     <dimen name="padding_medium">@dimen/padding_common</dimen>
     <dimen name="padding_big">16dp</dimen>

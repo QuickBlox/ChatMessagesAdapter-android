@@ -88,10 +88,6 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
         } return false;
     }
 
-    public PlayerControllerView getPlayerView(){
-        return playerView;
-    }
-
     private void stopResetCurrentPlayer() {
         Log.v(TAG, "stopResetCurrentPlayer");
         if(playerView != null) {

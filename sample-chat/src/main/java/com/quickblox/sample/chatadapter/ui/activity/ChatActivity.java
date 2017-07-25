@@ -60,6 +60,11 @@ public class ChatActivity extends AppCompatActivity {
         loadChatHistory(qbUsers);
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+//        if possible stop playing via callback or via getMediaManagerInstance
+    }
 
     private void loadChatHistory(final ArrayList<QBUser> qbUsers) {
         ChatHelper.getInstance().loadChatHistory(chatDialog, skipPagination, new QBEntityCallback<ArrayList<QBChatMessage>>() {

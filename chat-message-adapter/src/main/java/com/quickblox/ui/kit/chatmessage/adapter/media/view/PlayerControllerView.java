@@ -58,7 +58,6 @@ public class PlayerControllerView extends LinearLayout {
 
     private MediaController mediaController;
     private final ComponentListener componentListener;
-    private EventListener eventListener;
 
     private boolean isAttachedToWindow;
 
@@ -78,8 +77,6 @@ public class PlayerControllerView extends LinearLayout {
 //            hide();
         }
     };
-    private int tempPosition;
-    private int position = -1;
 
     public interface EventListener {
         void hideView();
@@ -141,33 +138,12 @@ public class PlayerControllerView extends LinearLayout {
         this.mediaController = mediaController;
     }
 
-    public void initMediaController(MediaController mediaController, AudioController.EventListener eventListener) {
-        this.mediaController = mediaController;
-        setEventListener(eventListener);
-    }
-
     public void restoreState(ExoPlayer player) {
         initPlayer(player);
     }
 
-    public void saveState() {
-
-    }
-
-    public void setPosition(int position) {
-        this.tempPosition = position;
-    }
-
-    public int getPosition() {
-        return position;
-    }
-
     public boolean isCurrentViewPlaying() {
-        return position == tempPosition;
-    }
-
-    private void setEventListener(PlayerControllerView.EventListener eventListener) {
-        this.eventListener = eventListener;
+        return player != null;
     }
 
     public void initPlayer(ExoPlayer player) {
@@ -291,7 +267,6 @@ public class PlayerControllerView extends LinearLayout {
                         } else {
                             isInAdBreak = false;
                             long periodDurationUs = period.getDurationUs();
-                            Log.d("AMBRA", "periodDurationUs = " + periodDurationUs);
                             Assertions.checkState(periodDurationUs != C.TIME_UNSET);
                             long periodDurationInWindowUs = periodDurationUs;
                             if (j == window.firstPeriodIndex) {
@@ -524,11 +499,6 @@ public class PlayerControllerView extends LinearLayout {
         public void onClick(View view) {
             if (playButton == view) {
                 mediaController.onPlayClicked(PlayerControllerView.this);
-                position = tempPosition;
-                Log.d(TAG, "POLL position = tempPosition= " + position);
-//                QBMessagesAdapter.AudioAttachHolder holder = (QBMessagesAdapter.AudioAttachHolder) getTag();
-//                holder.setIsRecyclable(false);
-//                Log.d("POLL", "holder setIsRecyclable(false)- " + holder.hashCode());
             } else if (pauseButton == view) {
                 mediaController.onPauseClicked(view);
             }
@@ -544,23 +514,5 @@ public class PlayerControllerView extends LinearLayout {
                 mediaController.onRewind(windowsIndex(), rewindPositionMs());
             }
         }
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasWindowFocus) {
-        super.onWindowFocusChanged(hasWindowFocus);
-        Log.d(TAG, "onWindowFocusChanged hasWindowFocus= " + hasWindowFocus);
-        if(player != null && eventListener != null) {
-            if(hasWindowFocus) {
-                eventListener.showView();
-            } else {
-                eventListener.hideView();
-            }
-        }
-    }
-
-    public boolean isPlaying() {
-        Log.d(TAG, "POLL player= " + player);
-        return player != null && player.getPlayWhenReady();
     }
 }
