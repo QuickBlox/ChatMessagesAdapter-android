@@ -20,6 +20,7 @@ import com.quickblox.sample.chatadapter.utils.ChatHelper;
 import com.quickblox.ui.kit.chatmessage.adapter.QBMessagesAdapter;
 import com.quickblox.core.QBEntityCallback;
 import com.quickblox.core.exception.QBResponseException;
+import com.quickblox.ui.kit.chatmessage.adapter.listeners.MediaPlayerListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachImageClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatMessageLinkClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.utils.QBMessageTextClickMovement;
@@ -41,6 +42,8 @@ public class ChatActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private QBMessagesAdapter chatAdapter;
 
+    MediaPlayerListener mediaPlayerListener;
+
     public static void start(Context context, ArrayList<QBUser> qbUsers) {
         Intent intent = new Intent(context, ChatActivity.class);
         intent.putExtra(EXTRA_QB_USERS, qbUsers);
@@ -61,9 +64,22 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+//        init playing via callback or via handleMessage
+        if(mediaPlayerListener != null){
+            mediaPlayerListener.onResume();
+        }
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
-//        if possible stop playing via callback or via getMediaManagerInstance
+//       release player via callback or via handleMessage
+        if(mediaPlayerListener != null){
+            mediaPlayerListener.onPause();
+        }
+
     }
 
     private void loadChatHistory(final ArrayList<QBUser> qbUsers) {
@@ -74,6 +90,9 @@ public class ChatActivity extends AppCompatActivity {
                 Collections.reverse(messages);
 
                 chatAdapter = new CustomMessageAdapter(ChatActivity.this, messages, qbUsers);
+
+                mediaPlayerListener = chatAdapter.getMediaPlayerListener();
+
                 chatAdapter.setMessageTextViewLinkClickListener(new QBChatMessageLinkClickListener() {
                     @Override
                     public void onLinkClicked(String linkText, QBMessageTextClickMovement.QBLinkType linkType, int positionInAdapter) {

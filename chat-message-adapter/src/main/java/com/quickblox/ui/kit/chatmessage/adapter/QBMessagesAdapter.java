@@ -24,6 +24,7 @@ import com.quickblox.chat.QBChatService;
 import com.quickblox.chat.model.QBAttachment;
 import com.quickblox.chat.model.QBChatMessage;
 import com.quickblox.content.model.QBFile;
+import com.quickblox.ui.kit.chatmessage.adapter.listeners.MediaPlayerListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachImageClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachLocationClickListener;
@@ -84,6 +85,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     private SingleMediaManager mediaManager;
     private MediaControllerEventListener mediaControllerEventListener;
+    private MediaPlayerListenerImpl mediaPlayerListener;
     private HashMap<PlayerControllerView, Integer> playerViewHashMap;
     private int activePlayerViewPosition;
 
@@ -552,6 +554,10 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         return mediaControllerEventListener == null ? mediaControllerEventListener = new MediaControllerEventListener() : mediaControllerEventListener;
     }
 
+    private MediaPlayerListenerImpl getMediaPlayerListenerImplInstance() {
+        return mediaPlayerListener == null ? mediaPlayerListener = new MediaPlayerListenerImpl() : mediaPlayerListener;
+    }
+
     protected void showPhotoAttach(QBMessageViewHolder holder, int position) {
         String imageUrl = getImageUrl(position);
         showImageByURL(holder, imageUrl, position);
@@ -614,6 +620,10 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         if (listener != null) {
             holder.itemView.setOnClickListener(new QBItemClickListenerFilter(listener, qbAttachment, position));
         }
+    }
+
+    public MediaPlayerListener getMediaPlayerListener() {
+        return getMediaPlayerListenerImplInstance();
     }
 
     protected static class TextMessageHolder extends QBMessageViewHolder {
@@ -723,6 +733,20 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         @Override
         public void onPlayerInViewInit(PlayerControllerView view) {
             setPlayerViewActivePosition(getPlayerViewPosition(view));
+        }
+    }
+
+    protected class MediaPlayerListenerImpl implements MediaPlayerListener {
+
+        @Override
+        public void onResume() {
+            notifyDataSetChanged();
+            getMediaManagerInstance().resumePlay();
+        }
+
+        @Override
+        public void onPause() {
+            getMediaManagerInstance().suspendPlay();
         }
     }
 }

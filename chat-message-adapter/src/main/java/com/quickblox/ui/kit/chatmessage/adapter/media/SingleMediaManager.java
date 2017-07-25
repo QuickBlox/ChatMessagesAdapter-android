@@ -4,11 +4,14 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.quickblox.ui.kit.chatmessage.adapter.media.utils.SimpleExoPlayerInitializer;
@@ -24,6 +27,11 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
     private PlayerControllerView playerView;
     private SimpleExoPlayer exoPlayer;
     private Context context;
+
+    private Uri uri;
+    private boolean shouldAutoPlay;
+    private int resumeWindow;
+    private long resumePosition;
 
     public SingleMediaManager(Context context) {
         this.context = context;
@@ -45,7 +53,7 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
                 return;
             }
         }
-
+        this.uri = uri;
         stopResetCurrentPlayer();
         initViewPlayback(playerView);
         startPlayback(playerView, uri);
@@ -54,6 +62,14 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
     @Override
     public void pauseMedia() {
         exoPlayer.setPlayWhenReady(false);
+    }
+
+    public void suspendPlay() {
+        resetMediaPlayer();
+    }
+
+    public void resumePlay() {
+        initializePlayer();
     }
 
     @Override
@@ -98,10 +114,30 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
 
     private void releasePlayer() {
         if (exoPlayer != null) {
+            shouldAutoPlay = exoPlayer.getPlayWhenReady();
+            updateResumePosition();
             exoPlayer.release();
+            playerView.releaseView();
             removeEventListener();
             exoPlayer = null;
         }
+    }
+
+    private void initializePlayer() {
+        initPlayer();
+        MediaSource mediaSource = SimpleExoPlayerInitializer.buildMediaSource(uri);
+        boolean haveResumePosition = resumeWindow != C.INDEX_UNSET;
+        if (haveResumePosition) {
+            exoPlayer.seekTo(resumeWindow, resumePosition);
+        }
+        exoPlayer.prepare(mediaSource, !haveResumePosition, false);
+        exoPlayer.setPlayWhenReady(shouldAutoPlay);
+    }
+
+    private void updateResumePosition() {
+        resumeWindow = exoPlayer.getCurrentWindowIndex();
+        resumePosition = exoPlayer.isCurrentWindowSeekable() ? Math.max(0, exoPlayer.getCurrentPosition())
+                : C.TIME_UNSET;
     }
 
     private void initViewPlayback(PlayerControllerView playerView) {
