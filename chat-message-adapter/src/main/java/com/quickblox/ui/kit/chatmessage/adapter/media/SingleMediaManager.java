@@ -29,6 +29,10 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
         this.context = context;
     }
 
+    public SimpleExoPlayer getExoPlayer() {
+        return exoPlayer;
+    }
+
     @Override
     public void playMedia(PlayerControllerView playerView, Uri uri) {
         if(isPlayerViewCurrent(playerView)){
@@ -74,7 +78,7 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
     }
 
     private boolean isPlayerViewCurrent(PlayerControllerView playerView) {
-        return  exoPlayer != null && this.playerView != null && this.playerView == playerView;
+        return  exoPlayer != null && this.playerView != null && this.playerView == playerView && playerView.isCurrentViewPlaying();
     }
 
     public boolean isPlaying() {
@@ -82,6 +86,10 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
             Log.d(TAG, "isPlaying playbackState= " + exoPlayer.getPlaybackState());
             return exoPlayer.getPlayWhenReady();
         } return false;
+    }
+
+    public PlayerControllerView getPlayerView(){
+        return playerView;
     }
 
     private void stopResetCurrentPlayer() {
