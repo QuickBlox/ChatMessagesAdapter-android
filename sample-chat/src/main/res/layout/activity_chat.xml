@@ -77,15 +77,43 @@
         style="@style/MatchWidth"
 
         android:layout_alignParentBottom="true"
-        android:background="?attr/colorAccent"
-        android:orientation="horizontal"
+        android:background="@color/text_color_green"
+        android:orientation="vertical"
         android:visibility="invisible">
 
-    <ImageView
-        android:id="@+id/button_chat_audio_attachment"
-        style="@style/BorderlessImageButtonStyle"
-        android:layout_gravity="center_vertical"
-        android:src="@android:drawable/ic_menu_delete" />
+        <TextView
+            android:id="@+id/chat_audio_count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:text="remaining"
+            android:textSize="20sp" />
+
+        <FrameLayout
+            style="@style/MatchWidth"
+            android:background="?attr/colorAccent">
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="50dp"
+                android:layout_marginRight="50dp"
+                android:text="cancel&#09;RECORDING"
+                android:textSize="20sp" />
+
+
+            <ImageView
+                android:id="@+id/button_chat_audio_attachment"
+                style="@style/BorderlessImageButtonStyle"
+                android:layout_gravity="center_vertical"
+                android:src="@android:drawable/ic_menu_delete" />
+
+        </FrameLayout>
+
     </LinearLayout>
 
 </RelativeLayout>

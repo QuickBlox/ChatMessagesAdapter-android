@@ -8,7 +8,7 @@ import java.io.File;
 
 public interface AudioRecordListener {
 
-    void onAudioRecorded(int requestCode, File file);
+    void onAudioRecorded(int requestCode, File file, int what);
 
     void onAudioRecordError(int requestCode, Exception e);
 

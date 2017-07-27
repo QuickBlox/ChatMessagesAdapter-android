@@ -1,48 +1,54 @@
 package com.quickblox.ui.kit.chatmessage.adapter.media.recorder;
 
-import android.app.Activity;
-import android.media.AudioFormat;
 import android.media.MediaRecorder;
-import android.media.MediaRecorder.AudioSource;
-import android.support.v4.app.Fragment;
+import android.util.Log;
 
 import com.quickblox.ui.kit.chatmessage.adapter.media.recorder.listeners.AudioRecordListener;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
 
 /**
  * Created by roman on 7/26/17.
  */
 
 public class AudioRecorder {
-    private AudioRecordListener listener;
-    private Fragment fragment;
-    private Activity activity;
+    private static final String TAG = AudioRecorder.class.getSimpleName();
+    public static final int CHANNEL_MONO = 1;
+    public static final int CHANNEL_STEREO = 2;
+
+    private String folderName = TAG;
+    private String fileName = "recorded_audio_chat.wav";
     private String filePath;
     private int requestCode;
-    private AudioSource source;
-    private AudioFormat channel;
 
-    private AudioRecorder(Activity activity) {
-        this.activity = activity;
+    private int audioSource = MediaRecorder.AudioSource.MIC;
+    private int outputFormat = MediaRecorder.OutputFormat.THREE_GPP;
+    private int audioEncoder = MediaRecorder.AudioEncoder.AAC;
+    private int bitRate = 96000;
+    private int samplingRate = 44100;
+    private int duration = (int) TimeUnit.SECONDS.toMillis(30);
+
+    private AudioRecordListener recordListener;
+    private MediaRecorder recorder = null;
+    private RecordState state;
+    private int channels = CHANNEL_STEREO;
+
+
+    private AudioRecorder(AudioRecordListener recordListener) {
+        this.recordListener = recordListener;
     }
 
-    private AudioRecorder(Fragment fragment) {
-        this.fragment = fragment;
+
+    public static AudioRecorder with(AudioRecordListener recordListener) {
+        return new AudioRecorder(recordListener);
     }
 
-    private AudioRecorder(AudioRecordListener listener) {
-        this.listener = listener;
-    }
-
-//    public static AudioRecorder with(Activity activity) {
-//        return new AudioRecorder(activity);
-//    }
-
-    public static AudioRecorder with(Fragment fragment) {
-        return new AudioRecorder(fragment);
-    }
-
-    public static AudioRecorder with(AudioRecordListener listener) {
-        return new AudioRecorder(listener);
+    public AudioRecorder useInBuildFilePathGenerator() {
+        filePath = Utils.getAudioFilePathTemp(folderName, fileName);
+        return this;
     }
 
     public AudioRecorder setFilePath(String filePath) {
@@ -55,18 +61,122 @@ public class AudioRecorder {
         return this;
     }
 
-    public AudioRecorder setSource(AudioSource source) {
-        this.source = source;
+    public AudioRecorder setAudioSource(int source) {
+        this.audioSource = source;
         return this;
     }
 
-    public AudioRecorder setChannel(AudioFormat channel) {
-        this.channel = channel;
+    public AudioRecorder setOutputFormat(int outputFormat) {
+        this.outputFormat = outputFormat;
         return this;
     }
 
-    public void record() {
-
+    public AudioRecorder setAudioEncoder(int audioEncoder) {
+        this.audioEncoder = audioEncoder;
+        return this;
     }
 
+    public AudioRecorder setAudioEncodingBitRate(int bitRate) {
+        this.bitRate = bitRate;
+        return this;
+    }
+
+    public AudioRecorder setDuration(int durationSeconds) {
+        this.duration = (int) TimeUnit.SECONDS.toMillis(durationSeconds);
+        return this;
+    }
+
+    public AudioRecorder setAudioChannels(int channels) {
+        this.channels = channels;
+        return this;
+    }
+
+    public AudioRecorder setAudioSamplingRate(int samplingRate) {
+        this.samplingRate = samplingRate;
+        return this;
+    }
+
+    public void cancel() {
+//        release all data and maybe delete temp file
+        release();
+
+        if(recordListener != null) {
+            recordListener.onAudioRecordClosed(requestCode);
+        }
+    }
+
+    public void startRecording() {
+        setState(RecordState.RECORD_STATE_BEGIN);
+        recorder = new MediaRecorder();
+        recorder.setAudioSource(audioSource);
+        recorder.setOutputFormat(outputFormat);
+        recorder.setOutputFile(filePath);
+        recorder.setAudioChannels(channels);
+        recorder.setAudioEncoder(audioEncoder);
+        recorder.setAudioEncodingBitRate(bitRate);
+        recorder.setAudioSamplingRate(samplingRate);
+        recorder.setMaxDuration(duration);
+        recorder.setOnInfoListener(new OnInfoListenerImpl());
+        recorder.setOnErrorListener(new OnErrorListenerImpl());
+        try {
+            recorder.prepare();
+        } catch (IOException e) {
+            recordListener.onAudioRecordError(requestCode, e);
+        }
+
+        recorder.start();
+    }
+
+    private File getFile() {
+        return new File(filePath);
+    }
+
+    public void stopRecording() {
+        release();
+        sendResult(0);
+    }
+
+    public void release() {
+        recorder.stop();
+        recorder.release();
+        recorder = null;
+    }
+
+    private class OnErrorListenerImpl implements MediaRecorder.OnErrorListener {
+
+        @Override
+        public void onError(MediaRecorder mediaRecorder, int what, int extra) {
+            setState(RecordState.RECORD_STATE_ERROR);
+            String error = Utils.parseCode(what);
+            recordListener.onAudioRecordError(requestCode, new Exception(error));
+        }
+    }
+
+    private class OnInfoListenerImpl implements MediaRecorder.OnInfoListener {
+
+        @Override
+        public void onInfo(MediaRecorder mediaRecorder, int what, int extra) {
+            String event = Utils.parseCode(what);
+            sendResult(what);
+            Log.d(TAG, "onInfo event= " + event + ", extra= " + extra);
+        }
+    }
+
+    private void sendResult(int what) {
+        if(state.ordinal() < RecordState.RECORD_STATE_COMPLETED.ordinal()) {
+            setState(RecordState.RECORD_STATE_COMPLETED);
+            recordListener.onAudioRecorded(requestCode, getFile(), what);
+        }
+    }
+
+    private void setState(RecordState state) {
+        this.state = state;
+    }
+
+    public enum RecordState {
+        RECORD_STATE_UNKNOWN,
+        RECORD_STATE_BEGIN,
+        RECORD_STATE_COMPLETED,
+        RECORD_STATE_ERROR;
+    }
 }
