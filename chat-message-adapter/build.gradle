@@ -85,4 +85,5 @@ dependencies {
     compile "com.google.android.exoplayer:exoplayer:$rootProject.exoPlayerVersion"
 
     compile "com.android.support:support-v4:$rootProject.supportV4Version"
+    compile 'com.android.support:appcompat-v7:24.2.1'
 }

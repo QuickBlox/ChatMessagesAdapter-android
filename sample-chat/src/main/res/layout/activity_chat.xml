@@ -63,5 +63,29 @@
             android:layout_gravity="center_vertical"
             android:src="@drawable/badge_attach_message_time"
             android:text="@string/chat_send" />
+
+        <ImageButton
+            android:id="@+id/button_chat_record_audio"
+            style="@style/BorderlessImageButtonStyle"
+            android:layout_gravity="center_vertical"
+            android:src="@android:drawable/ic_btn_speak_now"
+            android:text="@string/chat_send" />
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_chat_audio_container"
+        style="@style/MatchWidth"
+
+        android:layout_alignParentBottom="true"
+        android:background="?attr/colorAccent"
+        android:orientation="horizontal"
+        android:visibility="invisible">
+
+    <ImageView
+        android:id="@+id/button_chat_audio_attachment"
+        style="@style/BorderlessImageButtonStyle"
+        android:layout_gravity="center_vertical"
+        android:src="@android:drawable/ic_menu_delete" />
+    </LinearLayout>
+
 </RelativeLayout>

@@ -5,11 +5,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -26,15 +30,18 @@ import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachClickListe
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatMessageLinkClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBMediaPlayerListener;
 import com.quickblox.ui.kit.chatmessage.adapter.media.SingleMediaManager;
+import com.quickblox.ui.kit.chatmessage.adapter.media.recorder.AudioRecorder;
+import com.quickblox.ui.kit.chatmessage.adapter.media.recorder.listeners.AudioRecordListener;
 import com.quickblox.ui.kit.chatmessage.adapter.utils.QBMessageTextClickMovement;
 import com.quickblox.users.model.QBUser;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
 import static android.widget.LinearLayout.VERTICAL;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity implements AudioRecordListener {
     private static final String TAG = ChatActivity.class.getSimpleName();
     private static final String EXTRA_QB_USERS = "qb_user_list";
     private static final String DIALOG_ID = "57b701e8a0eb472505000039";
@@ -45,6 +52,9 @@ public class ChatActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private QBMessagesAdapter chatAdapter;
     private SingleMediaManager mediaManager;
+    private ImageButton recordButton;
+
+    private LinearLayout audioLayout;
 
     public static void start(Context context, ArrayList<QBUser> qbUsers) {
         Intent intent = new Intent(context, ChatActivity.class);
@@ -165,14 +175,62 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
     public void onBackPressed() {
         Log.d(TAG, "onBackPressed");
         ChatHelper.getInstance().logout();
         finish();
+    }
+
+    public void processSendMessage(File file) {
+        Log.d(TAG, "processSendMessage file= " + file);
+    }
+
+    public void recordClick() {
+        Log.d(TAG, "recordClick start");
+        AudioRecorder.with(this)
+                // Required
+                .setFilePath(TEMP_AUDIO_FILE_PATH)
+                .setRequestCode(REQUEST_CODE_AUDIO_RECORD)
+
+                // Optional
+//                .setSource(MediaRecorder.AudioSource.MIC)
+//                .setChannel(MediaRecorder.AudioChannel.STEREO)
+//                .setSampleRate(AudioSampleRate.HZ_48000)
+//                .setAutoStart(false)
+//                .setKeepDisplayOn(true)
+
+                // Start recording
+                .record();
+//        new AudioRecorderHelper().record(this, REQUEST_CODE_AUDIO_RECORD);
+    }
+
+
+    private boolean canCancel(float x, float y) {
+        return x < -350;
+    }
+
+
+    private void cancelRecord() {
+        Log.d(TAG, "cancelRecord");
+        audioLayout.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void onAudioRecorded(int requestCode, File file) {
+        switch (requestCode) {
+            case REQUEST_CODE_AUDIO_RECORD:
+                processSendMessage(file);
+                break;
+        }
+    }
+
+    @Override
+    public void onAudioRecordError(int requestCode, Exception e) {
+
+    }
+
+    @Override
+    public void onAudioRecordClosed(int requestCode) {
+
     }
 }
