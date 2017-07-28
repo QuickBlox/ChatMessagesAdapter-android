@@ -1,6 +1,6 @@
 package com.quickblox.ui.kit.chatmessage.adapter.media.recorder;
 
-import com.quickblox.ui.kit.chatmessage.adapter.media.recorder.listeners.AudioRecordListener;
+import com.quickblox.ui.kit.chatmessage.adapter.media.recorder.listeners.QBMediaRecordListener;
 
 /**
  * Created by roman on 7/26/17.
@@ -8,7 +8,7 @@ import com.quickblox.ui.kit.chatmessage.adapter.media.recorder.listeners.AudioRe
 
 public class AudioRecorderHelper {
 
-    public void record(AudioRecordListener recordListener, int requestCode) {
+    public void record(QBMediaRecordListener recordListener, int requestCode) {
 
     }
 }

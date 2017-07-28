@@ -1,20 +1,22 @@
 package com.quickblox.sample.chatadapter.ui.activity;
 
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -35,8 +37,9 @@ import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachClickListe
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatMessageLinkClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBMediaPlayerListener;
 import com.quickblox.ui.kit.chatmessage.adapter.media.SingleMediaManager;
+import com.quickblox.ui.kit.chatmessage.adapter.media.recorder.AudioRecordController;
 import com.quickblox.ui.kit.chatmessage.adapter.media.recorder.AudioRecorder;
-import com.quickblox.ui.kit.chatmessage.adapter.media.recorder.listeners.AudioRecordListener;
+import com.quickblox.ui.kit.chatmessage.adapter.media.recorder.listeners.QBMediaRecordListener;
 import com.quickblox.ui.kit.chatmessage.adapter.utils.QBMessageTextClickMovement;
 import com.quickblox.users.model.QBUser;
 
@@ -46,12 +49,13 @@ import java.util.Collections;
 
 import static android.widget.LinearLayout.VERTICAL;
 
-public class ChatActivity extends AppCompatActivity implements AudioRecordListener {
+public class ChatActivity extends AppCompatActivity implements QBMediaRecordListener {
     private static final String TAG = ChatActivity.class.getSimpleName();
     private static final String EXTRA_QB_USERS = "qb_user_list";
     private static final String DIALOG_ID = "57b701e8a0eb472505000039";
 
     private static final int REQUEST_CODE_AUDIO_RECORD = 55;
+    private static final int REQUEST_RECORD_AUDIO_WRITE_EXTERNAL_STORAGE_PERMISSIONS = 200;
 
     private int skipPagination = 0;
     private QBChatDialog chatDialog;
@@ -64,8 +68,12 @@ public class ChatActivity extends AppCompatActivity implements AudioRecordListen
 
     private LinearLayout audioLayout;
 
-    private AudioRecorder audioRecorder;
+    private AudioRecordController audioRecordController;
     private boolean canceled;
+
+    // Requesting permission to RECORD_AUDIO
+    private boolean permissionToRecordAccepted = false;
+    private String [] permissions = {Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     public static void start(Context context, ArrayList<QBUser> qbUsers) {
         Intent intent = new Intent(context, ChatActivity.class);
@@ -87,6 +95,7 @@ public class ChatActivity extends AppCompatActivity implements AudioRecordListen
         audioLayout = (LinearLayout) findViewById(R.id.layout_chat_audio_container);
         recordButton = (ImageButton) findViewById(R.id.button_chat_record_audio);
 
+        requestPermission();
         initAudioRecorder();
         recordButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -97,7 +106,7 @@ public class ChatActivity extends AppCompatActivity implements AudioRecordListen
                     case MotionEvent.ACTION_DOWN: // press
                         Log.d(TAG, "onTouch ACTION_DOWN");
                         canceled = false;
-                        recordClick();
+                        record();
                         break;
                     case MotionEvent.ACTION_MOVE: // move
 //                        use more precise logic for detecting swipe
@@ -118,6 +127,18 @@ public class ChatActivity extends AppCompatActivity implements AudioRecordListen
         });
 
         loadChatHistory(qbUsers);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode){
+            case REQUEST_RECORD_AUDIO_WRITE_EXTERNAL_STORAGE_PERMISSIONS:
+                permissionToRecordAccepted  = grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                        grantResults[1] == PackageManager.PERMISSION_GRANTED;
+                break;
+        }
+        if (!permissionToRecordAccepted ) finish();
     }
 
     @Override
@@ -231,28 +252,29 @@ public class ChatActivity extends AppCompatActivity implements AudioRecordListen
         Log.d(TAG, "processSendMessage file= " + file);
     }
 
+    public void requestPermission() {
+        ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_WRITE_EXTERNAL_STORAGE_PERMISSIONS);
+    }
+
     public void initAudioRecorder() {
-        audioRecorder = AudioRecorder.with(this)
+        AudioRecorder audioRecorder = AudioRecorder.newBuilder(this)
                 // Required
                 .useInBuildFilePathGenerator()
                 .setRequestCode(REQUEST_CODE_AUDIO_RECORD)
-                .setDuration(10);
-
-                 // Optional
-//                .setAudioSource(MediaRecorder.AudioSource.MIC)
-//                .setOutputFormat(MediaRecorder.OutputFormat.AMR_NB);
+                .setDuration(10)
+                .build();
+                // Optional
+//                .setAudioSource(QBMediaRecorder.AudioSource.MIC)
+//                .setOutputFormat(QBMediaRecorder.OutputFormat.AMR_NB);
 //                .setSampleRate(AudioSampleRate.HZ_48000)
 
-
-        // Start recording
-//                .record();
-//        new AudioRecorderHelper().record(this, REQUEST_CODE_AUDIO_RECORD);
+        audioRecordController = new AudioRecordController(audioRecorder);
     }
 
-    public void recordClick() {
-        Log.d(TAG, "recordClick start");
+    public void record() {
+        Log.d(TAG, "record start");
         audioLayout.setVisibility(View.VISIBLE);
-        audioRecorder.startRecording();
+        audioRecordController.record();
 
         new CountDownTimer(10 * 1000, 1000) {
 
@@ -268,15 +290,15 @@ public class ChatActivity extends AppCompatActivity implements AudioRecordListen
     }
 
     public void stopRecordClick() {
-        Log.d(TAG, "recordClick stop");
-        audioRecorder.stopRecording();
+        Log.d(TAG, "record stop");
+        audioRecordController.stopRecord();
     }
 
     public void cancelRecord() {
-        Log.d(TAG, "recordClick cancel");
+        Log.d(TAG, "record cancel");
         canceled = true;
         audioLayout.setVisibility(View.INVISIBLE);
-        audioRecorder.cancel();
+        audioRecordController.cancel();
     }
 
     private boolean canCancel(float x, float y) {
@@ -284,25 +306,25 @@ public class ChatActivity extends AppCompatActivity implements AudioRecordListen
     }
 
     @Override
-    public void onAudioRecorded(int requestCode, File file, int extra) {
-        audioLayout.setVisibility(View.INVISIBLE);
-        if(extra == MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
-            Toast.makeText(this, "Max duration reached", Toast.LENGTH_LONG).show();
-        }
+    public void onMediaRecorded(int requestCode, File file, int extra) {
         switch (requestCode) {
             case REQUEST_CODE_AUDIO_RECORD:
+                audioLayout.setVisibility(View.INVISIBLE);
+                if(extra == MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
+                    Toast.makeText(this, "Max duration reached", Toast.LENGTH_LONG).show();
+                }
                 processSendMessage(file);
                 break;
         }
     }
 
     @Override
-    public void onAudioRecordError(int requestCode, Exception e) {
+    public void onMediaRecordError(int requestCode, Exception e) {
         cancelRecord();
     }
 
     @Override
-    public void onAudioRecordClosed(int requestCode) {
+    public void onMediaRecordClosed(int requestCode) {
         Toast.makeText(this, "Audio is not recorded", Toast.LENGTH_LONG).show();
     }
 }
