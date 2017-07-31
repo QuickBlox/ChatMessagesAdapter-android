@@ -34,6 +34,7 @@ public class Utils {
                 break;
             default:
                 msg = "UNKNOWN";
+                break;
         }
         return msg;
     }

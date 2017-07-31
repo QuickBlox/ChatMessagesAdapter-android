@@ -4,8 +4,13 @@ package com.quickblox.ui.kit.chatmessage.adapter.media.recorder.model;
  * Created by roman on 7/28/17.
  */
 
+/**
+ * Abstract model of the MediaRecorder, in future can be extended by VideoRecorder,
+ * and some logic from AudioRecorder can be replaced here.
+ */
 public abstract class QBMediaRecorder<T> {
-    public static final int MEDIA_RECORDER_INFO_SUCCESS = 0;
+
+    protected static final int MEDIA_RECORDER_INFO_SUCCESS = 0;
 
     protected abstract void start();
 

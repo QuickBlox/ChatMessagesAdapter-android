@@ -34,6 +34,14 @@ public class AudioRecorder extends QBMediaRecorder<AudioRecorder> {
     }
 
     @Override
+    protected void start() {
+        initMediaRecorder();
+        prepareMediaRecorder();
+        setState(RecordState.RECORD_STATE_BEGIN);
+        recorder.start();
+    }
+
+    @Override
     protected void cancel() {
 //        releaseMediaRecorder all data and maybe delete temp file
         releaseMediaRecorder();
@@ -43,11 +51,10 @@ public class AudioRecorder extends QBMediaRecorder<AudioRecorder> {
         }
     }
 
-    protected void start() {
-        initMediaRecorder();
-        prepareMediaRecorder();
-        setState(RecordState.RECORD_STATE_BEGIN);
-        recorder.start();
+    @Override
+    protected void stop() {
+        releaseMediaRecorder();
+        sendResult(MEDIA_RECORDER_INFO_SUCCESS);
     }
 
     private void initMediaRecorder() {
@@ -80,8 +87,8 @@ public class AudioRecorder extends QBMediaRecorder<AudioRecorder> {
     }
 
     private void notifyListenerSuccess(int what) {
+        setState(RecordState.RECORD_STATE_COMPLETED);
         if(recordListener != null) {
-            setState(RecordState.RECORD_STATE_COMPLETED);
             recordListener.onMediaRecorded(requestCode, getFile(), what);
         }
     }
@@ -90,17 +97,18 @@ public class AudioRecorder extends QBMediaRecorder<AudioRecorder> {
         return new File(configurationBuilder.filePath);
     }
 
-    protected void stop() {
-        releaseMediaRecorder();
-        sendResult(MEDIA_RECORDER_INFO_SUCCESS);
-    }
-
     private void releaseMediaRecorder() {
         if(state.ordinal() > RecordState.RECORD_STATE_BEGIN.ordinal()) {
             recorder.stop();
         }
         recorder.release();
         recorder = null;
+    }
+
+    private void sendResult(int what) {
+        if(state.ordinal() < RecordState.RECORD_STATE_COMPLETED.ordinal()) {
+            notifyListenerSuccess(what);
+        }
     }
 
     private class OnErrorListenerImpl implements MediaRecorder.OnErrorListener {
@@ -119,12 +127,6 @@ public class AudioRecorder extends QBMediaRecorder<AudioRecorder> {
             String event = Utils.parseCode(what);
             sendResult(what);
             Log.d(TAG, "onInfo event= " + event + ", extra= " + extra);
-        }
-    }
-
-    private void sendResult(int what) {
-        if(state.ordinal() < RecordState.RECORD_STATE_COMPLETED.ordinal()) {
-            notifyListenerSuccess(what);
         }
     }
 
