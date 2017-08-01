@@ -13,6 +13,7 @@ import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
+import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBMediaPlayerListener;
 import com.quickblox.ui.kit.chatmessage.adapter.media.utils.SimpleExoPlayerInitializer;
 import com.quickblox.ui.kit.chatmessage.adapter.media.view.QBPlaybackControlView;
 
@@ -31,9 +32,15 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
     private boolean shouldAutoPlay;
     private int resumeWindow;
     private long resumePosition;
+    private QBMediaPlayerListener mediaPlayerListener;
 
     public SingleMediaManager(Context context) {
         this.context = context;
+    }
+
+    public SingleMediaManager(Context context, QBMediaPlayerListener mediaPlayerListener) {
+        this.context = context;
+        this.mediaPlayerListener = mediaPlayerListener;
     }
 
     public SimpleExoPlayer getExoPlayer() {
@@ -49,6 +56,10 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
             } else {
                 Log.v(TAG, "playMedia: continue playing");
                 exoPlayer.setPlayWhenReady(true);
+
+                if(mediaPlayerListener != null) {
+                    mediaPlayerListener.onResume();
+                }
                 return;
             }
         }
@@ -56,11 +67,19 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
         stopResetCurrentPlayer();
         initViewPlayback(playerView);
         startPlayback(playerView, uri);
+
+        if(mediaPlayerListener != null) {
+            mediaPlayerListener.onStart();
+        }
     }
 
     @Override
     public void pauseMedia() {
         exoPlayer.setPlayWhenReady(false);
+
+        if(mediaPlayerListener != null) {
+            mediaPlayerListener.onPause();
+        }
     }
 
     public void suspendPlay() {
@@ -155,6 +174,11 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
         exoPlayer.removeListener(this);
     }
 
+    private void setPlayerToStartPosition() {
+        exoPlayer.seekTo(0);
+        pauseMedia();
+    }
+
     @Override
     public void onTimelineChanged(Timeline timeline, Object manifest) {
 
@@ -172,12 +196,14 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        Log.d(TAG, "onPlayerStateChanged playbackState= " + playbackState);
+        parsePlayerEvent(playbackState);
     }
 
     @Override
     public void onPlayerError(ExoPlaybackException error) {
-
+        if(mediaPlayerListener != null) {
+            mediaPlayerListener.onPlayerError(error);
+        }
     }
 
     @Override
@@ -188,5 +214,23 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
     @Override
     public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
 
+    }
+
+    private void parsePlayerEvent(int playbackState) {
+        switch(playbackState) {
+            case ExoPlayer.STATE_BUFFERING:
+                break;
+            case ExoPlayer.STATE_ENDED:
+                if(mediaPlayerListener != null) {
+                    mediaPlayerListener.onStop();
+                }
+                break;
+            case ExoPlayer.STATE_IDLE:
+                break;
+            case ExoPlayer.STATE_READY:
+                break;
+            default:
+                break;
+        }
     }
 }

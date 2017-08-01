@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.google.android.exoplayer2.ExoPlaybackException;
 import com.quickblox.chat.model.QBAttachment;
 import com.quickblox.chat.model.QBChatDialog;
 import com.quickblox.chat.model.QBChatMessage;
@@ -20,7 +21,7 @@ import com.quickblox.sample.chatadapter.utils.ChatHelper;
 import com.quickblox.ui.kit.chatmessage.adapter.QBMessagesAdapter;
 import com.quickblox.core.QBEntityCallback;
 import com.quickblox.core.exception.QBResponseException;
-import com.quickblox.ui.kit.chatmessage.adapter.listeners.MediaPlayerListener;
+import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBMediaPlayerListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachImageClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatMessageLinkClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.utils.QBMessageTextClickMovement;
@@ -41,8 +42,6 @@ public class ChatActivity extends AppCompatActivity {
     private RecyclerView messagesListView;
     private ProgressBar progressBar;
     private QBMessagesAdapter chatAdapter;
-
-    MediaPlayerListener mediaPlayerListener;
 
     public static void start(Context context, ArrayList<QBUser> qbUsers) {
         Intent intent = new Intent(context, ChatActivity.class);
@@ -67,18 +66,13 @@ public class ChatActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 //        init playing via callback or via handleMessage
-        if(mediaPlayerListener != null){
-            mediaPlayerListener.onResume();
-        }
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 //       release player via callback or via handleMessage
-        if(mediaPlayerListener != null){
-            mediaPlayerListener.onPause();
-        }
 
     }
 
@@ -90,8 +84,6 @@ public class ChatActivity extends AppCompatActivity {
                 Collections.reverse(messages);
 
                 chatAdapter = new CustomMessageAdapter(ChatActivity.this, messages, qbUsers);
-
-                mediaPlayerListener = chatAdapter.getMediaPlayerListener();
 
                 chatAdapter.setMessageTextViewLinkClickListener(new QBChatMessageLinkClickListener() {
                     @Override
@@ -115,6 +107,32 @@ public class ChatActivity extends AppCompatActivity {
                     }
                 });
 
+                chatAdapter.setMediaPlayerListener(new QBMediaPlayerListener() {
+                    @Override
+                    public void onStart() {
+                        Log.d(TAG, "onStart");
+                    }
+
+                    @Override
+                    public void onResume() {
+                        Log.d(TAG, "onResume");
+                    }
+
+                    @Override
+                    public void onPause() {
+                        Log.d(TAG, "onPause");
+                    }
+
+                    @Override
+                    public void onStop() {
+                        Log.d(TAG, "onStop");
+                    }
+
+                    @Override
+                    public void onPlayerError(ExoPlaybackException error) {
+
+                    }
+                });
 
                 LinearLayoutManager layoutManager = new LinearLayoutManager(ChatActivity.this, VERTICAL, false);
                 messagesListView.setLayoutManager(layoutManager);

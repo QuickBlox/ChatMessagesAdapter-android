@@ -11,7 +11,6 @@ import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -24,7 +23,7 @@ import com.quickblox.chat.QBChatService;
 import com.quickblox.chat.model.QBAttachment;
 import com.quickblox.chat.model.QBChatMessage;
 import com.quickblox.content.model.QBFile;
-import com.quickblox.ui.kit.chatmessage.adapter.listeners.MediaPlayerListener;
+import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBMediaPlayerListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachImageClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachLocationClickListener;
@@ -62,6 +61,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     private QBChatMessageLinkClickListener messageTextViewLinkClickListener;
     private QBChatAttachImageClickListener attachImageClickListener;
     private QBChatAttachLocationClickListener attachLocationClickListener;
+    private QBMediaPlayerListener mediaPlayerListener;
     private boolean overrideOnClick;
 
     private SparseIntArray containerLayoutRes = new SparseIntArray() {
@@ -85,7 +85,6 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     private SingleMediaManager mediaManager;
     private MediaControllerEventListener mediaControllerEventListener;
-    private MediaPlayerListenerImpl mediaPlayerListener;
     private HashMap<QBPlaybackControlView, Integer> playerViewHashMap;
     private int activePlayerViewPosition;
 
@@ -134,6 +133,14 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     public void removeMessageTextViewLinkClickListener() {
         this.messageTextViewLinkClickListener = null;
         this.overrideOnClick = false;
+    }
+
+    public void setMediaPlayerListener(QBMediaPlayerListener mediaPlayerListener) {
+        this.mediaPlayerListener = mediaPlayerListener;
+    }
+
+    public void removeMediaPlayerListener() {
+        this.mediaPlayerListener = null;
     }
 
     @Override
@@ -546,16 +553,16 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     }
 
     private SingleMediaManager getMediaManagerInstance() {
-       return mediaManager == null ? mediaManager = new SingleMediaManager(context) : mediaManager;
+       return mediaManager == null ? mediaManager = new SingleMediaManager(context, mediaPlayerListener) : mediaManager;
     }
 
     private MediaControllerEventListener getMediaControllerEventListenerInstance() {
         return mediaControllerEventListener == null ? mediaControllerEventListener = new MediaControllerEventListener() : mediaControllerEventListener;
     }
 
-    private MediaPlayerListenerImpl getMediaPlayerListenerImplInstance() {
-        return mediaPlayerListener == null ? mediaPlayerListener = new MediaPlayerListenerImpl() : mediaPlayerListener;
-    }
+//    private MediaPlayerListenerImpl getMediaPlayerListenerImplInstance() {
+//        return mediaPlayerListener == null ? mediaPlayerListener = new MediaPlayerListenerImpl() : mediaPlayerListener;
+//    }
 
     protected void showPhotoAttach(QBMessageViewHolder holder, int position) {
         String imageUrl = getImageUrl(position);
@@ -619,10 +626,6 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         if (listener != null) {
             holder.itemView.setOnClickListener(new QBItemClickListenerFilter(listener, qbAttachment, position));
         }
-    }
-
-    public MediaPlayerListener getMediaPlayerListener() {
-        return getMediaPlayerListenerImplInstance();
     }
 
     protected static class TextMessageHolder extends QBMessageViewHolder {
@@ -727,20 +730,6 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         @Override
         public void onPlayerInViewInit(QBPlaybackControlView view) {
             setPlayerViewActivePosition(getPlayerViewPosition(view));
-        }
-    }
-
-    protected class MediaPlayerListenerImpl implements MediaPlayerListener {
-
-        @Override
-        public void onResume() {
-            notifyDataSetChanged();
-            getMediaManagerInstance().resumePlay();
-        }
-
-        @Override
-        public void onPause() {
-            getMediaManagerInstance().suspendPlay();
         }
     }
 }
