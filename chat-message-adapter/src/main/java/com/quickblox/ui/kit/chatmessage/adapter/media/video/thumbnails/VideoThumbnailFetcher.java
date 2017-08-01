@@ -20,11 +20,11 @@ import java.util.HashMap;
  * Created by roman on 7/18/17.
  */
 
-class VideoCoverFetcher implements DataFetcher<InputStream> {
-    private final VideoCover model;
+class VideoThumbnailFetcher implements DataFetcher<InputStream> {
+    private final VideoThumbnail model;
     private FileInputStream stream;
 
-    public VideoCoverFetcher(VideoCover model) {
+    public VideoThumbnailFetcher(VideoThumbnail model) {
         this.model = model;
     }
 

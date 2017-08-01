@@ -12,11 +12,11 @@ import java.io.InputStream;
  * Created by roman on 7/18/17.
  */
 
-public class VideoCoverModule implements GlideModule {
+public class VideoThumbnailModule implements GlideModule {
     @Override public void applyOptions(Context context, GlideBuilder builder) {
 
     }
     @Override public void registerComponents(Context context, Glide glide) {
-        glide.register(VideoCover.class, InputStream.class, new VideoCoverLoader.Factory());
+        glide.register(VideoThumbnail.class, InputStream.class, new VideoThumbnailLoader.Factory());
     }
 }

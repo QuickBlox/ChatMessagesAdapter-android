@@ -31,7 +31,7 @@ import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatMessageLinkClick
 import com.quickblox.ui.kit.chatmessage.adapter.media.AudioController;
 import com.quickblox.ui.kit.chatmessage.adapter.media.MediaController;
 import com.quickblox.ui.kit.chatmessage.adapter.media.SingleMediaManager;
-import com.quickblox.ui.kit.chatmessage.adapter.media.video.thumbnails.VideoCover;
+import com.quickblox.ui.kit.chatmessage.adapter.media.video.thumbnails.VideoThumbnail;
 import com.quickblox.ui.kit.chatmessage.adapter.media.view.QBPlaybackControlView;
 import com.quickblox.ui.kit.chatmessage.adapter.utils.LocationUtils;
 import com.quickblox.ui.kit.chatmessage.adapter.utils.QBMessageTextClickMovement;
@@ -542,10 +542,10 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         int preferredImageWidth = (int) context.getResources().getDimension(R.dimen.attach_image_width_preview);
         int preferredImageHeight = (int) context.getResources().getDimension(R.dimen.attach_image_height_preview);
 
-        VideoCover model = new VideoCover(url);
+        VideoThumbnail model = new VideoThumbnail(url);
         Glide.with(context)
                 .load(model)
-                .listener(this.<VideoCover, GlideDrawable>getRequestListener(holder, position))
+                .listener(this.<VideoThumbnail, GlideDrawable>getRequestListener(holder, position))
                 .override(preferredImageWidth, preferredImageHeight)
                 .dontTransform()
                 .error(R.drawable.ic_error)

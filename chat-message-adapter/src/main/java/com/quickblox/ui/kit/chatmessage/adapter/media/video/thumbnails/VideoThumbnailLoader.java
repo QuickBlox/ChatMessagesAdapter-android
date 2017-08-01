@@ -14,14 +14,14 @@ import java.io.InputStream;
  * Created by roman on 7/18/17.
  */
 
-class VideoCoverLoader implements StreamModelLoader<VideoCover> {
-    @Override public DataFetcher<InputStream> getResourceFetcher(VideoCover model, int width, int height) {
-        return new VideoCoverFetcher(model);
+class VideoThumbnailLoader implements StreamModelLoader<VideoThumbnail> {
+    @Override public DataFetcher<InputStream> getResourceFetcher(VideoThumbnail model, int width, int height) {
+        return new VideoThumbnailFetcher(model);
     }
 
-    static class Factory implements ModelLoaderFactory<VideoCover, InputStream> {
-        @Override public ModelLoader<VideoCover, InputStream> build(Context context, GenericLoaderFactory factories) {
-            return new VideoCoverLoader();
+    static class Factory implements ModelLoaderFactory<VideoThumbnail, InputStream> {
+        @Override public ModelLoader<VideoThumbnail, InputStream> build(Context context, GenericLoaderFactory factories) {
+            return new VideoThumbnailLoader();
         }
         @Override public void teardown() {
         }
