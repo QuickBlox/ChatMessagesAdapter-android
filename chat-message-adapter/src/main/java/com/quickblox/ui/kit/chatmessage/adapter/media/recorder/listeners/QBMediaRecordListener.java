@@ -8,9 +8,9 @@ import java.io.File;
 
 public interface QBMediaRecordListener {
 
-    void onMediaRecorded(int requestCode, File file, int what);
+    void onMediaRecorded(File file);
 
-    void onMediaRecordError(int requestCode, Exception e);
+    void onMediaRecordError(Exception e);
 
-    void onMediaRecordClosed(int requestCode);
+    void onMediaRecordClosed();
 }

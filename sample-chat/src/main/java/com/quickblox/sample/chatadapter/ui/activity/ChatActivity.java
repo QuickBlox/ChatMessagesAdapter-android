@@ -54,7 +54,6 @@ public class ChatActivity extends AppCompatActivity implements QBMediaRecordList
     private static final String EXTRA_QB_USERS = "qb_user_list";
     private static final String DIALOG_ID = "57b701e8a0eb472505000039";
 
-    private static final int REQUEST_CODE_AUDIO_RECORD = 55;
     private static final int REQUEST_RECORD_AUDIO_WRITE_EXTERNAL_STORAGE_PERMISSIONS = 200;
 
     private int skipPagination = 0;
@@ -260,7 +259,6 @@ public class ChatActivity extends AppCompatActivity implements QBMediaRecordList
         AudioRecorder audioRecorder = AudioRecorder.newBuilder(this)
                 // Required
                 .useInBuildFilePathGenerator()
-                .setRequestCode(REQUEST_CODE_AUDIO_RECORD)
                 .setDuration(10)
                 .build();
                 // Optional
@@ -306,25 +304,18 @@ public class ChatActivity extends AppCompatActivity implements QBMediaRecordList
     }
 
     @Override
-    public void onMediaRecorded(int requestCode, File file, int extra) {
-        switch (requestCode) {
-            case REQUEST_CODE_AUDIO_RECORD:
-                audioLayout.setVisibility(View.INVISIBLE);
-                if(extra == MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
-                    Toast.makeText(this, "Max duration reached", Toast.LENGTH_LONG).show();
-                }
-                processSendMessage(file);
-                break;
-        }
+    public void onMediaRecorded(File file) {
+        audioLayout.setVisibility(View.INVISIBLE);
+        processSendMessage(file);
     }
 
     @Override
-    public void onMediaRecordError(int requestCode, Exception e) {
+    public void onMediaRecordError(Exception e) {
         cancelRecord();
     }
 
     @Override
-    public void onMediaRecordClosed(int requestCode) {
+    public void onMediaRecordClosed() {
         Toast.makeText(this, "Audio is not recorded", Toast.LENGTH_LONG).show();
     }
 }

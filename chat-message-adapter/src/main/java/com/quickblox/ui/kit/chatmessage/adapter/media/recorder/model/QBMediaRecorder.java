@@ -10,8 +10,6 @@ package com.quickblox.ui.kit.chatmessage.adapter.media.recorder.model;
  */
 public abstract class QBMediaRecorder<T> {
 
-    protected static final int MEDIA_RECORDER_INFO_SUCCESS = 0;
-
     protected abstract void start();
 
     protected abstract void stop();
