@@ -2,7 +2,7 @@ package com.quickblox.ui.kit.chatmessage.adapter.media;
 
 import android.net.Uri;
 
-import com.quickblox.ui.kit.chatmessage.adapter.media.view.PlayerControllerView;
+import com.quickblox.ui.kit.chatmessage.adapter.media.view.QBPlaybackControlView;
 
 /**
  * Created by roman on 7/14/17.
@@ -10,13 +10,9 @@ import com.quickblox.ui.kit.chatmessage.adapter.media.view.PlayerControllerView;
 
 public interface MediaManager {
 
-    void playMedia(PlayerControllerView playerView, Uri uri);
+    void playMedia(QBPlaybackControlView playerView, Uri uri);
 
     void pauseMedia();
-
-    void fastForward(int windowIndex, long positionMs);
-
-    void rewind(int windowIndex, long positionMs);
 
     void stopAnyPlayback();
 

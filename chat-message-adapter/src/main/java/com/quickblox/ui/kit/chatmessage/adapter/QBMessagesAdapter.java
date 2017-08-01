@@ -33,7 +33,7 @@ import com.quickblox.ui.kit.chatmessage.adapter.media.AudioController;
 import com.quickblox.ui.kit.chatmessage.adapter.media.MediaController;
 import com.quickblox.ui.kit.chatmessage.adapter.media.SingleMediaManager;
 import com.quickblox.ui.kit.chatmessage.adapter.media.video.thumbnails.VideoCover;
-import com.quickblox.ui.kit.chatmessage.adapter.media.view.PlayerControllerView;
+import com.quickblox.ui.kit.chatmessage.adapter.media.view.QBPlaybackControlView;
 import com.quickblox.ui.kit.chatmessage.adapter.utils.LocationUtils;
 import com.quickblox.ui.kit.chatmessage.adapter.utils.QBMessageTextClickMovement;
 import com.quickblox.users.model.QBUser;
@@ -86,7 +86,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     private SingleMediaManager mediaManager;
     private MediaControllerEventListener mediaControllerEventListener;
     private MediaPlayerListenerImpl mediaPlayerListener;
-    private HashMap<PlayerControllerView, Integer> playerViewHashMap;
+    private HashMap<QBPlaybackControlView, Integer> playerViewHashMap;
     private int activePlayerViewPosition;
 
 
@@ -476,8 +476,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         Log.d(TAG, "displayAttachmentAudio blob ID= " + attachment.getId() + ", URL= " + attachment.getUrl());
 
         Uri uri = getUriFromAttach(attachment);
-        PlayerControllerView playerView = ((AudioAttachHolder) holder).playerView;
-        Log.d("TEMPOS", "displayAttachmentAudio playerView.hashCode()" + playerView.hashCode());
+        QBPlaybackControlView playerView = ((AudioAttachHolder) holder).playerView;
         showAudioView(playerView, uri, position);
     }
 
@@ -495,7 +494,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         return Uri.parse(attachment.getUrl());
     }
 
-    private void showAudioView(PlayerControllerView playerView, Uri uri, int position) {
+    private void showAudioView(QBPlaybackControlView playerView, Uri uri, int position) {
         initPlayerView(playerView, uri, position);
 
         if (isCurrentViewActive(position)) {
@@ -504,7 +503,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         }
     }
 
-    private void initPlayerView(PlayerControllerView playerView, Uri uri, int position) {
+    private void initPlayerView(QBPlaybackControlView playerView, Uri uri, int position) {
         playerView.releaseView();
         AudioController audioController = new AudioController(getMediaManagerInstance(), uri);
         audioController.setEventMediaController(getMediaControllerEventListenerInstance());
@@ -520,14 +519,14 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         this.activePlayerViewPosition = activeViewPosition;
     }
 
-    private void setViewPosition(PlayerControllerView view, int position) {
+    private void setViewPosition(QBPlaybackControlView view, int position) {
         if(playerViewHashMap == null) {
             playerViewHashMap = new HashMap<>();
         }
         playerViewHashMap.put(view, position);
     }
 
-    private int getPlayerViewPosition(PlayerControllerView view) {
+    private int getPlayerViewPosition(QBPlaybackControlView view) {
         return playerViewHashMap.get(view);
     }
 
@@ -658,16 +657,11 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     }
 
     public static class AudioAttachHolder extends QBMessageViewHolder {
-        public PlayerControllerView playerView;
-        public ImageButton playBtn;
-        public ImageButton pauseBtn;
+        public QBPlaybackControlView playerView;
 
         public AudioAttachHolder(View itemView, @IdRes int attachId) {
             super(itemView);
-            playerView = (PlayerControllerView) itemView.findViewById(attachId);
-            playBtn = (ImageButton) playerView.findViewById(R.id.player_play);
-            pauseBtn = (ImageButton) playerView.findViewById(R.id.player_pause);
-            playerView.setTag(this);
+            playerView = (QBPlaybackControlView) itemView.findViewById(attachId);
         }
     }
 
@@ -731,7 +725,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     private class MediaControllerEventListener implements MediaController.EventMediaController {
 
         @Override
-        public void onPlayerInViewInit(PlayerControllerView view) {
+        public void onPlayerInViewInit(QBPlaybackControlView view) {
             setPlayerViewActivePosition(getPlayerViewPosition(view));
         }
     }

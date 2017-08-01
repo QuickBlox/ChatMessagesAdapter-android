@@ -10,12 +10,11 @@ import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
-import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.quickblox.ui.kit.chatmessage.adapter.media.utils.SimpleExoPlayerInitializer;
-import com.quickblox.ui.kit.chatmessage.adapter.media.view.PlayerControllerView;
+import com.quickblox.ui.kit.chatmessage.adapter.media.view.QBPlaybackControlView;
 
 /**
  * Created by roman on 7/14/17.
@@ -24,7 +23,7 @@ import com.quickblox.ui.kit.chatmessage.adapter.media.view.PlayerControllerView;
 public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener {
     private static String TAG = SingleMediaManager.class.getSimpleName();
 
-    private PlayerControllerView playerView;
+    private QBPlaybackControlView playerView;
     private SimpleExoPlayer exoPlayer;
     private Context context;
 
@@ -42,7 +41,7 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
     }
 
     @Override
-    public void playMedia(PlayerControllerView playerView, Uri uri) {
+    public void playMedia(QBPlaybackControlView playerView, Uri uri) {
         if(isPlayerViewCurrent(playerView)){
             if(isPlaying()) {
                 Log.v(TAG, "playMedia: already playing");
@@ -72,15 +71,6 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
         initializePlayer();
     }
 
-    @Override
-    public void fastForward(int windowIndex, long positionMs) {
-        exoPlayer.seekTo(windowIndex, positionMs);
-    }
-
-    @Override
-    public void rewind(int windowIndex, long positionMs) {
-        exoPlayer.seekTo(windowIndex, positionMs);
-    }
 
     @Override
     public void stopAnyPlayback() {
@@ -93,8 +83,8 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
         releasePlayer();
     }
 
-    private boolean isPlayerViewCurrent(PlayerControllerView playerView) {
-        return  exoPlayer != null && this.playerView != null && this.playerView == playerView && playerView.isCurrentViewPlaying();
+    private boolean isPlayerViewCurrent(QBPlaybackControlView playerView) {
+        return exoPlayer != null && this.playerView != null && this.playerView == playerView && playerView.isCurrentViewPlaying();
     }
 
     public boolean isPlaying() {
@@ -117,7 +107,6 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
             shouldAutoPlay = exoPlayer.getPlayWhenReady();
             updateResumePosition();
             exoPlayer.release();
-            playerView.releaseView();
             removeEventListener();
             exoPlayer = null;
         }
@@ -140,14 +129,14 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
                 : C.TIME_UNSET;
     }
 
-    private void initViewPlayback(PlayerControllerView playerView) {
+    private void initViewPlayback(QBPlaybackControlView playerView) {
         Log.v(TAG, "initViewPlayback");
         this.playerView = playerView;
         initPlayer();
-        playerView.initPlayer(exoPlayer);
+        playerView.setPlayer(exoPlayer);
     }
 
-    private void startPlayback(PlayerControllerView playerView, Uri uri) {
+    private void startPlayback(QBPlaybackControlView playerView, Uri uri) {
         Log.v(TAG, "startPlayback exoPlayer= " + (exoPlayer == null));
         exoPlayer.prepare(SimpleExoPlayerInitializer.buildMediaSource(uri));
         exoPlayer.setPlayWhenReady(true);
@@ -183,7 +172,7 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-Log.d("MORADIN", "onPlayerStateChanged playbackState= " + playbackState);
+        Log.d(TAG, "onPlayerStateChanged playbackState= " + playbackState);
     }
 
     @Override
