@@ -24,6 +24,7 @@ import com.quickblox.core.exception.QBResponseException;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBMediaPlayerListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachImageClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatMessageLinkClickListener;
+import com.quickblox.ui.kit.chatmessage.adapter.media.SingleMediaManager;
 import com.quickblox.ui.kit.chatmessage.adapter.utils.QBMessageTextClickMovement;
 import com.quickblox.users.model.QBUser;
 
@@ -42,6 +43,7 @@ public class ChatActivity extends AppCompatActivity {
     private RecyclerView messagesListView;
     private ProgressBar progressBar;
     private QBMessagesAdapter chatAdapter;
+    private SingleMediaManager mediaManager;
 
     public static void start(Context context, ArrayList<QBUser> qbUsers) {
         Intent intent = new Intent(context, ChatActivity.class);
@@ -66,14 +68,18 @@ public class ChatActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 //        init playing via callback or via handleMessage
-
+        if(mediaManager != null) {
+            mediaManager.resumePlay();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 //       release player via callback or via handleMessage
-
+        if(mediaManager != null) {
+            mediaManager.suspendPlay();
+        }
     }
 
     private void loadChatHistory(final ArrayList<QBUser> qbUsers) {
@@ -84,6 +90,8 @@ public class ChatActivity extends AppCompatActivity {
                 Collections.reverse(messages);
 
                 chatAdapter = new CustomMessageAdapter(ChatActivity.this, messages, qbUsers);
+
+                mediaManager = chatAdapter.getMediaManagerInstance();
 
                 chatAdapter.setMessageTextViewLinkClickListener(new QBChatMessageLinkClickListener() {
                     @Override

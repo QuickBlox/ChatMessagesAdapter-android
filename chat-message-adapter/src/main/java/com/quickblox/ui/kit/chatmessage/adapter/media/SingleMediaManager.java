@@ -38,9 +38,12 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
         this.context = context;
     }
 
-    public SingleMediaManager(Context context, QBMediaPlayerListener mediaPlayerListener) {
-        this.context = context;
+    public void setMediaPlayerListener(QBMediaPlayerListener mediaPlayerListener) {
         this.mediaPlayerListener = mediaPlayerListener;
+    }
+
+    public void removeMediaPlayerListener(){
+        this.mediaPlayerListener = null;
     }
 
     public SimpleExoPlayer getExoPlayer() {
@@ -65,8 +68,9 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
         }
         this.uri = uri;
         stopResetCurrentPlayer();
+        initPlayer();
         initViewPlayback(playerView);
-        startPlayback(playerView, uri);
+        startPlayback();
 
         if(mediaPlayerListener != null) {
             mediaPlayerListener.onStart();
@@ -84,10 +88,16 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
 
     public void suspendPlay() {
         resetMediaPlayer();
+        if(mediaPlayerListener != null) {
+            mediaPlayerListener.onPause();
+        }
     }
 
     public void resumePlay() {
-        initializePlayer();
+        restoreMediaPlayer();
+        if(mediaPlayerListener != null) {
+            mediaPlayerListener.onResume();
+        }
     }
 
 
@@ -131,8 +141,11 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
         }
     }
 
-    private void initializePlayer() {
+    private void restoreMediaPlayer() {
         initPlayer();
+        if (isPlayerViewCurrent(playerView)) {
+            playerView.setPlayer(exoPlayer);
+        }
         MediaSource mediaSource = SimpleExoPlayerInitializer.buildMediaSource(uri);
         boolean haveResumePosition = resumeWindow != C.INDEX_UNSET;
         if (haveResumePosition) {
@@ -151,11 +164,10 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
     private void initViewPlayback(QBPlaybackControlView playerView) {
         Log.v(TAG, "initViewPlayback");
         this.playerView = playerView;
-        initPlayer();
         playerView.setPlayer(exoPlayer);
     }
 
-    private void startPlayback(QBPlaybackControlView playerView, Uri uri) {
+    private void startPlayback() {
         Log.v(TAG, "startPlayback exoPlayer= " + (exoPlayer == null));
         exoPlayer.prepare(SimpleExoPlayerInitializer.buildMediaSource(uri));
         exoPlayer.setPlayWhenReady(true);
@@ -174,7 +186,7 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
         exoPlayer.removeListener(this);
     }
 
-    private void setPlayerToStartPosition() {
+    public void setPlayerToStartPosition() {
         exoPlayer.seekTo(0);
         pauseMedia();
     }

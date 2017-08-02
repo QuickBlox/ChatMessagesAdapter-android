@@ -61,7 +61,6 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     private QBChatMessageLinkClickListener messageTextViewLinkClickListener;
     private QBChatAttachImageClickListener attachImageClickListener;
     private QBChatAttachLocationClickListener attachLocationClickListener;
-    private QBMediaPlayerListener mediaPlayerListener;
     private boolean overrideOnClick;
 
     private SparseIntArray containerLayoutRes = new SparseIntArray() {
@@ -136,11 +135,11 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     }
 
     public void setMediaPlayerListener(QBMediaPlayerListener mediaPlayerListener) {
-        this.mediaPlayerListener = mediaPlayerListener;
+        getMediaManagerInstance().setMediaPlayerListener(mediaPlayerListener);
     }
 
     public void removeMediaPlayerListener() {
-        this.mediaPlayerListener = null;
+        getMediaManagerInstance().removeMediaPlayerListener();
     }
 
     @Override
@@ -480,7 +479,6 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     protected void displayAttachmentAudio(QBMessageViewHolder holder, int position) {
         QBAttachment attachment = getQBAttach(position);
-        Log.d(TAG, "displayAttachmentAudio blob ID= " + attachment.getId() + ", URL= " + attachment.getUrl());
 
         Uri uri = getUriFromAttach(attachment);
         QBPlaybackControlView playerView = ((AudioAttachHolder) holder).playerView;
@@ -490,7 +488,6 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     protected void displayAttachmentVideo(QBMessageViewHolder holder, int position) {
         QBAttachment attachment = getQBAttach(position);
-        Log.d(TAG, "displayAttachmentVideo blob ID= " + attachment.getId() + ", URL= " + attachment.getUrl());
         String url = attachment.getUrl();
 
         showVideoThumbnail(holder, url, position);
@@ -503,7 +500,6 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     private void showAudioView(QBPlaybackControlView playerView, Uri uri, int position) {
         initPlayerView(playerView, uri, position);
-
         if (isCurrentViewActive(position)) {
             Log.d(TAG, "showAudioView isCurrentViewActive");
             playerView.restoreState(getMediaManagerInstance().getExoPlayer());
@@ -552,17 +548,14 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
                 .into(((VideoAttachHolder) holder).attachImageView);
     }
 
-    private SingleMediaManager getMediaManagerInstance() {
-       return mediaManager == null ? mediaManager = new SingleMediaManager(context, mediaPlayerListener) : mediaManager;
+    public SingleMediaManager getMediaManagerInstance() {
+       return mediaManager == null ? mediaManager = new SingleMediaManager(context) : mediaManager;
     }
 
     private MediaControllerEventListener getMediaControllerEventListenerInstance() {
         return mediaControllerEventListener == null ? mediaControllerEventListener = new MediaControllerEventListener() : mediaControllerEventListener;
     }
 
-//    private MediaPlayerListenerImpl getMediaPlayerListenerImplInstance() {
-//        return mediaPlayerListener == null ? mediaPlayerListener = new MediaPlayerListenerImpl() : mediaPlayerListener;
-//    }
 
     protected void showPhotoAttach(QBMessageViewHolder holder, int position) {
         String imageUrl = getImageUrl(position);
