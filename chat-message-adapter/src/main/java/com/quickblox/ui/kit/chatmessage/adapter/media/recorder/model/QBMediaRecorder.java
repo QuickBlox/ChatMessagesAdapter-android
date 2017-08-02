@@ -10,9 +10,9 @@ package com.quickblox.ui.kit.chatmessage.adapter.media.recorder.model;
  */
 public abstract class QBMediaRecorder<T> {
 
-    protected abstract void start();
+    public abstract void startRecord();
 
-    protected abstract void stop();
+    public abstract void stopRecord();
 
-    protected abstract void cancel();
+    public abstract void cancelRecord();
 }

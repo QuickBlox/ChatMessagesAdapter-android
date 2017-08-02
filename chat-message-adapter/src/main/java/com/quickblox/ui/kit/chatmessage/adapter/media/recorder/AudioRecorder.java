@@ -33,7 +33,7 @@ public class AudioRecorder extends QBMediaRecorder<AudioRecorder> {
     }
 
     @Override
-    protected void start() {
+    public void startRecord() {
         initMediaRecorder();
         prepareMediaRecorder();
         setState(RecordState.RECORD_STATE_BEGIN);
@@ -41,7 +41,7 @@ public class AudioRecorder extends QBMediaRecorder<AudioRecorder> {
     }
 
     @Override
-    protected void cancel() {
+    public void cancelRecord() {
 //        releaseMediaRecorder all data and maybe delete temp file
         releaseMediaRecorder();
 
@@ -51,7 +51,7 @@ public class AudioRecorder extends QBMediaRecorder<AudioRecorder> {
     }
 
     @Override
-    protected void stop() {
+    public void stopRecord() {
         releaseMediaRecorder();
         sendResult();
     }

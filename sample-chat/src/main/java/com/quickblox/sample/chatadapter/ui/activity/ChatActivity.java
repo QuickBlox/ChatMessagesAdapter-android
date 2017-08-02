@@ -49,7 +49,7 @@ import java.util.Collections;
 
 import static android.widget.LinearLayout.VERTICAL;
 
-public class ChatActivity extends AppCompatActivity implements QBMediaRecordListener {
+public class ChatActivity extends AppCompatActivity {
     private static final String TAG = ChatActivity.class.getSimpleName();
     private static final String EXTRA_QB_USERS = "qb_user_list";
     private static final String DIALOG_ID = "57b701e8a0eb472505000039";
@@ -67,7 +67,7 @@ public class ChatActivity extends AppCompatActivity implements QBMediaRecordList
 
     private LinearLayout audioLayout;
 
-    private AudioRecordController audioRecordController;
+    private AudioRecorder audioRecorder;
     private boolean canceled;
 
     // Requesting permission to RECORD_AUDIO
@@ -256,7 +256,7 @@ public class ChatActivity extends AppCompatActivity implements QBMediaRecordList
     }
 
     public void initAudioRecorder() {
-        AudioRecorder audioRecorder = AudioRecorder.newBuilder(this)
+        audioRecorder = AudioRecorder.newBuilder(new QBMediaRecordListenerImpl())
                 // Required
                 .useInBuildFilePathGenerator()
                 .setDuration(10)
@@ -266,13 +266,12 @@ public class ChatActivity extends AppCompatActivity implements QBMediaRecordList
 //                .setOutputFormat(QBMediaRecorder.OutputFormat.AMR_NB);
 //                .setSampleRate(AudioSampleRate.HZ_48000)
 
-        audioRecordController = new AudioRecordController(audioRecorder);
     }
 
     public void record() {
-        Log.d(TAG, "record start");
+        Log.d(TAG, "record startRecord");
         audioLayout.setVisibility(View.VISIBLE);
-        audioRecordController.record();
+        audioRecorder.startRecord();
 
         new CountDownTimer(10 * 1000, 1000) {
 
@@ -288,34 +287,38 @@ public class ChatActivity extends AppCompatActivity implements QBMediaRecordList
     }
 
     public void stopRecordClick() {
-        Log.d(TAG, "record stop");
-        audioRecordController.stopRecord();
+        Log.d(TAG, "record stopRecord");
+        audioRecorder.stopRecord();
     }
 
     public void cancelRecord() {
-        Log.d(TAG, "record cancel");
+        Log.d(TAG, "record cancelRecord");
         canceled = true;
         audioLayout.setVisibility(View.INVISIBLE);
-        audioRecordController.cancel();
+        audioRecorder.cancelRecord();
     }
 
     private boolean canCancel(float x, float y) {
         return x < -350;
     }
 
-    @Override
-    public void onMediaRecorded(File file) {
-        audioLayout.setVisibility(View.INVISIBLE);
-        processSendMessage(file);
-    }
 
-    @Override
-    public void onMediaRecordError(Exception e) {
-        cancelRecord();
-    }
+    private class QBMediaRecordListenerImpl implements QBMediaRecordListener {
 
-    @Override
-    public void onMediaRecordClosed() {
-        Toast.makeText(this, "Audio is not recorded", Toast.LENGTH_LONG).show();
+        @Override
+        public void onMediaRecorded(File file) {
+            audioLayout.setVisibility(View.INVISIBLE);
+            processSendMessage(file);
+        }
+
+        @Override
+        public void onMediaRecordError(Exception e) {
+            cancelRecord();
+        }
+
+        @Override
+        public void onMediaRecordClosed() {
+            Toast.makeText(ChatActivity.this, "Audio is not recorded", Toast.LENGTH_LONG).show();
+        }
     }
 }
