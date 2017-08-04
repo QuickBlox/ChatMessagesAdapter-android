@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ui.PlaybackControlView;
@@ -19,6 +20,8 @@ public class QBPlaybackControlView extends PlaybackControlView {
 
     private final View playButton;
     private final View pauseButton;
+    private final TextView durationView;
+    private final TextView positionView;
 
     private final ComponentListener componentListener;
     private MediaController mediaController;
@@ -35,6 +38,10 @@ public class QBPlaybackControlView extends PlaybackControlView {
     public QBPlaybackControlView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         componentListener = new ComponentListener();
+
+        durationView = (TextView)findViewById(R.id.msg_attach_duration);
+        positionView = (TextView) findViewById(R.id.exo_position);
+        
         playButton = findViewById(R.id.exo_play);
         if (playButton != null) {
             playButton.setOnClickListener(componentListener);
@@ -49,6 +56,24 @@ public class QBPlaybackControlView extends PlaybackControlView {
     private void alwaysShow() {
         setShowTimeoutMs(0);
         show();
+    }
+
+    public void setDurationViewOnTop(){
+        setPositionViewVisibility(GONE);
+        setDurationViewVisibility(VISIBLE);
+    }
+
+    public void setPositionViewOnTop(){
+        setPositionViewVisibility(VISIBLE);
+        setDurationViewVisibility(GONE);
+    }
+
+    private void setPositionViewVisibility(int visibility){
+        positionView.setVisibility(visibility);
+    }
+
+    private void setDurationViewVisibility(int visibility){
+        durationView.setVisibility(visibility);
     }
 
     public void initMediaController(MediaController mediaController) {

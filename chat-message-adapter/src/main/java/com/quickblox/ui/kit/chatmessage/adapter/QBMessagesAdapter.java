@@ -160,10 +160,10 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
                         R.id.msg_text_time_attach);
                 return qbViewHolder;
             case TYPE_ATTACH_RIGHT_AUDIO:
-                qbViewHolder = new AudioAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_audio_attach);
+                qbViewHolder = new AudioAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_audio_attach, R.id.msg_attach_duration);
                 return qbViewHolder;
             case TYPE_ATTACH_LEFT_AUDIO:
-                qbViewHolder = new AudioAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_audio_attach);
+                qbViewHolder = new AudioAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_audio_attach, R.id.msg_attach_duration);
                 return qbViewHolder;
             case TYPE_ATTACH_RIGHT_VIDEO:
                 qbViewHolder = new VideoAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_video_attach, R.id.msg_progressbar_attach,
@@ -481,7 +481,10 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         QBAttachment attachment = getQBAttach(position);
 
         Uri uri = getUriFromAttach(attachment);
+        int duration = getDurationFromAttach(attachment, position);
+        setDurationAudio(duration, holder);
         QBPlaybackControlView playerView = ((AudioAttachHolder) holder).playerView;
+
         showAudioView(playerView, uri, position);
     }
 
@@ -496,6 +499,19 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     protected Uri getUriFromAttach(QBAttachment attachment) {
         return Uri.parse(attachment.getUrl());
+    }
+
+    protected int getDurationFromAttach(QBAttachment attachment, int position) {
+//        TODO TEMP STUB
+        if(attachment.getDuration() == 0){
+            attachment.setDuration(position);
+        }
+        return attachment.getDuration();
+    }
+
+    protected void setDurationAudio(int duration, QBMessageViewHolder holder) {
+        //        TODO TEMP SOLUTION
+        ((AudioAttachHolder)holder).durationView.setText("00:" + String.valueOf(duration));
     }
 
     private void showAudioView(QBPlaybackControlView playerView, Uri uri, int position) {
@@ -654,10 +670,12 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     public static class AudioAttachHolder extends QBMessageViewHolder {
         public QBPlaybackControlView playerView;
+        public TextView durationView;
 
-        public AudioAttachHolder(View itemView, @IdRes int attachId) {
+        public AudioAttachHolder(View itemView, @IdRes int attachId, @IdRes int durationId) {
             super(itemView);
             playerView = (QBPlaybackControlView) itemView.findViewById(attachId);
+            durationView = (TextView) itemView.findViewById(durationId);
         }
     }
 

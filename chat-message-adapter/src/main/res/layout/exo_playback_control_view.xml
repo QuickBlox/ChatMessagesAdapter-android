@@ -28,6 +28,19 @@
             style="@style/ExoMediaButton.Pause"
             android:layout_width="32dp"
             android:layout_height="40dp"/>
+
+        <TextView
+            android:id="@+id/msg_attach_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:paddingTop="10dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="4dp"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
         <TextView
             android:id="@id/exo_position"
             android:layout_width="wrap_content"
