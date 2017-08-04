@@ -1,76 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="bottom"
-    android:layoutDirection="ltr"
-    android:background="#CC000000"
-    android:orientation="vertical">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/progress_relativelayout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <com.quickblox.ui.kit.chatmessage.adapter.media.view.QBTimeBar
+        android:id="@id/exo_progress"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:indeterminateOnly="false"
+        android:max="100"
+        android:progressDrawable="@drawable/progress_bar_states"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:paddingTop="4dp"
-        android:orientation="horizontal">
+        android:layout_centerVertical="true" >
 
-
-        <ImageButton android:id="@id/exo_rew"
-            style="@style/ExoMediaButton.Rewind"
-            android:layout_height="40dp"
-            android:layout_width="32dp"/>
-
-        <ImageButton android:id="@id/exo_play"
+        <ImageButton
+            android:id="@id/exo_play"
             style="@style/ExoMediaButton.Play"
-            android:layout_height="40dp"
-            android:layout_width="32dp"/>
+            android:layout_width="32dp"
+            android:layout_height="40dp"/>
 
-        <ImageButton android:id="@id/exo_pause"
+        <ImageButton
+            android:id="@id/exo_pause"
             style="@style/ExoMediaButton.Pause"
-            android:layout_height="40dp"
-            android:layout_width="32dp"/>
-
-        <ImageButton android:id="@id/exo_ffwd"
-            style="@style/ExoMediaButton.FastForward"
-            android:layout_height="40dp"
-            android:layout_width="32dp"/>
-
+            android:layout_width="32dp"
+            android:layout_height="40dp"/>
+        <TextView
+            android:id="@id/exo_position"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:paddingTop="10dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="4dp"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
 
-        <TextView android:id="@id/exo_position"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
-            android:includeFontPadding="false"
-            android:textColor="#FFBEBEBE"/>
 
-        <com.google.android.exoplayer2.ui.DefaultTimeBar
-            android:id="@id/exo_progress"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="26dp"/>
 
-        <TextView android:id="@id/exo_duration"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
-            android:includeFontPadding="false"
-            android:textColor="#FFBEBEBE"/>
 
-    </LinearLayout>
 
-</LinearLayout>
+    <!--<TextView-->
+    <!--android:id="@id/exo_duration"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:includeFontPadding="false"-->
+    <!--android:paddingLeft="4dp"-->
+    <!--android:paddingRight="4dp"-->
+    <!--android:textColor="#FFBEBEBE"-->
+    <!--android:textSize="14sp"-->
+    <!--android:textStyle="bold" />-->
+
+</RelativeLayout>

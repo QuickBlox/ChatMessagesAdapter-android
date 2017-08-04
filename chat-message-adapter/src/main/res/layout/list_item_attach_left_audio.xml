@@ -3,6 +3,10 @@
     android:id="@+id/msg_widget_attach_audio_left"
     style="@style/ListItemAudioMessage.Left">
 
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/msg_image_avatar"
+        style="@style/AvatarImageViewStyle.Left" />
+
     <RelativeLayout
         android:id="@+id/msg_bubble_background_attach"
         style="@style/BubbleAttachAudioFrame.Left">

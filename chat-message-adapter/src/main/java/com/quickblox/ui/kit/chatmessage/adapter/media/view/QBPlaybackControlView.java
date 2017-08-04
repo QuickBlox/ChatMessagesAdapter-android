@@ -62,7 +62,7 @@ public class QBPlaybackControlView extends PlaybackControlView {
     public void releaseView() {
         Log.d(TAG, "releaseView view");
         if (this.getPlayer() != null) {
-           setPlayer(null);
+            setPlayer(null);
         }
     }
 

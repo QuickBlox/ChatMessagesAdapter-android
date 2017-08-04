@@ -12,4 +12,8 @@
             style="@style/AudioViewAttach.Right" />
 
     </RelativeLayout>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/msg_image_avatar"
+        style="@style/AvatarImageViewStyle.Right" />
 </LinearLayout>
