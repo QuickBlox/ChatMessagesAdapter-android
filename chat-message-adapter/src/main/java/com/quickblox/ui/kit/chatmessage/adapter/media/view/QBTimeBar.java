@@ -48,7 +48,6 @@ public class QBTimeBar extends ProgressBar implements TimeBar {
     @Override
     public void setPosition(long position) {
         this.position = position;
-        updateProgress();
     }
 
     @Override
@@ -59,6 +58,7 @@ public class QBTimeBar extends ProgressBar implements TimeBar {
     @Override
     public void setDuration(long duration) {
         this.duration = duration;
+        updateProgress();
     }
 
     @Override
@@ -67,10 +67,10 @@ public class QBTimeBar extends ProgressBar implements TimeBar {
     }
 
     private void updateProgress() {
-        if(duration == 0) {
-            return;
+        int scrubberPixelPosition = 0;
+        if(duration != 0) {
+            scrubberPixelPosition = (int) ((getMax() * position) / duration);
         }
-        int scrubberPixelPosition = (int) ((getMax() * position) / duration);
         setProgress(scrubberPixelPosition);
     }
 }

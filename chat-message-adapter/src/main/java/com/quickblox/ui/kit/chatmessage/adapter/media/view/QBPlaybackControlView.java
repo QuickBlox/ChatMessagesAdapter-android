@@ -81,11 +81,18 @@ public class QBPlaybackControlView extends PlaybackControlView {
     }
 
     public void restoreState(ExoPlayer player) {
+        setPositionViewOnTop();
         setPlayer(player);
     }
 
     public void releaseView() {
-        Log.d(TAG, "releaseView view");
+        Log.d(TAG, "releaseView");
+        setDurationViewOnTop();
+        disposeViewPlayer();
+    }
+
+    public void disposeViewPlayer() {
+        Log.d(TAG, "disposeViewPlayer");
         if (this.getPlayer() != null) {
             setPlayer(null);
         }
@@ -99,6 +106,7 @@ public class QBPlaybackControlView extends PlaybackControlView {
         @Override
         public void onClick(View view) {
             if (playButton == view) {
+                setPositionViewOnTop();
                 mediaController.onPlayClicked(QBPlaybackControlView.this);
             } else if (pauseButton == view) {
                 mediaController.onPauseClicked(view);

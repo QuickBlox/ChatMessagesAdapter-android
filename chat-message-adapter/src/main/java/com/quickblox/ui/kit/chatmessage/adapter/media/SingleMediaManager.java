@@ -67,6 +67,7 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
             }
         }
         this.uri = uri;
+        updatePlayerView(playerView);
         stopResetCurrentPlayer();
         initPlayer();
         initViewPlayback(playerView);
@@ -123,11 +124,17 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
         } return false;
     }
 
+    private void updatePlayerView(QBPlaybackControlView playerView) {
+        if(this.playerView !=null && this.playerView != playerView) {
+            this.playerView.setDurationViewOnTop();
+        }
+    }
+
     private void stopResetCurrentPlayer() {
         Log.v(TAG, "stopResetCurrentPlayer");
         if(playerView != null) {
             releasePlayer();
-            playerView.releaseView();
+            playerView.disposeViewPlayer();
         }
     }
 
