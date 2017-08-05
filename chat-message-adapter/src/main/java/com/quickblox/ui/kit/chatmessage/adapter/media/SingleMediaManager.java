@@ -193,7 +193,7 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
         exoPlayer.removeListener(this);
     }
 
-    public void setPlayerToStartPosition() {
+    public void onStartPosition() {
         exoPlayer.seekTo(0);
         pauseMedia();
     }

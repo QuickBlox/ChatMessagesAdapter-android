@@ -16,7 +16,9 @@ public interface MediaController {
 
     void onPlayClicked(QBPlaybackControlView view);
 
-    void onPauseClicked(View view);
+    void onPauseClicked();
 
-    void stopAnyPlayback();
+    void onStartPosition();
+
+    void onStopAnyPlayback();
 }

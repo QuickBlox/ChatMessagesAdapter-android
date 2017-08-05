@@ -17,6 +17,7 @@ android {
     compileOptions.targetCompatibility = rootProject.targetCompatibility
 
     defaultConfig {
+        vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

@@ -31,12 +31,17 @@ public class AudioController implements MediaController {
     }
 
     @Override
-    public void onPauseClicked(View view) {
+    public void onPauseClicked() {
         mediaManager.pauseMedia();
     }
 
     @Override
-    public void stopAnyPlayback() {
+    public void onStopAnyPlayback() {
         mediaManager.stopAnyPlayback();
+    }
+
+    @Override
+    public void onStartPosition() {
+        mediaManager.onStartPosition();
     }
 }

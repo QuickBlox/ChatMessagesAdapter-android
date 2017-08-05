@@ -498,7 +498,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
 
     protected Uri getUriFromAttach(QBAttachment attachment) {
-        return Uri.parse(attachment.getUrl());
+        return Uri.parse("https://ia802508.us.archive.org/5/items/testmp3testfile/mpthreetest.mp3");
     }
 
     protected int getDurationFromAttach(QBAttachment attachment, int position) {
