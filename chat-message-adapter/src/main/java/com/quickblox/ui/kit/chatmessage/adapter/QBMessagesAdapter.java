@@ -23,6 +23,7 @@ import com.quickblox.chat.QBChatService;
 import com.quickblox.chat.model.QBAttachment;
 import com.quickblox.chat.model.QBChatMessage;
 import com.quickblox.content.model.QBFile;
+import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachAudioClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBMediaPlayerListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachImageClickListener;
@@ -31,6 +32,7 @@ import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatMessageLinkClick
 import com.quickblox.ui.kit.chatmessage.adapter.media.AudioController;
 import com.quickblox.ui.kit.chatmessage.adapter.media.MediaController;
 import com.quickblox.ui.kit.chatmessage.adapter.media.SingleMediaManager;
+import com.quickblox.ui.kit.chatmessage.adapter.media.utils.Utils;
 import com.quickblox.ui.kit.chatmessage.adapter.media.video.thumbnails.VideoThumbnail;
 import com.quickblox.ui.kit.chatmessage.adapter.media.view.QBPlaybackControlView;
 import com.quickblox.ui.kit.chatmessage.adapter.utils.LocationUtils;
@@ -61,6 +63,8 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     private QBChatMessageLinkClickListener messageTextViewLinkClickListener;
     private QBChatAttachImageClickListener attachImageClickListener;
     private QBChatAttachLocationClickListener attachLocationClickListener;
+    private QBChatAttachAudioClickListener attachAudioClickListener;
+
     private boolean overrideOnClick;
 
     private SparseIntArray containerLayoutRes = new SparseIntArray() {
@@ -118,12 +122,20 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         attachLocationClickListener = clickListener;
     }
 
+    public void setAttachAudioClickListener(QBChatAttachAudioClickListener clickListener) {
+        this.attachAudioClickListener = clickListener;
+    }
+
     public void removeAttachImageClickListener(QBChatAttachImageClickListener clickListener) {
         attachImageClickListener = null;
     }
 
     public void removeLocationImageClickListener(QBChatAttachLocationClickListener clickListener) {
         attachLocationClickListener = null;
+    }
+
+    public void removeAttachAudioClickListener(QBChatAttachAudioClickListener clickListener) {
+        attachAudioClickListener = null;
     }
 
     /**
@@ -268,6 +280,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         if (avatarUrl != null) {
             displayAvatarImage(avatarUrl, holder.avatar);
         }
+        setItemClickListener(getAttachListenerByType(position), holder, getQBAttach(position), position);
     }
 
 
@@ -278,6 +291,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         if (avatarUrl != null) {
             displayAvatarImage(avatarUrl, holder.avatar);
         }
+        setItemClickListener(getAttachListenerByType(position), holder, getQBAttach(position), position);
     }
 
     protected void onBindViewAttachRightVideoHolder(VideoAttachHolder holder, T chatMessage, int position) {
@@ -343,11 +357,13 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     private QBChatAttachClickListener getAttachListenerByType(int position) {
         QBAttachment attachment = getQBAttach(position);
 
-        if (QBAttachment.PHOTO_TYPE.equalsIgnoreCase(attachment.getType())||
-            QBAttachment.IMAGE_TYPE.equalsIgnoreCase(attachment.getType())) {
-              return attachImageClickListener;
+        if (QBAttachment.PHOTO_TYPE.equalsIgnoreCase(attachment.getType()) ||
+                QBAttachment.IMAGE_TYPE.equalsIgnoreCase(attachment.getType())) {
+            return attachImageClickListener;
         } else if (QBAttachment.LOCATION_TYPE.equalsIgnoreCase(attachment.getType())) {
-              return attachLocationClickListener;
+            return attachLocationClickListener;
+        } else if (QBAttachment.AUDIO_TYPE.equalsIgnoreCase(attachment.getType())) {
+            return attachAudioClickListener;
         }
         return null;
     }
@@ -403,20 +419,6 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
             return isIncoming(chatMessage) ? TYPE_TEXT_LEFT : TYPE_TEXT_RIGHT;
         }
         return customViewType(position);
-    }
-
-    @Override
-    public void onViewRecycled(QBMessageViewHolder holder) {
-        super.onViewRecycled(holder);
-        Log.d("TEMPOS", "onViewRecycled");
-        if (holder instanceof VideoAttachHolder) {
-            Log.d("TEMPOS", "onViewRecycled VideoAttachHolder releaseView");
-
-        }
-        if (holder instanceof AudioAttachHolder) {
-            Log.d(TAG, "TEMPOS onViewRecycled AudioAttachHolder releaseView");
-
-        }
     }
 
     protected int getLocationView(T chatMessage) {
@@ -498,20 +500,15 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
 
     protected Uri getUriFromAttach(QBAttachment attachment) {
-        return Uri.parse("https://ia802508.us.archive.org/5/items/testmp3testfile/mpthreetest.mp3");
+        return Uri.parse(QBFile.getPublicUrlForUID(attachment.getId()));
     }
 
     protected int getDurationFromAttach(QBAttachment attachment, int position) {
-//        TODO TEMP STUB
-        if(attachment.getDuration() == 0){
-            attachment.setDuration(position);
-        }
         return attachment.getDuration();
     }
 
     protected void setDurationAudio(int duration, QBMessageViewHolder holder) {
-        //        TODO TEMP SOLUTION
-        ((AudioAttachHolder)holder).durationView.setText("00:" + String.valueOf(duration));
+        ((AudioAttachHolder)holder).durationView.setText(Utils.formatTimeSecondsToMinutes(duration));
     }
 
     private void showAudioView(QBPlaybackControlView playerView, Uri uri, int position) {

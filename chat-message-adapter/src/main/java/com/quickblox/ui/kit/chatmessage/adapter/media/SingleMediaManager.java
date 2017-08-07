@@ -175,7 +175,6 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
     }
 
     private void startPlayback() {
-        Log.v(TAG, "startPlayback exoPlayer= " + (exoPlayer == null));
         exoPlayer.prepare(SimpleExoPlayerInitializer.buildMediaSource(uri));
         exoPlayer.setPlayWhenReady(true);
     }

@@ -1,6 +1,7 @@
 package com.quickblox.sample.chatadapter.ui.adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import com.google.gson.Gson;
 import com.quickblox.chat.QBChatService;
 import com.quickblox.chat.model.QBAttachment;
 import com.quickblox.chat.model.QBChatMessage;
+import com.quickblox.content.model.QBFile;
 import com.quickblox.sample.chatadapter.R;
 import com.quickblox.sample.chatadapter.utils.UserData;
 import com.quickblox.ui.kit.chatmessage.adapter.QBMessagesAdapter;
@@ -104,6 +106,19 @@ public class CustomMessageAdapter extends QBMessagesAdapter<QBChatMessage> {
     public String getImageUrl(int position) {
         QBAttachment attachment = getQBAttach(position);
         return attachment.getUrl();
+    }
+
+    @Override
+    protected Uri getUriFromAttach(QBAttachment attachment) {
+        return Uri.parse(attachment.getUrl());
+    }
+
+    @Override
+    protected int getDurationFromAttach(QBAttachment attachment, int position) {
+        if(attachment.getDuration() == 0){
+            attachment.setDuration(position);
+        }
+        return attachment.getDuration();
     }
 
 //    @Override
