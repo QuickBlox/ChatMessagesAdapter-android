@@ -69,7 +69,7 @@ public class ChatActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 //        init playing via callback or via handleMessage
-        if(mediaManager != null) {
+        if(mediaManager != null && mediaManager.isMediaPlayerReady()) {
             mediaManager.resumePlay();
         }
     }
@@ -78,7 +78,7 @@ public class ChatActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 //       release player via callback or via handleMessage
-        if(mediaManager != null) {
+        if(mediaManager != null && mediaManager.isMediaPlayerReady()) {
             mediaManager.suspendPlay();
         }
     }

@@ -11,6 +11,8 @@
             android:id="@+id/msg_audio_attach"
             style="@style/AudioViewAttach.Right" />
 
+        <include layout="@layout/widget_item_attach_right" />
+
     </RelativeLayout>
 
     <de.hdodenhof.circleimageview.CircleImageView

@@ -147,11 +147,11 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     }
 
     public void setMediaPlayerListener(QBMediaPlayerListener mediaPlayerListener) {
-        getMediaManagerInstance().setMediaPlayerListener(mediaPlayerListener);
+        getMediaManagerInstance().addListener(mediaPlayerListener);
     }
 
-    public void removeMediaPlayerListener() {
-        getMediaManagerInstance().removeMediaPlayerListener();
+    public void removeMediaPlayerListener(QBMediaPlayerListener listener) {
+        getMediaManagerInstance().removeListener(listener);
     }
 
     @Override
@@ -172,10 +172,12 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
                         R.id.msg_text_time_attach);
                 return qbViewHolder;
             case TYPE_ATTACH_RIGHT_AUDIO:
-                qbViewHolder = new AudioAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_audio_attach, R.id.msg_attach_duration);
+                qbViewHolder = new AudioAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_audio_attach, R.id.msg_attach_duration,
+                        R.id.msg_text_time_attach);
                 return qbViewHolder;
             case TYPE_ATTACH_LEFT_AUDIO:
-                qbViewHolder = new AudioAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_audio_attach, R.id.msg_attach_duration);
+                qbViewHolder = new AudioAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_audio_attach, R.id.msg_attach_duration,
+                        R.id.msg_text_time_attach);
                 return qbViewHolder;
             case TYPE_ATTACH_RIGHT_VIDEO:
                 qbViewHolder = new VideoAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_video_attach, R.id.msg_progressbar_attach,
@@ -274,7 +276,9 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     }
 
     protected void onBindViewAttachRightAudioHolder(AudioAttachHolder holder, T chatMessage, int position) {
+        setDateSentAttach(holder, chatMessage);
         displayAttachmentAudio(holder, position);
+
         int valueType = getItemViewType(position);
         String avatarUrl = obtainAvatarUrl(valueType, chatMessage);
         if (avatarUrl != null) {
@@ -285,7 +289,9 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
 
     protected void onBindViewAttachLeftAudioHolder(AudioAttachHolder holder, T chatMessage, int position) {
+        setDateSentAttach(holder, chatMessage);
         displayAttachmentAudio(holder, position);
+
         int valueType = getItemViewType(position);
         String avatarUrl = obtainAvatarUrl(valueType, chatMessage);
         if (avatarUrl != null) {
@@ -368,7 +374,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         return null;
     }
 
-    protected void setDateSentAttach(ImageAttachHolder holder, T chatMessage) {
+    protected void setDateSentAttach(BaseAttachHolder holder, T chatMessage) {
         holder.attachTextTime.setText(getDate(chatMessage.getDateSent()));
     }
 
@@ -492,8 +498,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
 
     protected void displayAttachmentVideo(QBMessageViewHolder holder, int position) {
-        QBAttachment attachment = getQBAttach(position);
-        String url = attachment.getUrl();
+        String url = getImageUrl(position);
 
         showVideoThumbnail(holder, url, position);
     }
@@ -554,7 +559,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         VideoThumbnail model = new VideoThumbnail(url);
         Glide.with(context)
                 .load(model)
-                .listener(this.<VideoThumbnail, GlideDrawable>getRequestListener(holder, position))
+                .listener(this.<VideoThumbnail, GlideDrawable>getVideoThumbnailRequestListener(holder, position))
                 .override(preferredImageWidth, preferredImageHeight)
                 .dontTransform()
                 .error(R.drawable.ic_error)
@@ -612,7 +617,11 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     }
 
 
-    protected <M, P> RequestListener<M, P> getRequestListener(QBMessageViewHolder holder, int position) {
+    protected RequestListener getRequestListener(QBMessageViewHolder holder, int position) {
+        return new ImageLoadListener<>((BaseImageAttachHolder) holder);
+    }
+
+    protected RequestListener getVideoThumbnailRequestListener(QBMessageViewHolder holder, int position) {
         return new ImageLoadListener<>((BaseImageAttachHolder) holder);
     }
 
@@ -645,16 +654,23 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         }
     }
 
-    protected static class BaseImageAttachHolder extends QBMessageViewHolder {
-        public ImageView attachImageView;
-        public ProgressBar attachmentProgressBar;
+    protected static class BaseAttachHolder extends QBMessageViewHolder {
         public TextView attachTextTime;
 
-        public BaseImageAttachHolder(View itemView, @IdRes int attachId, @IdRes int progressBarId, @IdRes int timeId) {
+        public BaseAttachHolder(View itemView, @IdRes int timeId) {
             super(itemView);
+            attachTextTime = (TextView) itemView.findViewById(timeId);
+        }
+    }
+
+    protected static class BaseImageAttachHolder extends BaseAttachHolder {
+        public ImageView attachImageView;
+        public ProgressBar attachmentProgressBar;
+
+        public BaseImageAttachHolder(View itemView, @IdRes int attachId, @IdRes int progressBarId, @IdRes int timeId) {
+            super(itemView, timeId);
             attachImageView = (ImageView) itemView.findViewById(attachId);
             attachmentProgressBar = (ProgressBar) itemView.findViewById(progressBarId);
-            attachTextTime = (TextView) itemView.findViewById(timeId);
         }
     }
 
@@ -665,12 +681,12 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         }
     }
 
-    public static class AudioAttachHolder extends QBMessageViewHolder {
+    public static class AudioAttachHolder extends BaseAttachHolder {
         public QBPlaybackControlView playerView;
         public TextView durationView;
 
-        public AudioAttachHolder(View itemView, @IdRes int attachId, @IdRes int durationId) {
-            super(itemView);
+        public AudioAttachHolder(View itemView, @IdRes int attachId, @IdRes int durationId, @IdRes int timeId) {
+            super(itemView, timeId);
             playerView = (QBPlaybackControlView) itemView.findViewById(attachId);
             durationView = (TextView) itemView.findViewById(durationId);
         }

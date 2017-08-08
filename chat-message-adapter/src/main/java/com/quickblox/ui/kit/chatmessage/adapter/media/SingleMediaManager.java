@@ -17,6 +17,8 @@ import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBMediaPlayerListener;
 import com.quickblox.ui.kit.chatmessage.adapter.media.utils.SimpleExoPlayerInitializer;
 import com.quickblox.ui.kit.chatmessage.adapter.media.view.QBPlaybackControlView;
 
+import java.util.concurrent.CopyOnWriteArraySet;
+
 /**
  * Created by roman on 7/14/17.
  */
@@ -32,18 +34,19 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
     private boolean shouldAutoPlay;
     private int resumeWindow;
     private long resumePosition;
-    private QBMediaPlayerListener mediaPlayerListener;
+    private final CopyOnWriteArraySet<QBMediaPlayerListener> listeners;
 
     public SingleMediaManager(Context context) {
+        listeners = new CopyOnWriteArraySet<>();
         this.context = context;
     }
 
-    public void setMediaPlayerListener(QBMediaPlayerListener mediaPlayerListener) {
-        this.mediaPlayerListener = mediaPlayerListener;
+    public void addListener(QBMediaPlayerListener listener) {
+        listeners.add(listener);
     }
 
-    public void removeMediaPlayerListener(){
-        this.mediaPlayerListener = null;
+    public void removeListener(QBMediaPlayerListener listener) {
+        listeners.remove(listener);
     }
 
     public SimpleExoPlayer getExoPlayer() {
@@ -60,9 +63,7 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
                 Log.v(TAG, "playMedia: continue playing");
                 exoPlayer.setPlayWhenReady(true);
 
-                if(mediaPlayerListener != null) {
-                    mediaPlayerListener.onResume();
-                }
+                notifyListenersOnResume();
                 return;
             }
         }
@@ -73,32 +74,23 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
         initViewPlayback(playerView);
         startPlayback();
 
-        if(mediaPlayerListener != null) {
-            mediaPlayerListener.onStart();
-        }
+        notifyListenersOnStart();
     }
 
     @Override
     public void pauseMedia() {
         exoPlayer.setPlayWhenReady(false);
-
-        if(mediaPlayerListener != null) {
-            mediaPlayerListener.onPause();
-        }
+        notifyListenersOnPause();
     }
 
     public void suspendPlay() {
         resetMediaPlayer();
-        if(mediaPlayerListener != null) {
-            mediaPlayerListener.onPause();
-        }
+        notifyListenersOnPause();
     }
 
     public void resumePlay() {
         restoreMediaPlayer();
-        if(mediaPlayerListener != null) {
-            mediaPlayerListener.onResume();
-        }
+        notifyListenersOnResume();
     }
 
 
@@ -115,6 +107,10 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
 
     private boolean isPlayerViewCurrent(QBPlaybackControlView playerView) {
         return exoPlayer != null && this.playerView != null && this.playerView == playerView && playerView.isCurrentViewPlaying();
+    }
+
+    public boolean isMediaPlayerReady() {
+        return uri != null;
     }
 
     public boolean isPlaying() {
@@ -197,6 +193,36 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
         pauseMedia();
     }
 
+    private void notifyListenersOnStart() {
+        for(QBMediaPlayerListener listener : listeners) {
+            listener.onStart();
+        }
+    }
+
+    private void notifyListenersOnResume() {
+        for(QBMediaPlayerListener listener : listeners) {
+            listener.onResume();
+        }
+    }
+
+    private void notifyListenersOnPause() {
+        for(QBMediaPlayerListener listener : listeners) {
+            listener.onPause();
+        }
+    }
+
+    private void notifyListenersOnStop() {
+        for(QBMediaPlayerListener listener : listeners) {
+            listener.onStop();
+        }
+    }
+
+    private void notifyListenersOnPlayerError(ExoPlaybackException error) {
+        for(QBMediaPlayerListener listener : listeners) {
+            listener.onPlayerError(error);
+        }
+    }
+
     @Override
     public void onTimelineChanged(Timeline timeline, Object manifest) {
 
@@ -219,9 +245,7 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
 
     @Override
     public void onPlayerError(ExoPlaybackException error) {
-        if(mediaPlayerListener != null) {
-            mediaPlayerListener.onPlayerError(error);
-        }
+        notifyListenersOnPlayerError(error);
     }
 
     @Override
@@ -239,9 +263,7 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
             case ExoPlayer.STATE_BUFFERING:
                 break;
             case ExoPlayer.STATE_ENDED:
-                if(mediaPlayerListener != null) {
-                    mediaPlayerListener.onStop();
-                }
+                notifyListenersOnStop();
                 break;
             case ExoPlayer.STATE_IDLE:
                 break;

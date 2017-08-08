@@ -37,7 +37,7 @@ class VideoThumbnailFetcher implements DataFetcher<InputStream> {
     public InputStream loadData(Priority priority) throws Exception {
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         try {
-            Log.d("GVEN", "model.path= " + model.path);
+            Log.d("VideoThumbnailFetcher", "model.path= " + model.path);
             retriever.setDataSource(model.path, new HashMap<String, String>());
             Bitmap bitmap = retriever.getFrameAtTime();
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
