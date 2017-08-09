@@ -21,9 +21,8 @@ import com.quickblox.sample.chatadapter.utils.ChatHelper;
 import com.quickblox.ui.kit.chatmessage.adapter.QBMessagesAdapter;
 import com.quickblox.core.QBEntityCallback;
 import com.quickblox.core.exception.QBResponseException;
-import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachAudioClickListener;
+import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBMediaPlayerListener;
-import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachImageClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatMessageLinkClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.media.SingleMediaManager;
 import com.quickblox.ui.kit.chatmessage.adapter.utils.QBMessageTextClickMovement;
@@ -108,7 +107,7 @@ public class ChatActivity extends AppCompatActivity {
                     }
 
                 }, false);
-                chatAdapter.setAttachImageClickListener(new QBChatAttachImageClickListener() {
+                chatAdapter.setAttachImageClickListener(new QBChatAttachClickListener() {
                     @Override
                     public void onLinkClicked(QBAttachment imageAttach, int positionInAdapter) {
                         Log.d(TAG, "setAttachImageClickListener: positionInAdapter - " + positionInAdapter);
@@ -116,7 +115,7 @@ public class ChatActivity extends AppCompatActivity {
                     }
                 });
 
-                chatAdapter.setAttachAudioClickListener(new QBChatAttachAudioClickListener() {
+                chatAdapter.setAttachAudioClickListener(new QBChatAttachClickListener() {
                     @Override
                     public void onLinkClicked(QBAttachment audioAttach, int positionInAdapter) {
                         Log.d(TAG, "onClick: audioAttach - " + audioAttach + " positionInAdapter = " + positionInAdapter);

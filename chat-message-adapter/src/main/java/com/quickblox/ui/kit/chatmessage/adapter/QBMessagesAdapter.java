@@ -23,11 +23,8 @@ import com.quickblox.chat.QBChatService;
 import com.quickblox.chat.model.QBAttachment;
 import com.quickblox.chat.model.QBChatMessage;
 import com.quickblox.content.model.QBFile;
-import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachAudioClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBMediaPlayerListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachClickListener;
-import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachImageClickListener;
-import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachLocationClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatMessageLinkClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.media.AudioController;
 import com.quickblox.ui.kit.chatmessage.adapter.media.MediaController;
@@ -42,9 +39,10 @@ import com.quickblox.users.model.QBUser;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Adapter<QBMessagesAdapter.QBMessageViewHolder> implements QBBaseAdapter<T> {
     private static final String TAG = QBMessagesAdapter.class.getSimpleName();
@@ -61,9 +59,9 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     //Message TextView click listener
     //
     private QBChatMessageLinkClickListener messageTextViewLinkClickListener;
-    private QBChatAttachImageClickListener attachImageClickListener;
-    private QBChatAttachLocationClickListener attachLocationClickListener;
-    private QBChatAttachAudioClickListener attachAudioClickListener;
+    private QBChatAttachClickListener attachImageClickListener;
+    private QBChatAttachClickListener attachLocationClickListener;
+    private QBChatAttachClickListener attachAudioClickListener;
 
     private boolean overrideOnClick;
 
@@ -88,7 +86,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     private SingleMediaManager mediaManager;
     private MediaControllerEventListener mediaControllerEventListener;
-    private HashMap<QBPlaybackControlView, Integer> playerViewHashMap;
+    private Map<QBPlaybackControlView, Integer> playerViewHashMap;
     private int activePlayerViewPosition;
 
 
@@ -114,27 +112,27 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         this.overrideOnClick = overrideOnClick;
     }
 
-    public void setAttachImageClickListener(QBChatAttachImageClickListener clickListener) {
+    public void setAttachImageClickListener(QBChatAttachClickListener clickListener) {
         attachImageClickListener = clickListener;
     }
 
-    public void setAttachLocationClickListener(QBChatAttachLocationClickListener clickListener) {
+    public void setAttachLocationClickListener(QBChatAttachClickListener clickListener) {
         attachLocationClickListener = clickListener;
     }
 
-    public void setAttachAudioClickListener(QBChatAttachAudioClickListener clickListener) {
+    public void setAttachAudioClickListener(QBChatAttachClickListener clickListener) {
         this.attachAudioClickListener = clickListener;
     }
 
-    public void removeAttachImageClickListener(QBChatAttachImageClickListener clickListener) {
+    public void removeAttachImageClickListener(QBChatAttachClickListener clickListener) {
         attachImageClickListener = null;
     }
 
-    public void removeLocationImageClickListener(QBChatAttachLocationClickListener clickListener) {
+    public void removeLocationImageClickListener(QBChatAttachClickListener clickListener) {
         attachLocationClickListener = null;
     }
 
-    public void removeAttachAudioClickListener(QBChatAttachAudioClickListener clickListener) {
+    public void removeAttachAudioClickListener(QBChatAttachClickListener clickListener) {
         attachAudioClickListener = null;
     }
 
@@ -259,7 +257,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
             displayAvatarImage(avatarUrl, holder.avatar);
         }
 
-        setItemClickListener(getAttachListenerByType(position), holder, getQBAttach(position), position);
+        setItemAttachClickListener(getAttachListenerByType(position), holder, getQBAttach(position), position);
     }
 
     protected void onBindViewAttachLeftHolder(ImageAttachHolder holder, T chatMessage, int position) {
@@ -272,7 +270,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
             displayAvatarImage(avatarUrl, holder.avatar);
         }
 
-        setItemClickListener(getAttachListenerByType(position), holder, getQBAttach(position), position);
+        setItemAttachClickListener(getAttachListenerByType(position), holder, getQBAttach(position), position);
     }
 
     protected void onBindViewAttachRightAudioHolder(AudioAttachHolder holder, T chatMessage, int position) {
@@ -284,7 +282,6 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         if (avatarUrl != null) {
             displayAvatarImage(avatarUrl, holder.avatar);
         }
-        setItemClickListener(getAttachListenerByType(position), holder, getQBAttach(position), position);
     }
 
 
@@ -297,7 +294,6 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         if (avatarUrl != null) {
             displayAvatarImage(avatarUrl, holder.avatar);
         }
-        setItemClickListener(getAttachListenerByType(position), holder, getQBAttach(position), position);
     }
 
     protected void onBindViewAttachRightVideoHolder(VideoAttachHolder holder, T chatMessage, int position) {
@@ -309,7 +305,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
             displayAvatarImage(avatarUrl, holder.avatar);
         }
 
-        setItemClickListener(getAttachListenerByType(position), holder, getQBAttach(position), position);
+        setItemAttachClickListener(getAttachListenerByType(position), holder, getQBAttach(position), position);
     }
 
     protected void onBindViewAttachLeftVideoHolder(VideoAttachHolder holder, T chatMessage, int position) {
@@ -321,7 +317,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
             displayAvatarImage(avatarUrl, holder.avatar);
         }
 
-        setItemClickListener(getAttachListenerByType(position), holder, getQBAttach(position), position);
+        setItemAttachClickListener(getAttachListenerByType(position), holder, getQBAttach(position), position);
     }
 
     protected void onBindViewMsgLeftHolder(TextMessageHolder holder, T chatMessage, int position) {
@@ -494,6 +490,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         QBPlaybackControlView playerView = ((AudioAttachHolder) holder).playerView;
 
         showAudioView(playerView, uri, position);
+        setItemAttachAudioClickListener(getAttachListenerByType(position), holder, getQBAttach(position), position, playerView);
     }
 
 
@@ -505,7 +502,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
 
     protected Uri getUriFromAttach(QBAttachment attachment) {
-        return Uri.parse(QBFile.getPublicUrlForUID(attachment.getId()));
+        return Utils.getUriFromAttachPublicUrl(attachment);
     }
 
     protected int getDurationFromAttach(QBAttachment attachment, int position) {
@@ -542,13 +539,14 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     private void setViewPosition(QBPlaybackControlView view, int position) {
         if(playerViewHashMap == null) {
-            playerViewHashMap = new HashMap<>();
+            playerViewHashMap = new WeakHashMap<>();
         }
         playerViewHashMap.put(view, position);
     }
 
     private int getPlayerViewPosition(QBPlaybackControlView view) {
-        return playerViewHashMap.get(view);
+        Integer position = playerViewHashMap.get(view);
+        return position == null ? activePlayerViewPosition : position;
     }
 
     private void showVideoThumbnail(final QBMessageViewHolder holder, String url, int position) {
@@ -637,10 +635,15 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
                 .into(imageView);
     }
 
-    protected void setItemClickListener(QBChatAttachClickListener listener, QBMessageViewHolder holder, QBAttachment qbAttachment, int position) {
+    protected void setItemAttachClickListener(QBChatAttachClickListener listener, QBMessageViewHolder holder, QBAttachment qbAttachment, int position) {
         if (listener != null) {
-            holder.itemView.setOnClickListener(new QBItemClickListenerFilter(listener, qbAttachment, position));
+            holder.bubbleFrame.setOnClickListener(new QBItemClickListenerFilter(listener, qbAttachment, position));
         }
+    }
+
+    protected void setItemAttachAudioClickListener(QBChatAttachClickListener listener, QBMessageViewHolder holder, QBAttachment qbAttachment, int position,
+                                                   QBPlaybackControlView controlView) {
+        holder.bubbleFrame.setOnClickListener(new QBItemAudioClickListener(listener, qbAttachment, position, controlView));
     }
 
     protected static class TextMessageHolder extends QBMessageViewHolder {
@@ -701,10 +704,12 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     protected abstract static class QBMessageViewHolder extends RecyclerView.ViewHolder {
         public ImageView avatar;
+        public View bubbleFrame;
 
         public QBMessageViewHolder(View itemView) {
             super(itemView);
             avatar = (ImageView) itemView.findViewById(R.id.msg_image_avatar);
+            bubbleFrame = itemView.findViewById(R.id.msg_bubble_background);
         }
     }
 
@@ -732,10 +737,27 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         }
     }
 
+    private class QBItemAudioClickListener extends QBItemClickListenerFilter {
+        private QBPlaybackControlView controlView;
+
+        QBItemAudioClickListener(QBChatAttachClickListener chatAttachClickListener, QBAttachment attachment, int position, QBPlaybackControlView controlView) {
+            super(chatAttachClickListener, attachment, position);
+            this.controlView = controlView;
+        }
+
+        @Override
+        public void onClick(View view) {
+            if(chatAttachClickListener != null) {
+                super.onClick(view);
+            }
+            controlView.clickIconPlayPauseView();
+        }
+    }
+
     private class QBItemClickListenerFilter implements View.OnClickListener {
-        private int position;
-        private QBAttachment attachment;
-        private QBChatAttachClickListener chatAttachClickListener;
+        protected int position;
+        protected QBAttachment attachment;
+        protected QBChatAttachClickListener chatAttachClickListener;
 
         QBItemClickListenerFilter(QBChatAttachClickListener qbChatAttachClickListener, QBAttachment attachment, int position) {
             this.position = position;

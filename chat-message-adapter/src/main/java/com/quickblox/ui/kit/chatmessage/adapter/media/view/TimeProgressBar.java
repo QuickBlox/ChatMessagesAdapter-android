@@ -14,13 +14,13 @@ import com.google.android.exoplayer2.ui.TimeBar;
  * Created by roman on 8/4/17.
  */
 
-public class QBTimeBar extends ProgressBar implements TimeBar {
+public class TimeProgressBar extends ProgressBar implements TimeBar {
 
     private long duration;
     private long position;
 
 
-    public QBTimeBar(Context context, @Nullable AttributeSet attrs) {
+    public TimeProgressBar(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 

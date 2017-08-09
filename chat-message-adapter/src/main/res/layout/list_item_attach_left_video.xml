@@ -9,7 +9,7 @@
         style="@style/AvatarImageViewStyle.Left" />
 
     <RelativeLayout
-        android:id="@+id/msg_bubble_background_attach"
+        android:id="@+id/msg_bubble_background"
         style="@style/BubbleAttachFrame.Left">
 
         <ProgressBar

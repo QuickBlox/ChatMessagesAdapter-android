@@ -4,7 +4,7 @@
     style="@style/ListItemAudioMessage.Right">
 
     <RelativeLayout
-        android:id="@+id/msg_bubble_background_attach"
+        android:id="@+id/msg_bubble_background"
         style="@style/BubbleAttachAudioFrame.Right">
 
         <com.quickblox.ui.kit.chatmessage.adapter.media.view.QBPlaybackControlView

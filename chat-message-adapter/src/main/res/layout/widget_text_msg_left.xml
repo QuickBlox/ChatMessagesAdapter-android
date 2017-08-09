@@ -9,7 +9,7 @@
         style="@style/AvatarImageViewStyle.Left"/>
 
     <LinearLayout
-        android:id="@+id/msg_bubble_background_text"
+        android:id="@+id/msg_bubble_background"
         style="@style/BubbleTextFrame.Left">
 
 

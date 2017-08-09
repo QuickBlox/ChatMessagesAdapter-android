@@ -195,7 +195,7 @@ public class QBPlaybackControlView extends PlaybackControlView {
          setDurationViewOnTop();
      }
 
-     private void clickIconPlayPauseView() {
+     public void clickIconPlayPauseView() {
          if(iconPlayPauseView != null) {
              if (!iconPlayPauseView.isActivated()) {
                  iconPlayPauseView.setImageState(STATE_SET_PAUSE, true);
