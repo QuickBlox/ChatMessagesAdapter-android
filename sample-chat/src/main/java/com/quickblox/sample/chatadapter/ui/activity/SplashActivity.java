@@ -26,8 +26,8 @@ public class SplashActivity extends AppCompatActivity {
 
 
     private void loginToQB() {
-        QBUser qbUser = new QBUser(Consts.userOneLogin, Consts.userPassword);
-        qbUser.setId(Consts.userOneID);
+        QBUser qbUser = new QBUser(Consts.userTwoLogin, Consts.userPassword);
+        qbUser.setId(Consts.userTwoID);
         ChatHelper.getInstance().loginAndGetUsers(qbUser, new QBEntityCallback<ArrayList<QBUser>>() {
             @Override
             public void onSuccess(ArrayList<QBUser> qbUsers, Bundle bundle) {

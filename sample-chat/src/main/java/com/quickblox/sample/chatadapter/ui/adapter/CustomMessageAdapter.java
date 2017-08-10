@@ -1,19 +1,15 @@
 package com.quickblox.sample.chatadapter.ui.adapter;
 
 import android.app.Activity;
-import android.content.Context;
-import android.net.Uri;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.bumptech.glide.request.RequestListener;
 import com.google.gson.Gson;
 import com.quickblox.chat.QBChatService;
 import com.quickblox.chat.model.QBAttachment;
 import com.quickblox.chat.model.QBChatMessage;
-import com.quickblox.content.model.QBFile;
 import com.quickblox.sample.chatadapter.R;
 import com.quickblox.sample.chatadapter.utils.UserData;
 import com.quickblox.ui.kit.chatmessage.adapter.QBMessagesAdapter;
@@ -110,21 +106,8 @@ public class CustomMessageAdapter extends QBMessagesAdapter<QBChatMessage> {
     }
 
     @Override
-    protected Uri getUriFromAttach(QBAttachment attachment) {
-        return Uri.parse(attachment.getUrl());
+    public String obtainAvatarUrl(int valueType, QBChatMessage chatMessage) {
+        return currentUser.getId().equals(chatMessage.getSenderId()) ?
+                currentUserData.getUserAvatar() : opponentUserData.getUserAvatar();
     }
-
-    @Override
-    protected int getDurationFromAttach(QBAttachment attachment, int position) {
-        if(attachment.getDuration() == 0){
-            attachment.setDuration(position);
-        }
-        return attachment.getDuration();
-    }
-
-//    @Override
-//    public String obtainAvatarUrl(int valueType, QBChatMessage chatMessage) {
-//        return currentUser.getId().equals(chatMessage.getSenderId()) ?
-//                currentUserData.getUserAvatar() : opponentUserData.getUserAvatar();
-//    }
 }
