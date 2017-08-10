@@ -18,4 +18,7 @@
 
     <color name="text_color_link">@color/blue</color>
 
+    <color name="icon_playpause_pause">@color/white</color>
+    <color name="icon_playpause_play">@color/white</color>
+
 </resources>

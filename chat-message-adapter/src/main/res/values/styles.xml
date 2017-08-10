@@ -271,4 +271,56 @@
     </style>
 
 
+    <style name="ExoPlaybackControlView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="TimeProgressBarView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:indeterminateOnly">false</item>
+        <item name="android:max">100</item>
+        <item name="android:progressDrawable">@drawable/progress_bar_states</item>
+    </style>
+
+    <style name="ExoLinearFrame">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerVertical">true</item>
+    </style>
+
+    <style name="IconPlayPauseView">
+        <item name="android:layout_width">@dimen/icon_play_width</item>
+        <item name="android:layout_height">@dimen/icon_play_height</item>
+        <item name="android:contentDescription">@null</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:clickable">true</item>
+        <item name="android:src">@drawable/asl_playpause</item>
+    </style>
+
+    <style name="AudioAttachDurationView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:paddingLeft">@dimen/padding_big</item>
+        <item name="android:paddingRight">@dimen/padding_small</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AudioAttachPositionView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:paddingLeft">@dimen/padding_big</item>
+        <item name="android:paddingRight">@dimen/padding_small</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
 </resources>

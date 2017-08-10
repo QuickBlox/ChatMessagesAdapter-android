@@ -47,9 +47,10 @@ ext.sourceCompatibility = JavaVersion.VERSION_1_7
 ext.targetCompatibility = JavaVersion.VERSION_1_7
 
 ext.qbSdkVersion = "3.3.1"
-ext.recycleVersion = "25.1.0"
+ext.recycleVersion = "25.3.1"
 ext.circleImageVersion = "2.1.0"
 ext.glideVersion = "3.7.0"
+ext.exoPlayerVersion = "r2.4.0"
 ext.supportV4Version = "25.3.1"
 
 task clean(type: Delete) {

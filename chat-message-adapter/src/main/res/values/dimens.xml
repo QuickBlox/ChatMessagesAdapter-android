@@ -13,12 +13,21 @@
     <dimen name="padding_small">4dp</dimen>
     <dimen name="padding_medium">@dimen/padding_common</dimen>
     <dimen name="padding_big">16dp</dimen>
+    <dimen name="padding_very_big">18dp</dimen>
 
     <dimen name="text_size_small">15sp</dimen>
     <dimen name="text_size_medium">18sp</dimen>
 
     <dimen name="attach_image_width_preview">80dp</dimen>
     <dimen name="attach_image_height_preview">80dp</dimen>
+
+    <dimen name="icon_play_width">42dp</dimen>
+    <dimen name="icon_play_height">48dp</dimen>
+
+    <dimen name="vd_playpause_pause_width">26dp</dimen>
+    <dimen name="vd_playpause_pause_height">26dp</dimen>
+    <dimen name="vd_playpause_play_width">26dp</dimen>
+    <dimen name="vd_playpause_play_height">26dp</dimen>
 
 
     <dimen name="corners_small_value">3dp</dimen>

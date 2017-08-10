@@ -1,56 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/progress_relativelayout"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    style="@style/ExoPlaybackControlView">
 
     <com.quickblox.ui.kit.chatmessage.adapter.media.view.TimeProgressBar
         android:id="@id/exo_progress"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:indeterminateOnly="false"
-        android:max="100"
-        android:progressDrawable="@drawable/progress_bar_states"/>
+        style="@style/TimeProgressBarView" />
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true" >
+        android:id="@+id/exo_linear_frame"
+        style="@style/ExoLinearFrame">
 
         <ImageView
             android:id="@id/icon_play_pause"
-            android:layout_width="46dp"
-            android:layout_height="54dp"
-            android:contentDescription="@null"
-            android:scaleType="fitCenter"
-            android:clickable="true"
-            android:src="@drawable/asl_playpausestop"/>
+            style="@style/IconPlayPauseView"/>
 
         <TextView
             android:id="@+id/msg_attach_duration"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:includeFontPadding="false"
-            android:paddingTop="18dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="4dp"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            tools:text="00:00"/>
+            style="@style/AudioAttachDurationView"/>
 
         <TextView
             android:id="@id/exo_position"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:includeFontPadding="false"
-            android:paddingTop="18dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="4dp"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            style="@style/AudioAttachPositionView"/>
 
     </LinearLayout>
 
