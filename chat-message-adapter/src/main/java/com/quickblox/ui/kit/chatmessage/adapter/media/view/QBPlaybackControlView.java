@@ -1,6 +1,7 @@
 package com.quickblox.ui.kit.chatmessage.adapter.media.view;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -10,7 +11,7 @@ import android.widget.TextView;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.quickblox.ui.kit.chatmessage.adapter.R;
-import com.quickblox.ui.kit.chatmessage.adapter.media.MediaController;
+import com.quickblox.ui.kit.chatmessage.adapter.media.AudioController;
 
 /**
  * Created by roman on 8/1/17.
@@ -32,7 +33,8 @@ public class QBPlaybackControlView extends PlaybackControlView {
     private final ImageView iconPlayPauseView;
 
     private final ComponentListener componentListener;
-    private MediaController mediaController;
+    private AudioController mediaController;
+    private Uri uri;
 
 
     public QBPlaybackControlView(Context context) {
@@ -88,8 +90,17 @@ public class QBPlaybackControlView extends PlaybackControlView {
         durationView.setVisibility(visibility);
     }
 
-    public void initMediaController(MediaController mediaController) {
+    public void initView(AudioController mediaController, Uri uri) {
+        initMediaController(mediaController);
+        setUri(uri);
+    }
+
+    private void initMediaController(AudioController mediaController) {
         this.mediaController = mediaController;
+    }
+
+    private void setUri(Uri uri) {
+        this.uri = uri;
     }
 
     @Override
@@ -210,7 +221,7 @@ public class QBPlaybackControlView extends PlaybackControlView {
 
      private void performPlayClick() {
          setPositionViewOnTop();
-         mediaController.onPlayClicked(QBPlaybackControlView.this);
+         mediaController.onPlayClicked(QBPlaybackControlView.this, uri);
      }
 
     private void performPauseClick() {

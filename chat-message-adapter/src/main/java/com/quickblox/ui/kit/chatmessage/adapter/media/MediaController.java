@@ -1,5 +1,6 @@
 package com.quickblox.ui.kit.chatmessage.adapter.media;
 
+import android.net.Uri;
 import android.view.View;
 
 import com.quickblox.ui.kit.chatmessage.adapter.media.view.QBPlaybackControlView;
@@ -14,7 +15,7 @@ public interface MediaController {
         void onPlayerInViewInit(QBPlaybackControlView view);
     }
 
-    void onPlayClicked(QBPlaybackControlView view);
+    void onPlayClicked(QBPlaybackControlView view, Uri uri);
 
     void onPauseClicked();
 

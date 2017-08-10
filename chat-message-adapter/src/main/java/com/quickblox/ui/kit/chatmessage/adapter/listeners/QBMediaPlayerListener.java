@@ -1,5 +1,7 @@
 package com.quickblox.ui.kit.chatmessage.adapter.listeners;
 
+import android.net.Uri;
+
 import com.google.android.exoplayer2.ExoPlaybackException;
 
 /**
@@ -8,13 +10,13 @@ import com.google.android.exoplayer2.ExoPlaybackException;
 
 public interface QBMediaPlayerListener {
 
-    void onStart();
+    void onStart(Uri uri);
 
-    void onResume();
+    void onResume(Uri uri);
 
-    void onPause();
+    void onPause(Uri uri);
 
-    void onStop();
+    void onStop(Uri uri);
 
     void onPlayerError(ExoPlaybackException error);
 }

@@ -1,6 +1,6 @@
 package com.quickblox.ui.kit.chatmessage.adapter;
 
-import android.content.Context;
+import android.app.Activity;
 import android.net.Uri;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
@@ -82,15 +82,16 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     protected List<T> chatMessages;
     protected LayoutInflater inflater;
-    protected Context context;
+    protected Activity context;
 
     private SingleMediaManager mediaManager;
+    private AudioController audioController;
     private MediaControllerEventListener mediaControllerEventListener;
     private Map<QBPlaybackControlView, Integer> playerViewHashMap;
     private int activePlayerViewPosition;
 
 
-    public QBMessagesAdapter(Context context, List<T> chatMessages) {
+    public QBMessagesAdapter(Activity context, List<T> chatMessages) {
         this.context = context;
         this.chatMessages = chatMessages;
         this.inflater = LayoutInflater.from(context);
@@ -150,6 +151,14 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     public void removeMediaPlayerListener(QBMediaPlayerListener listener) {
         getMediaManagerInstance().removeListener(listener);
+    }
+
+    public void registerLifecycleHandler(){
+        getAudioControllerInstance().registerActivityHandler(context);
+    }
+
+    public void unregisterLifecycleHandler(){
+        getAudioControllerInstance().unregisterActivityHandler(context);
     }
 
     @Override
@@ -523,10 +532,8 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     private void initPlayerView(QBPlaybackControlView playerView, Uri uri, int position) {
         playerView.releaseView();
-        AudioController audioController = new AudioController(getMediaManagerInstance(), uri);
-        audioController.setEventMediaController(getMediaControllerEventListenerInstance());
         setViewPosition(playerView, position);
-        playerView.initMediaController(audioController);
+        playerView.initView(getAudioControllerInstance(), uri);
     }
 
     private boolean isCurrentViewActive(int position) {
@@ -565,11 +572,16 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     }
 
     public SingleMediaManager getMediaManagerInstance() {
-       return mediaManager == null ? mediaManager = new SingleMediaManager(context) : mediaManager;
+        return mediaManager = mediaManager == null ? new SingleMediaManager(context) : mediaManager;
+    }
+
+    private AudioController getAudioControllerInstance() {
+        return audioController = audioController == null ? new AudioController(getMediaManagerInstance(), getMediaControllerEventListenerInstance())
+                : audioController;
     }
 
     private MediaControllerEventListener getMediaControllerEventListenerInstance() {
-        return mediaControllerEventListener == null ? mediaControllerEventListener = new MediaControllerEventListener() : mediaControllerEventListener;
+        return mediaControllerEventListener = mediaControllerEventListener == null ? new MediaControllerEventListener() : mediaControllerEventListener;
     }
 
 

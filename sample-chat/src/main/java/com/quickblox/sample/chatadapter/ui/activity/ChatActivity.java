@@ -3,6 +3,7 @@ package com.quickblox.sample.chatadapter.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,16 +16,15 @@ import com.google.android.exoplayer2.ExoPlaybackException;
 import com.quickblox.chat.model.QBAttachment;
 import com.quickblox.chat.model.QBChatDialog;
 import com.quickblox.chat.model.QBChatMessage;
+import com.quickblox.core.QBEntityCallback;
+import com.quickblox.core.exception.QBResponseException;
 import com.quickblox.sample.chatadapter.R;
 import com.quickblox.sample.chatadapter.ui.adapter.CustomMessageAdapter;
 import com.quickblox.sample.chatadapter.utils.ChatHelper;
 import com.quickblox.ui.kit.chatmessage.adapter.QBMessagesAdapter;
-import com.quickblox.core.QBEntityCallback;
-import com.quickblox.core.exception.QBResponseException;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachClickListener;
-import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBMediaPlayerListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatMessageLinkClickListener;
-import com.quickblox.ui.kit.chatmessage.adapter.media.SingleMediaManager;
+import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBMediaPlayerListener;
 import com.quickblox.ui.kit.chatmessage.adapter.utils.QBMessageTextClickMovement;
 import com.quickblox.users.model.QBUser;
 
@@ -43,7 +43,6 @@ public class ChatActivity extends AppCompatActivity {
     private RecyclerView messagesListView;
     private ProgressBar progressBar;
     private QBMessagesAdapter chatAdapter;
-    private SingleMediaManager mediaManager;
 
     public static void start(Context context, ArrayList<QBUser> qbUsers) {
         Intent intent = new Intent(context, ChatActivity.class);
@@ -68,18 +67,12 @@ public class ChatActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 //        init playing via callback or via handleMessage
-        if(mediaManager != null && mediaManager.isMediaPlayerReady()) {
-            mediaManager.resumePlay();
-        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 //       release player via callback or via handleMessage
-        if(mediaManager != null && mediaManager.isMediaPlayerReady()) {
-            mediaManager.suspendPlay();
-        }
     }
 
     private void loadChatHistory(final ArrayList<QBUser> qbUsers) {
@@ -91,7 +84,7 @@ public class ChatActivity extends AppCompatActivity {
 
                 chatAdapter = new CustomMessageAdapter(ChatActivity.this, messages, qbUsers);
 
-                mediaManager = chatAdapter.getMediaManagerInstance();
+                chatAdapter.registerLifecycleHandler();
 
                 chatAdapter.setMessageTextViewLinkClickListener(new QBChatMessageLinkClickListener() {
                     @Override
@@ -124,22 +117,22 @@ public class ChatActivity extends AppCompatActivity {
 
                 chatAdapter.setMediaPlayerListener(new QBMediaPlayerListener() {
                     @Override
-                    public void onStart() {
-                        Log.d(TAG, "onStart");
+                    public void onStart(Uri uri) {
+                        Log.d(TAG, "onStart uri= "+ uri);
                     }
 
                     @Override
-                    public void onResume() {
+                    public void onResume(Uri uri) {
                         Log.d(TAG, "onResume");
                     }
 
                     @Override
-                    public void onPause() {
+                    public void onPause(Uri uri) {
                         Log.d(TAG, "onPause");
                     }
 
                     @Override
-                    public void onStop() {
+                    public void onStop(Uri uri) {
                         Log.d(TAG, "onStop");
                     }
 
@@ -161,6 +154,12 @@ public class ChatActivity extends AppCompatActivity {
                 Log.e(TAG, "loadChatHistoryOnError " + e.getMessage());
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        chatAdapter.unregisterLifecycleHandler();
     }
 
     @Override

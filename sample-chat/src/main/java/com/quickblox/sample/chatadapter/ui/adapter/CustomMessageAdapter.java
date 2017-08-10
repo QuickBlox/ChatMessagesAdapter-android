@@ -1,5 +1,6 @@
 package com.quickblox.sample.chatadapter.ui.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
@@ -32,7 +33,7 @@ public class CustomMessageAdapter extends QBMessagesAdapter<QBChatMessage> {
     private UserData currentUserData;
     private UserData opponentUserData;
 
-    public CustomMessageAdapter(Context context, List<QBChatMessage> chatMessages, ArrayList<QBUser> qbUsers) {
+    public CustomMessageAdapter(Activity context, List<QBChatMessage> chatMessages, ArrayList<QBUser> qbUsers) {
         super(context, chatMessages);
         setUsers(qbUsers);
     }
@@ -110,7 +111,7 @@ public class CustomMessageAdapter extends QBMessagesAdapter<QBChatMessage> {
 
     @Override
     protected Uri getUriFromAttach(QBAttachment attachment) {
-        return Uri.parse("https://ia802508.us.archive.org/5/items/testmp3testfile/mpthreetest.mp3");
+        return Uri.parse(attachment.getUrl());
     }
 
     @Override

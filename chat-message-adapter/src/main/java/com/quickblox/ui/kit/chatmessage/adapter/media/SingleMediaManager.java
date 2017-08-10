@@ -195,25 +195,25 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
 
     private void notifyListenersOnStart() {
         for(QBMediaPlayerListener listener : listeners) {
-            listener.onStart();
+            listener.onStart(uri);
         }
     }
 
     private void notifyListenersOnResume() {
         for(QBMediaPlayerListener listener : listeners) {
-            listener.onResume();
+            listener.onResume(uri);
         }
     }
 
     private void notifyListenersOnPause() {
         for(QBMediaPlayerListener listener : listeners) {
-            listener.onPause();
+            listener.onPause(uri);
         }
     }
 
     private void notifyListenersOnStop() {
         for(QBMediaPlayerListener listener : listeners) {
-            listener.onStop();
+            listener.onStop(uri);
         }
     }
 
