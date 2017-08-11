@@ -6,18 +6,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.media.MediaRecorder;
 import android.os.Bundle;
-import android.os.CountDownTimer;
+import android.os.SystemClock;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageButton;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.Chronometer;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -37,9 +39,10 @@ import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachClickListe
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatMessageLinkClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBMediaPlayerListener;
 import com.quickblox.ui.kit.chatmessage.adapter.media.SingleMediaManager;
-import com.quickblox.ui.kit.chatmessage.adapter.media.recorder.AudioRecordController;
 import com.quickblox.ui.kit.chatmessage.adapter.media.recorder.AudioRecorder;
+import com.quickblox.ui.kit.chatmessage.adapter.media.recorder.exceptions.MediaRecorderException;
 import com.quickblox.ui.kit.chatmessage.adapter.media.recorder.listeners.QBMediaRecordListener;
+import com.quickblox.ui.kit.chatmessage.adapter.media.recorder.view.QBRecordAudioButton;
 import com.quickblox.ui.kit.chatmessage.adapter.utils.QBMessageTextClickMovement;
 import com.quickblox.users.model.QBUser;
 
@@ -61,18 +64,20 @@ public class ChatActivity extends AppCompatActivity {
     private RecyclerView messagesListView;
     private ProgressBar progressBar;
     private QBMessagesAdapter chatAdapter;
+    private QBRecordAudioButton recordButton;
+    private TextView audioRecordTextView;
     private SingleMediaManager mediaManager;
-    private ImageButton recordButton;
-    TextView textViewCount;
 
     private LinearLayout audioLayout;
 
     private AudioRecorder audioRecorder;
-    private boolean canceled;
 
     // Requesting permission to RECORD_AUDIO
     private boolean permissionToRecordAccepted = false;
     private String [] permissions = {Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    private Chronometer recordChronometer;
+    private Vibrator vibro;
+    private ImageView bucketView;
 
     public static void start(Context context, ArrayList<QBUser> qbUsers) {
         Intent intent = new Intent(context, ChatActivity.class);
@@ -90,40 +95,16 @@ public class ChatActivity extends AppCompatActivity {
 
         messagesListView = (RecyclerView) findViewById(R.id.list_chat_messages);
         progressBar = (ProgressBar) findViewById(R.id.progress_chat);
-        textViewCount = (TextView) findViewById(R.id.chat_audio_count);
         audioLayout = (LinearLayout) findViewById(R.id.layout_chat_audio_container);
-        recordButton = (ImageButton) findViewById(R.id.button_chat_record_audio);
+        recordButton = (QBRecordAudioButton) findViewById(R.id.button_chat_record_audio);
+        recordChronometer = (Chronometer) findViewById(R.id.chat_audio_record_chronometer);
+        bucketView = (ImageView) findViewById(R.id.chat_audio_record_bucket_imageview);
+        audioRecordTextView = (TextView) findViewById(R.id.chat_audio_record_textview);
+        vibro = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         requestPermission();
         initAudioRecorder();
-        recordButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                float x = motionEvent.getX();
-                float y = motionEvent.getY();
-                switch (motionEvent.getAction()) {
-                    case MotionEvent.ACTION_DOWN: // press
-                        Log.d(TAG, "onTouch ACTION_DOWN");
-                        canceled = false;
-                        record();
-                        break;
-                    case MotionEvent.ACTION_MOVE: // move
-//                        use more precise logic for detecting swipe
-                        Log.d(TAG, "onTouch ACTION_MOVE x= " + x + ", y= " + y);
-                        if(canCancel(x, y) && !canceled) {
-                            cancelRecord();
-                        }
-                        break;
-                    case MotionEvent.ACTION_UP: // release
-                        Log.d(TAG, "onTouch ACTION_UP");
-                        if(!canceled) {
-                            stopRecordClick();
-                        }
-                        break;
-                }
-                return true;
-            }
-        });
+        recordButton.setRecordTouchListener(new RecordTouchListenerImpl());
 
         loadChatHistory(qbUsers);
     }
@@ -258,7 +239,7 @@ public class ChatActivity extends AppCompatActivity {
     public void initAudioRecorder() {
         audioRecorder = AudioRecorder.newBuilder(new QBMediaRecordListenerImpl())
                 // Required
-                .useInBuildFilePathGenerator()
+                .useInBuildFilePathGenerator(this)
                 .setDuration(10)
                 .build();
                 // Optional
@@ -268,40 +249,42 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
-    public void record() {
-        Log.d(TAG, "record startRecord");
+    public void startRecord() {
+        Log.d(TAG, "startRecord");
+        recordChronometer.setBase(SystemClock.elapsedRealtime());
+        recordChronometer.start();
+        recordChronometer.setVisibility(View.VISIBLE);
+        audioRecordTextView.setVisibility(View.VISIBLE);
+        vibro.vibrate(100);
         audioLayout.setVisibility(View.VISIBLE);
         audioRecorder.startRecord();
-
-        new CountDownTimer(10 * 1000, 1000) {
-
-            public void onTick(long millisUntilFinished) {
-                textViewCount.setText("remaining: " + millisUntilFinished / 1000);
-            }
-
-            public void onFinish() {
-                textViewCount.setText("Limit is over!");
-            }
-        }.start();
-
     }
 
-    public void stopRecordClick() {
-        Log.d(TAG, "record stopRecord");
+    public void stopRecord() {
+        Log.d(TAG, "stopRecord");
+        recordChronometer.stop();
+        vibro.vibrate(100);
+        audioLayout.setVisibility(View.INVISIBLE);
         audioRecorder.stopRecord();
     }
 
     public void cancelRecord() {
-        Log.d(TAG, "record cancelRecord");
-        canceled = true;
-        audioLayout.setVisibility(View.INVISIBLE);
+        Log.d(TAG, "cancelRecord");
+        recordChronometer.stop();
+        recordChronometer.setVisibility(View.INVISIBLE);
+        audioRecordTextView.setVisibility(View.INVISIBLE);
+        Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
+        bucketView.startAnimation(shake);
+        vibro.vibrate(100);
+        audioLayout.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                audioLayout.setVisibility(View.INVISIBLE);
+            }
+        }, 1500);
+
         audioRecorder.cancelRecord();
     }
-
-    private boolean canCancel(float x, float y) {
-        return x < -350;
-    }
-
 
     private class QBMediaRecordListenerImpl implements QBMediaRecordListener {
 
@@ -312,13 +295,31 @@ public class ChatActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onMediaRecordError(Exception e) {
+        public void onMediaRecordError(MediaRecorderException e) {
             cancelRecord();
         }
 
         @Override
         public void onMediaRecordClosed() {
             Toast.makeText(ChatActivity.this, "Audio is not recorded", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private class RecordTouchListenerImpl implements QBRecordAudioButton.RecordTouchEventListener {
+
+        @Override
+        public void onStartClick(View view) {
+            startRecord();
+        }
+
+        @Override
+        public void onCancelClick(View view) {
+            cancelRecord();
+        }
+
+        @Override
+        public void onStopClick(View view) {
+            stopRecord();
         }
     }
 }

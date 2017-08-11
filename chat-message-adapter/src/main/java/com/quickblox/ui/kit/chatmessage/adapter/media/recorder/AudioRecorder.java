@@ -1,9 +1,11 @@
 package com.quickblox.ui.kit.chatmessage.adapter.media.recorder;
 
+import android.content.Context;
 import android.media.MediaRecorder;
 import android.util.Log;
 
 
+import com.quickblox.ui.kit.chatmessage.adapter.media.recorder.exceptions.MediaRecorderException;
 import com.quickblox.ui.kit.chatmessage.adapter.media.recorder.listeners.QBMediaRecordListener;
 import com.quickblox.ui.kit.chatmessage.adapter.media.recorder.model.QBMediaRecorder;
 
@@ -74,11 +76,11 @@ public class AudioRecorder extends QBMediaRecorder<AudioRecorder> {
         try {
             recorder.prepare();
         } catch (IOException e) {
-            notifyListenerError(e);
+            notifyListenerError(new MediaRecorderException(e.getMessage()));
         }
     }
 
-    private void notifyListenerError(Exception e) {
+    private void notifyListenerError(MediaRecorderException e) {
         setState(RecordState.RECORD_STATE_ERROR);
         if(recordListener != null) {
             recordListener.onMediaRecordError(e);
@@ -115,7 +117,7 @@ public class AudioRecorder extends QBMediaRecorder<AudioRecorder> {
         @Override
         public void onError(MediaRecorder mediaRecorder, int what, int extra) {
             String error = Utils.parseCode(what);
-            notifyListenerError(new Exception(error));
+            notifyListenerError(new MediaRecorderException(error));
         }
     }
 
@@ -146,7 +148,6 @@ public class AudioRecorder extends QBMediaRecorder<AudioRecorder> {
 
         private int channels = CHANNEL_STEREO;
 
-        private String folderName = TAG;
         private String fileName = "recorded_audio_chat.wav";
         private String filePath;
 
@@ -160,8 +161,8 @@ public class AudioRecorder extends QBMediaRecorder<AudioRecorder> {
         private ConfigurationBuilder() {
         }
 
-        public ConfigurationBuilder useInBuildFilePathGenerator() {
-            filePath = Utils.getAudioFilePathTemp(folderName, fileName);
+        public ConfigurationBuilder useInBuildFilePathGenerator(Context context) {
+            filePath = Utils.getAudioPathPrivate(context, fileName);
             return this;
         }
 

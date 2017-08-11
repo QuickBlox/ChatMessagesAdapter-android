@@ -1,6 +1,8 @@
 package com.quickblox.ui.kit.chatmessage.adapter.media.recorder;
 
+import android.content.Context;
 import android.media.MediaRecorder;
+import android.os.Environment;
 
 import com.quickblox.core.helper.FileHelper;
 
@@ -12,9 +14,14 @@ import java.io.File;
 
 public class Utils {
 
-    public static String getAudioFilePathTemp(String folderName, String fileName) {
+    public static String getAudioFilePathPublic(String folderName, String fileName) {
         File folder = FileHelper.getDirectory(folderName);
         return folder + File.separator + fileName;
+    }
+
+    public static String getAudioPathPrivate(Context context, String fileName) {
+        File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_MUSIC), fileName);
+        return file.getPath();
     }
 
     public static String parseCode(int what) {

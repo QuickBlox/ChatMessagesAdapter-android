@@ -38,15 +38,4 @@ public class AudioController implements MediaController {
         mediaManager.onStartPosition();
     }
 
-    private void resumePlaying() {
-        if(mediaManager != null && mediaManager.isMediaPlayerReady()) {
-            mediaManager.resumePlay();
-        }
-    }
-
-    private void suspendPlaying() {
-        if(mediaManager != null && mediaManager.isMediaPlayerReady()) {
-            mediaManager.suspendPlay();
-        }
-    }
 }
