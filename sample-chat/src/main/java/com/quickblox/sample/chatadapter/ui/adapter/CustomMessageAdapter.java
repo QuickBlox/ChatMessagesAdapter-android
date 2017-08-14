@@ -1,12 +1,11 @@
 package com.quickblox.sample.chatadapter.ui.adapter;
 
-import android.content.Context;
+import android.app.Activity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.bumptech.glide.request.RequestListener;
 import com.google.gson.Gson;
 import com.quickblox.chat.QBChatService;
 import com.quickblox.chat.model.QBAttachment;
@@ -30,7 +29,7 @@ public class CustomMessageAdapter extends QBMessagesAdapter<QBChatMessage> {
     private UserData currentUserData;
     private UserData opponentUserData;
 
-    public CustomMessageAdapter(Context context, List<QBChatMessage> chatMessages, ArrayList<QBUser> qbUsers) {
+    public CustomMessageAdapter(Activity context, List<QBChatMessage> chatMessages, ArrayList<QBUser> qbUsers) {
         super(context, chatMessages);
         setUsers(qbUsers);
     }

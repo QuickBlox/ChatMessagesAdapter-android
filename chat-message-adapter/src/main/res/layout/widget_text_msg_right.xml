@@ -5,7 +5,7 @@
     style="@style/WidgetTextMessage.Right">
 
     <LinearLayout
-        android:id="@+id/msg_bubble_background_text"
+        android:id="@+id/msg_bubble_background"
         style="@style/BubbleTextFrame.Right">
 
         <LinearLayout

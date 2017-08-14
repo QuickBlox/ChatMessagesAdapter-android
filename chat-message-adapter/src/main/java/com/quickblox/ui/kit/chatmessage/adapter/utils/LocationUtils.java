@@ -23,7 +23,7 @@ import java.util.Map;
 public class LocationUtils {
 
     public static String generateLocationJson(Pair<String, Double> latitude, Pair<String, Double> longitude) {
-        Map<String, String> latLng = new HashMap<>();
+        Map<String, String> latLng = new LinkedHashMap<>();
         latLng.put(latitude.first, String.valueOf(latitude.second));
         latLng.put(longitude.first, String.valueOf(longitude.second));
         return JsonParserBase.serialize(latLng);

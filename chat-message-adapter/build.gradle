@@ -17,6 +17,7 @@ android {
     compileOptions.targetCompatibility = rootProject.targetCompatibility
 
     defaultConfig {
+        vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -80,5 +81,8 @@ dependencies {
     compile "de.hdodenhof:circleimageview:$rootProject.circleImageVersion"
 
     compile "com.github.bumptech.glide:glide:$rootProject.glideVersion"
+
+    compile "com.google.android.exoplayer:exoplayer:$rootProject.exoPlayerVersion"
+
     compile "com.android.support:support-v4:$rootProject.supportV4Version"
 }

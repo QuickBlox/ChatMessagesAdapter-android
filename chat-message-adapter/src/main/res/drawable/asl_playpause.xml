@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/pause"
+        android:drawable="@drawable/exo_controls_pause"
+        app:state_pause="true"/>
+
+    <item
+        android:id="@+id/play"
+        android:drawable="@drawable/exo_controls_play"/>
+
+</selector>

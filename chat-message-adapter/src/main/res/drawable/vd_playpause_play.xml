@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="@dimen/vd_playpause_play_width"
+    android:height="@dimen/vd_playpause_play_height"
+    android:viewportHeight="16"
+    android:viewportWidth="16">
+
+    <group
+        android:name="iconGroup"
+        android:pivotX="9"
+        android:pivotY="9"
+        android:rotation="90"
+        android:translateX="0.75"
+        android:translateY="-0.95">
+
+        <path
+            android:name="iconPath"
+            android:fillColor="@color/icon_playpause_play"
+            android:pathData="@string/path_play"/>
+    </group>
+</vector>

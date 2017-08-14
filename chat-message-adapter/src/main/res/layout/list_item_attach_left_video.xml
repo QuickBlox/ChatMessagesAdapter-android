@@ -17,7 +17,7 @@
             style="@style/ProgressBarAttach.Left" />
 
         <ImageView
-            android:id="@+id/msg_image_attach"
+            android:id="@+id/msg_video_attach"
             style="@style/ImageViewAttach.Left" />
 
         <include layout="@layout/widget_item_attach_left" />
