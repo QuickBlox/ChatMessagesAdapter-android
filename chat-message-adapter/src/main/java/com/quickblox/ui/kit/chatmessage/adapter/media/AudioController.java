@@ -1,9 +1,7 @@
 package com.quickblox.ui.kit.chatmessage.adapter.media;
 
-import android.app.Activity;
 import android.net.Uri;
 
-import com.quickblox.ui.kit.chatmessage.adapter.ActivityLifeCycleHandler;
 import com.quickblox.ui.kit.chatmessage.adapter.media.view.QBPlaybackControlView;
 
 /**
@@ -13,20 +11,10 @@ import com.quickblox.ui.kit.chatmessage.adapter.media.view.QBPlaybackControlView
 public class AudioController implements MediaController {
     private SingleMediaManager mediaManager;
     private EventMediaController eventMediaController;
-    private ActivityLifeCycleHandlerController handlerController;
 
     public AudioController(SingleMediaManager mediaManager, EventMediaController eventMediaController) {
         this.mediaManager = mediaManager;
         this.eventMediaController = eventMediaController;
-        handlerController = new ActivityLifeCycleHandlerController();
-    }
-
-    public void registerActivityHandler(Activity context) {
-        context.getApplication().registerActivityLifecycleCallbacks(handlerController);
-    }
-
-    public void unregisterActivityHandler(Activity context) {
-        context.getApplication().unregisterActivityLifecycleCallbacks(handlerController);
     }
 
     @Override
@@ -61,18 +49,4 @@ public class AudioController implements MediaController {
             mediaManager.suspendPlay();
         }
     }
-
-    private final class ActivityLifeCycleHandlerController extends ActivityLifeCycleHandler {
-
-        @Override
-        public void onActivityResumed(Activity activity) {
-            resumePlaying();
-        }
-
-        @Override
-        public void onActivityPaused(Activity activity) {
-            suspendPlaying();
-        }
-    }
-
 }

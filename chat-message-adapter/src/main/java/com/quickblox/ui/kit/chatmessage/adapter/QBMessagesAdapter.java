@@ -1,6 +1,6 @@
 package com.quickblox.ui.kit.chatmessage.adapter;
 
-import android.app.Activity;
+import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
@@ -82,7 +82,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     protected List<T> chatMessages;
     protected LayoutInflater inflater;
-    protected Activity context;
+    protected Context context;
 
     private SingleMediaManager mediaManager;
     private AudioController audioController;
@@ -91,7 +91,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     private int activePlayerViewPosition;
 
 
-    public QBMessagesAdapter(Activity context, List<T> chatMessages) {
+    public QBMessagesAdapter(Context context, List<T> chatMessages) {
         this.context = context;
         this.chatMessages = chatMessages;
         this.inflater = LayoutInflater.from(context);
@@ -151,14 +151,6 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     public void removeMediaPlayerListener(QBMediaPlayerListener listener) {
         getMediaManagerInstance().removeListener(listener);
-    }
-
-    public void registerLifecycleHandler(){
-        getAudioControllerInstance().registerActivityHandler(context);
-    }
-
-    public void unregisterLifecycleHandler(){
-        getAudioControllerInstance().unregisterActivityHandler(context);
     }
 
     @Override
