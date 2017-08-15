@@ -23,7 +23,7 @@ public class AudioRecorder extends QBMediaRecorder<AudioRecorder> {
 
     private QBMediaRecordListener recordListener;
     private MediaRecorder recorder = null;
-    private RecordState state;
+    private RecordState state = RecordState.RECORD_STATE_UNKNOWN;
     private ConfigurationBuilder configurationBuilder;
 
     private AudioRecorder(QBMediaRecordListener recordListener) {
@@ -99,15 +99,17 @@ public class AudioRecorder extends QBMediaRecorder<AudioRecorder> {
     }
 
     private void releaseMediaRecorder() {
-        if(state.ordinal() > RecordState.RECORD_STATE_BEGIN.ordinal()) {
-            recorder.stop();
+        if (recorder != null) {
+            if (state.ordinal() >= RecordState.RECORD_STATE_BEGIN.ordinal()) {
+                recorder.stop();
+            }
+            recorder.release();
+            recorder = null;
         }
-        recorder.release();
-        recorder = null;
     }
 
     private void sendResult() {
-        if(state.ordinal() < RecordState.RECORD_STATE_COMPLETED.ordinal()) {
+        if(state.ordinal() > RecordState.RECORD_STATE_UNKNOWN.ordinal() && state.ordinal() < RecordState.RECORD_STATE_COMPLETED.ordinal()) {
             notifyListenerSuccess();
         }
     }

@@ -88,7 +88,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     private AudioController audioController;
     private MediaControllerEventListener mediaControllerEventListener;
     private Map<QBPlaybackControlView, Integer> playerViewHashMap;
-    private int activePlayerViewPosition;
+    private int activePlayerViewPosition = -1;
 
 
     public QBMessagesAdapter(Context context, List<T> chatMessages) {
