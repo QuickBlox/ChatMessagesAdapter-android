@@ -63,5 +63,47 @@
             android:layout_gravity="center_vertical"
             android:src="@drawable/badge_attach_message_time"
             android:text="@string/chat_send" />
+
+        <com.quickblox.ui.kit.chatmessage.adapter.media.recorder.view.QBRecordAudioButton
+            android:id="@+id/button_chat_record_audio"
+            style="@style/BorderlessImageButtonStyle"
+            android:layout_gravity="center_vertical"
+            android:src="@android:drawable/ic_btn_speak_now"
+            android:text="@string/chat_send" />
     </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/layout_chat_audio_container"
+        style="@style/MatchWidth"
+        android:layout_alignParentBottom="true"
+        android:background="@color/text_color_white"
+        android:orientation="horizontal"
+        android:visibility="invisible">
+
+        <ImageView
+            android:id="@+id/chat_audio_record_bucket_imageview"
+            style="@style/BorderlessImageButtonStyle"
+            android:layout_gravity="center_vertical"
+            android:src="@android:drawable/ic_menu_delete" />
+
+        <Chronometer
+            android:id="@+id/chat_audio_record_chronometer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="24dp"
+            android:layout_marginStart="24dp"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/chat_audio_record_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingLeft="@dimen/padding_big"
+            android:textSize="18sp"
+            android:text="to cancel"/>
+
+    </LinearLayout>
+
 </RelativeLayout>
