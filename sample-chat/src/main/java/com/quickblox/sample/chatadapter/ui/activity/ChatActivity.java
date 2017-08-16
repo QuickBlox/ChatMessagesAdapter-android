@@ -59,7 +59,7 @@ import static android.widget.LinearLayout.VERTICAL;
 public class ChatActivity extends AppCompatActivity {
     private static final String TAG = ChatActivity.class.getSimpleName();
     private static final String EXTRA_QB_USERS = "qb_user_list";
-    private static final String DIALOG_ID = "57b701e8a0eb472505000039";
+    private static final String DIALOG_ID = "58219cc7a0eb4715f8000052";
 
     private static final int REQUEST_RECORD_AUDIO_WRITE_EXTERNAL_STORAGE_PERMISSIONS = 200;
 
@@ -197,6 +197,13 @@ public class ChatActivity extends AppCompatActivity {
                     @Override
                     public void onLinkClicked(QBAttachment audioAttach, int positionInAdapter) {
                         Log.d(TAG, "onClick: audioAttach - " + audioAttach + " positionInAdapter = " + positionInAdapter);
+                    }
+                });
+
+                chatAdapter.setAttachVideoClickListener(new QBChatAttachClickListener() {
+                    @Override
+                    public void onLinkClicked(QBAttachment videoAttach, int positionInAdapter) {
+                        Log.d(TAG, "onClick: videoAttach - " + videoAttach + " positionInAdapter = " + positionInAdapter);
                     }
                 });
 

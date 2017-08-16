@@ -114,6 +114,24 @@
     </style>
 
 
+    <style name="ImageViewPlayIconAttach.Right">
+        <item name="android:layout_marginRight">@dimen/padding_common</item>
+    </style>
+
+    <style name="ImageViewPlayIconAttach.Left">
+        <item name="android:layout_marginLeft">@dimen/padding_common</item>
+    </style>
+
+    <style name="ImageViewPlayIconAttach">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:scaleType">centerCrop</item>
+        <item name="android:src">@drawable/ic_play_circle_outline_white_48dp</item>
+        <item name="android:visibility">invisible</item>
+    </style>
+
+
     <style name="AudioViewAttach">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>

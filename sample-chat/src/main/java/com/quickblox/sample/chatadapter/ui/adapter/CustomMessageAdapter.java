@@ -106,8 +106,14 @@ public class CustomMessageAdapter extends QBMessagesAdapter<QBChatMessage> {
     }
 
     @Override
-    public String obtainAvatarUrl(int valueType, QBChatMessage chatMessage) {
-        return currentUser.getId().equals(chatMessage.getSenderId()) ?
-                currentUserData.getUserAvatar() : opponentUserData.getUserAvatar();
+    public String getVideoUrl(int position) {
+        QBAttachment attachment = getQBAttach(position);
+        return attachment.getUrl();
     }
+
+//    @Override
+//    public String obtainAvatarUrl(int valueType, QBChatMessage chatMessage) {
+//        return currentUser.getId().equals(chatMessage.getSenderId()) ?
+//                currentUserData.getUserAvatar() : opponentUserData.getUserAvatar();
+//    }
 }

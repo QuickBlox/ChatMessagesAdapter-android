@@ -15,6 +15,10 @@
             android:id="@+id/msg_video_attach"
             style="@style/ImageViewAttach.Right" />
 
+        <ImageView
+            android:id="@+id/msg_video_play_icon"
+            style="@style/ImageViewPlayIconAttach.Right" />
+
         <include layout="@layout/widget_item_attach_right" />
 
     </RelativeLayout>
