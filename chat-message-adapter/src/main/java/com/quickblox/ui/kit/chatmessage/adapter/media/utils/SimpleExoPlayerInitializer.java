@@ -20,7 +20,7 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 public class SimpleExoPlayerInitializer {
 
 
-    public static SimpleExoPlayer initializeAudioPlayer(Context context) {
+    public static SimpleExoPlayer initializeExoPlayer(Context context) {
         return ExoPlayerFactory.newSimpleInstance(
                 new DefaultRenderersFactory(context),
                 new DefaultTrackSelector(), new DefaultLoadControl());

@@ -335,6 +335,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     }
 
     protected void onBindViewAttachRightVideoHolder(VideoAttachHolder holder, T chatMessage, int position) {
+        setDateSentAttach(holder, chatMessage);
         displayAttachmentVideo(holder, position);
 
         int valueType = getItemViewType(position);
@@ -347,6 +348,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     }
 
     protected void onBindViewAttachLeftVideoHolder(VideoAttachHolder holder, T chatMessage, int position) {
+        setDateSentAttach(holder, chatMessage);
         displayAttachmentVideo(holder, position);
 
         int valueType = getItemViewType(position);

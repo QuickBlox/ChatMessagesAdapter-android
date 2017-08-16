@@ -176,7 +176,7 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
     }
 
     private void initPlayer() {
-        exoPlayer = SimpleExoPlayerInitializer.initializeAudioPlayer(context);
+        exoPlayer = SimpleExoPlayerInitializer.initializeExoPlayer(context);
         setEventListener();
     }
 
