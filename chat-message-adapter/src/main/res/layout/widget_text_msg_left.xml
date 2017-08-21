@@ -32,6 +32,10 @@
                 style="@style/TextViewTextMsg.Left"
                 tools:text="messagertdfsscsd" />
 
+            <LinearLayout
+                android:id="@+id/msg_link_preview"
+                style="@style/LinkPreviewFrame.Left"/>
+
             <!--LinearLayout should place its actual message widget here.-->
             <LinearLayout
                 android:id="@+id/msg_custom_widget_frame_bottom"

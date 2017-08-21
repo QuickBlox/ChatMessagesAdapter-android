@@ -2,6 +2,8 @@ package com.quickblox.sample.chatadapter.ui.activity;
 
 
 import android.Manifest;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -35,6 +37,8 @@ import com.quickblox.sample.chatadapter.R;
 import com.quickblox.sample.chatadapter.ui.adapter.CustomMessageAdapter;
 import com.quickblox.sample.chatadapter.utils.ChatHelper;
 import com.quickblox.ui.kit.chatmessage.adapter.QBMessagesAdapter;
+import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBLinkPreviewClickListener;
+import com.quickblox.ui.kit.chatmessage.adapter.models.QBLinkPreview;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatMessageLinkClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBMediaPlayerListener;
@@ -172,6 +176,23 @@ public class ChatActivity extends AppCompatActivity {
                     }
                 });
 
+                chatAdapter.setLinkPreviewClickListener(new QBLinkPreviewClickListener() {
+                    @Override
+                    public void onLinkPreviewClicked(String link, QBLinkPreview linkPreview, int position) {
+                        Log.d(TAG, "onLinkPreviewClicked: link = " + link + ", position = " + position);
+                    }
+
+                    @Override
+                    public void onLinkPreviewLongClicked(String link, QBLinkPreview linkPreview, int position) {
+                        Log.d(TAG, "onLinkPreviewLongClicked: link = " + link + ", position = " + position);
+                        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                        ClipData clip = ClipData.newPlainText("link", link);
+                        clipboard.setPrimaryClip(clip);
+                        Toast.makeText(ChatActivity.this, "Link " + link + " was copied to clipboard", Toast.LENGTH_LONG).show();
+                    }
+                }, false);
+
+
                 chatAdapter.setAttachAudioClickListener(new QBChatAttachClickListener() {
                     @Override
                     public void onLinkClicked(QBAttachment audioAttach, int positionInAdapter) {
@@ -206,7 +227,9 @@ public class ChatActivity extends AppCompatActivity {
                     }
                 });
 
+
                 LinearLayoutManager layoutManager = new LinearLayoutManager(ChatActivity.this, VERTICAL, false);
+                layoutManager.setStackFromEnd(true);
                 messagesListView.setLayoutManager(layoutManager);
                 messagesListView.setAdapter(chatAdapter);
                 progressBar.setVisibility(View.GONE);

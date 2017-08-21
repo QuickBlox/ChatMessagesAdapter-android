@@ -17,6 +17,10 @@
     <color name="text_color_green">@color/green</color>
 
     <color name="text_color_link">@color/blue</color>
+    <color name="text_color_link_preview_title">@color/blue</color>
+    <color name="text_color_link_preview_description">#333333</color>
+
+
 
     <color name="icon_playpause_pause">@color/white</color>
     <color name="icon_playpause_play">@color/white</color>

@@ -27,6 +27,10 @@
                 style="@style/TextViewTextMsg.Right"
                 tools:text="message the long one message" />
 
+            <LinearLayout
+                android:id="@+id/msg_link_preview"
+                style="@style/LinkPreviewFrame.Right"/>
+
             <!--LinearLayout should place its actual message widget here.-->
             <LinearLayout
                 android:id="@+id/msg_custom_widget_frame_bottom"

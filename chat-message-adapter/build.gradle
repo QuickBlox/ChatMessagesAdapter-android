@@ -38,8 +38,8 @@ uploadArchives {
         repository(url: rootProject.mainRepository) {
             if (rootProject.qbCredentialsAvailable) {
                 authentication(
-                    userName: qbUser,
-                    password: qbPassword
+                        userName: qbUser,
+                        password: qbPassword
                 )
             }
         }
