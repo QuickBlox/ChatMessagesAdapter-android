@@ -86,7 +86,7 @@ public class VideoPlayerActivity extends Activity {
         player.addListener(new PlayerStateListener());
         simpleExoPlayerView.setPlayer(player);
         player.setPlayWhenReady(shouldAutoPlay);
-        player.prepare(SimpleExoPlayerInitializer.buildMediaSource(videoUri));
+        player.prepare(SimpleExoPlayerInitializer.buildMediaSource(videoUri, this));
     }
 
     private void releasePlayer() {

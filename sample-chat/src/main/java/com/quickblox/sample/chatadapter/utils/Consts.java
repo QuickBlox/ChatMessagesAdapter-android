@@ -1,16 +1,16 @@
 package com.quickblox.sample.chatadapter.utils;
 
 public interface Consts {
-    String APP_ID = "29949";
-    String AUTH_KEY = "9HTvhpTECXcfLfR";
-    String AUTH_SECRET = "KBA8tPCPFpsXFCw";
-    String ACCOUNT_KEY = "zKQrk7gkoqQsFhY1pNzv";
+    String APP_ID = "92";
+    String AUTH_KEY = "wJHdOcQSxXQGWx5";
+    String AUTH_SECRET = "BTFsj7Rtt27DAmT";
+    String ACCOUNT_KEY = "rz2sXxBt5xgSxGjALDW6";
 
-    String userOneLogin = "useruno";
-    String userTwoLogin = "userdos";
+    String userOneLogin = "firstuserfirstuser";
+    String userTwoLogin = "seconduserseconduser";
 
     String userPassword = "x6Bt0VDy5";
 
-    int userOneID = 20166460;
-    int userTwoID = 20166487;
+    int userOneID = 16575824;
+    int userTwoID = 16575844;
 }

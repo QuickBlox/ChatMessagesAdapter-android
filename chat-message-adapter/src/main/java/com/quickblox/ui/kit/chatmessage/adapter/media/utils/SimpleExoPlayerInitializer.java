@@ -12,6 +12,8 @@ import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
+import com.quickblox.ui.kit.chatmessage.adapter.R;
 
 /**
  * Created by roman on 7/14/17.
@@ -19,16 +21,16 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 
 public class SimpleExoPlayerInitializer {
 
-
     public static SimpleExoPlayer initializeExoPlayer(Context context) {
         return ExoPlayerFactory.newSimpleInstance(
                 new DefaultRenderersFactory(context),
                 new DefaultTrackSelector(), new DefaultLoadControl());
     }
 
-    public static MediaSource buildMediaSource(Uri uri) {
+    public static MediaSource buildMediaSource(Uri uri, Context context) {
+        String userAgent = Util.getUserAgent(context, context.getResources().getString(R.string.app_name));
         return new ExtractorMediaSource(uri,
-                new DefaultHttpDataSourceFactory("ua"),
+                new DefaultHttpDataSourceFactory(userAgent),
                 new DefaultExtractorsFactory(), null, null);
     }
 }

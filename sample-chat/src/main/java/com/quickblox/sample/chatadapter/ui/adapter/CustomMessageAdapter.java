@@ -66,14 +66,6 @@ public class CustomMessageAdapter extends QBMessagesAdapter<QBChatMessage> {
     }
 
     @Override
-    protected QBMessageViewHolder onCreateCustomViewHolder(ViewGroup parent, int viewType) {
-        Log.d(TAG, "onCreateCustomViewHolder viewType= " + viewType);
-        return viewType == TYPE_OWN_VIDEO_ATTACH ? new ImageAttachHolder(inflater.inflate(R.layout.list_item_attach_right, parent, false),
-                R.id.msg_image_attach, R.id.msg_progressbar_attach, R.id.msg_text_time_attach) : null;
-    }
-
-
-    @Override
     protected void onBindViewCustomHolder(QBMessageViewHolder holder, QBChatMessage chatMessage, int position) {
         displayAttachment(holder, position);
         holder.avatar.setVisibility(View.GONE);
@@ -106,14 +98,8 @@ public class CustomMessageAdapter extends QBMessagesAdapter<QBChatMessage> {
     }
 
     @Override
-    public String getVideoUrl(int position) {
-        QBAttachment attachment = getQBAttach(position);
-        return attachment.getUrl();
+    public String obtainAvatarUrl(int valueType, QBChatMessage chatMessage) {
+        return currentUser.getId().equals(chatMessage.getSenderId()) ?
+                currentUserData.getUserAvatar() : opponentUserData.getUserAvatar();
     }
-
-//    @Override
-//    public String obtainAvatarUrl(int valueType, QBChatMessage chatMessage) {
-//        return currentUser.getId().equals(chatMessage.getSenderId()) ?
-//                currentUserData.getUserAvatar() : opponentUserData.getUserAvatar();
-//    }
 }

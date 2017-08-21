@@ -201,27 +201,27 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
                 return qbViewHolder;
             case TYPE_ATTACH_RIGHT:
                 qbViewHolder = new ImageAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_image_attach, R.id.msg_progressbar_attach,
-                        R.id.msg_text_time_attach);
+                        R.id.msg_text_time_attach, R.id.msg_signs_attach);
                 return qbViewHolder;
             case TYPE_ATTACH_LEFT:
                 qbViewHolder = new ImageAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_image_attach, R.id.msg_progressbar_attach,
-                        R.id.msg_text_time_attach);
+                        R.id.msg_text_time_attach, R.id.msg_signs_attach);
                 return qbViewHolder;
             case TYPE_ATTACH_RIGHT_AUDIO:
                 qbViewHolder = new AudioAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_audio_attach, R.id.msg_attach_duration,
-                        R.id.msg_text_time_attach);
+                        R.id.msg_text_time_attach, R.id.msg_signs_attach);
                 return qbViewHolder;
             case TYPE_ATTACH_LEFT_AUDIO:
                 qbViewHolder = new AudioAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_audio_attach, R.id.msg_attach_duration,
-                        R.id.msg_text_time_attach);
+                        R.id.msg_text_time_attach, R.id.msg_signs_attach);
                 return qbViewHolder;
             case TYPE_ATTACH_RIGHT_VIDEO:
                 qbViewHolder = new VideoAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_video_attach, R.id.msg_progressbar_attach,
-                        R.id.msg_text_time_attach, R.id.msg_video_play_icon);
+                        R.id.msg_attach_duration, R.id.msg_text_time_attach, R.id.msg_signs_attach, R.id.msg_video_play_icon);
                 return qbViewHolder;
             case TYPE_ATTACH_LEFT_VIDEO:
                 qbViewHolder = new VideoAttachHolder(inflater.inflate(containerLayoutRes.get(viewType), parent, false), R.id.msg_video_attach, R.id.msg_progressbar_attach,
-                        R.id.msg_text_time_attach, R.id.msg_video_play_icon);
+                        R.id.msg_attach_duration, R.id.msg_text_time_attach, R.id.msg_signs_attach, R.id.msg_video_play_icon);
                 return qbViewHolder;
 
             default:
@@ -611,9 +611,15 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
 
     protected void displayAttachmentVideo(QBMessageViewHolder holder, int position) {
+        QBAttachment attachment = getQBAttach(position);
+        int duration = getDurationFromAttach(attachment, position);
+        setDurationVideo(duration, holder);
         String url = getVideoUrl(position);
-
         showVideoThumbnail(holder, url, position);
+    }
+
+    protected void setDurationVideo(int duration, QBMessageViewHolder holder) {
+        ((VideoAttachHolder)holder).durationView.setText(Utils.formatTimeSecondsToMinutes(duration));
     }
 
 
@@ -786,10 +792,12 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     protected static class BaseAttachHolder extends QBMessageViewHolder {
         public TextView attachTextTime;
+        public ImageView signAttachView;
 
-        public BaseAttachHolder(View itemView, @IdRes int timeId) {
+        public BaseAttachHolder(View itemView, @IdRes int timeId, @IdRes int signViewId) {
             super(itemView);
             attachTextTime = (TextView) itemView.findViewById(timeId);
+            signAttachView = (ImageView) itemView.findViewById(signViewId);
         }
     }
 
@@ -797,8 +805,8 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         public ImageView attachImageView;
         public ProgressBar attachmentProgressBar;
 
-        public BaseImageAttachHolder(View itemView, @IdRes int attachId, @IdRes int progressBarId, @IdRes int timeId) {
-            super(itemView, timeId);
+        public BaseImageAttachHolder(View itemView, @IdRes int attachId, @IdRes int progressBarId, @IdRes int timeId, @IdRes int signId) {
+            super(itemView, timeId, signId);
             attachImageView = (ImageView) itemView.findViewById(attachId);
             attachmentProgressBar = (ProgressBar) itemView.findViewById(progressBarId);
         }
@@ -806,8 +814,8 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     protected static class ImageAttachHolder extends BaseImageAttachHolder {
 
-        public ImageAttachHolder(View itemView, @IdRes int attachId, @IdRes int progressBarId, @IdRes int timeId) {
-            super(itemView, attachId, progressBarId, timeId);
+        public ImageAttachHolder(View itemView, @IdRes int attachId, @IdRes int progressBarId, @IdRes int timeId, @IdRes int signId) {
+            super(itemView, attachId, progressBarId, timeId, signId);
         }
     }
 
@@ -815,8 +823,8 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         public QBPlaybackControlView playerView;
         public TextView durationView;
 
-        public AudioAttachHolder(View itemView, @IdRes int attachId, @IdRes int durationId, @IdRes int timeId) {
-            super(itemView, timeId);
+        public AudioAttachHolder(View itemView, @IdRes int attachId, @IdRes int durationId, @IdRes int timeId, @IdRes int signId) {
+            super(itemView, timeId, signId);
             playerView = (QBPlaybackControlView) itemView.findViewById(attachId);
             durationView = (TextView) itemView.findViewById(durationId);
         }
@@ -824,10 +832,12 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     protected static class VideoAttachHolder extends BaseImageAttachHolder {
         public ImageView playIcon;
+        public TextView durationView;
 
-        public VideoAttachHolder(View itemView, @IdRes int attachId, @IdRes int progressBarId, @IdRes int timeId, @IdRes int playIconId) {
-            super(itemView, attachId, progressBarId, timeId);
+        public VideoAttachHolder(View itemView, @IdRes int attachId, @IdRes int progressBarId, @IdRes int durationId, @IdRes int timeId, @IdRes int signId, @IdRes int playIconId) {
+            super(itemView, attachId, progressBarId, timeId, signId);
             playIcon = (ImageView) itemView.findViewById(playIconId);
+            durationView = (TextView) itemView.findViewById(durationId);
         }
     }
 
