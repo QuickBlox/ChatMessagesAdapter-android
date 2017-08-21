@@ -31,6 +31,7 @@ import com.google.android.exoplayer2.ExoPlaybackException;
 import com.quickblox.chat.model.QBAttachment;
 import com.quickblox.chat.model.QBChatDialog;
 import com.quickblox.chat.model.QBChatMessage;
+import com.quickblox.content.model.QBFile;
 import com.quickblox.core.QBEntityCallback;
 import com.quickblox.core.exception.QBResponseException;
 import com.quickblox.sample.chatadapter.R;
@@ -47,6 +48,7 @@ import com.quickblox.ui.kit.chatmessage.adapter.media.recorder.AudioRecorder;
 import com.quickblox.ui.kit.chatmessage.adapter.media.recorder.exceptions.MediaRecorderException;
 import com.quickblox.ui.kit.chatmessage.adapter.media.recorder.listeners.QBMediaRecordListener;
 import com.quickblox.ui.kit.chatmessage.adapter.media.recorder.view.QBRecordAudioButton;
+import com.quickblox.ui.kit.chatmessage.adapter.media.video.ui.VideoPlayerActivity;
 import com.quickblox.ui.kit.chatmessage.adapter.utils.QBMessageTextClickMovement;
 import com.quickblox.users.model.QBUser;
 
@@ -197,6 +199,14 @@ public class ChatActivity extends AppCompatActivity {
                     @Override
                     public void onLinkClicked(QBAttachment audioAttach, int positionInAdapter) {
                         Log.d(TAG, "onClick: audioAttach - " + audioAttach + " positionInAdapter = " + positionInAdapter);
+                    }
+                });
+
+                chatAdapter.setAttachVideoClickListener(new QBChatAttachClickListener() {
+                    @Override
+                    public void onLinkClicked(QBAttachment videoAttach, int positionInAdapter) {
+                        Log.d(TAG, "onClick: videoAttach - " + videoAttach + " positionInAdapter = " + positionInAdapter);
+                        VideoPlayerActivity.start(ChatActivity.this, Uri.parse(QBFile.getPrivateUrlForUID(videoAttach.getId())));
                     }
                 });
 

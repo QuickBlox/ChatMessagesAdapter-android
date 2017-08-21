@@ -20,6 +20,14 @@
             android:id="@+id/msg_video_attach"
             style="@style/ImageViewAttach.Left" />
 
+        <ImageView
+            android:id="@+id/msg_video_play_icon"
+            style="@style/ImageViewPlayIconAttach.Left" />
+
+        <TextView
+            android:id="@+id/msg_attach_duration"
+            style="@style/VideoAttachDurationView.Left" />
+
         <include layout="@layout/widget_item_attach_left" />
 
 

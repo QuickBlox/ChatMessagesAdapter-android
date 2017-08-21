@@ -149,7 +149,7 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
         if (isPlayerViewCurrent(playerView)) {
             playerView.setPlayer(exoPlayer);
         }
-        MediaSource mediaSource = SimpleExoPlayerInitializer.buildMediaSource(uri);
+        MediaSource mediaSource = SimpleExoPlayerInitializer.buildMediaSource(uri, context);
         boolean haveResumePosition = resumeWindow != C.INDEX_UNSET;
         if (haveResumePosition) {
             exoPlayer.seekTo(resumeWindow, resumePosition);
@@ -171,12 +171,12 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
     }
 
     private void startPlayback() {
-        exoPlayer.prepare(SimpleExoPlayerInitializer.buildMediaSource(uri));
+        exoPlayer.prepare(SimpleExoPlayerInitializer.buildMediaSource(uri, context));
         exoPlayer.setPlayWhenReady(true);
     }
 
     private void initPlayer() {
-        exoPlayer = SimpleExoPlayerInitializer.initializeAudioPlayer(context);
+        exoPlayer = SimpleExoPlayerInitializer.initializeExoPlayer(context);
         setEventListener();
     }
 

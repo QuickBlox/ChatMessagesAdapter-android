@@ -114,9 +114,28 @@
     </style>
 
 
+    <style name="ImageViewPlayIconAttach.Right">
+        <item name="android:layout_marginRight">@dimen/padding_common</item>
+    </style>
+
+    <style name="ImageViewPlayIconAttach.Left">
+        <item name="android:layout_marginLeft">@dimen/padding_common</item>
+    </style>
+
+    <style name="ImageViewPlayIconAttach">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:scaleType">centerCrop</item>
+        <item name="android:src">@drawable/ic_play_circle_outline_white_48dp</item>
+        <item name="android:visibility">invisible</item>
+    </style>
+
+
     <style name="AudioViewAttach">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="controller_layout_id">@layout/widget_exo_playback_audio_control_view</item>
     </style>
 
     <style name="AudioViewAttach.Right">
@@ -390,4 +409,40 @@
         <item name="android:textSize">@dimen/text_size_small</item>
         <item name="android:textStyle">bold</item>
     </style>
+
+
+    <style name="VideoAttachDurationView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:paddingLeft">@dimen/padding_small</item>
+        <item name="android:paddingRight">@dimen/padding_small</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="VideoAttachDurationView.Right">
+        <item name="android:layout_alignParentBottom">true</item>
+    </style>
+
+    <style name="VideoAttachDurationView.Left">
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:layout_alignParentRight">true</item>
+    </style>
+
+
+    <style name="VideoPlayerRootView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:focusable">true</item>
+        <item name="android:keepScreenOn">true</item>
+    </style>
+
+    <style name="VideoSimplePlayerView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:focusable">true</item>
+    </style>
+
 </resources>
