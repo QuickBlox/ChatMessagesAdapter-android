@@ -30,8 +30,6 @@ import com.quickblox.core.QBEntityCallback;
 import com.quickblox.core.exception.QBResponseException;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBMediaPlayerListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachClickListener;
-import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachImageClickListener;
-import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachLocationClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatMessageLinkClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBLinkPreviewClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.media.AudioController;
@@ -148,7 +146,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         this.attachAudioClickListener = clickListener;
     }
 
-    public void removeAttachImageClickListener(QBChatAttachImageClickListener clickListener) {
+    public void removeAttachImageClickListener(QBChatAttachClickListener clickListener) {
         attachImageClickListener = null;
     }
 

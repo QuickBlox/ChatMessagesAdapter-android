@@ -37,8 +37,6 @@ import com.quickblox.sample.chatadapter.R;
 import com.quickblox.sample.chatadapter.ui.adapter.CustomMessageAdapter;
 import com.quickblox.sample.chatadapter.utils.ChatHelper;
 import com.quickblox.ui.kit.chatmessage.adapter.QBMessagesAdapter;
-import com.quickblox.core.QBEntityCallback;
-import com.quickblox.core.exception.QBResponseException;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBLinkPreviewClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.models.QBLinkPreview;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachClickListener;
