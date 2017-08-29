@@ -270,7 +270,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     public void initAudioRecorder() {
-        audioRecorder = AudioRecorder.newBuilder(new QBMediaRecordListenerImpl())
+        audioRecorder = AudioRecorder.newBuilder()
                 // Required
                 .useInBuildFilePathGenerator(this)
                 .setDuration(10)
@@ -279,7 +279,7 @@ public class ChatActivity extends AppCompatActivity {
 //                .setAudioSource(QBMediaRecorder.AudioSource.MIC)
 //                .setOutputFormat(QBMediaRecorder.OutputFormat.AMR_NB);
 //                .setSampleRate(AudioSampleRate.HZ_48000)
-
+        audioRecorder.setMediaRecordListener(new QBMediaRecordListenerImpl());
     }
 
     public void startRecord() {

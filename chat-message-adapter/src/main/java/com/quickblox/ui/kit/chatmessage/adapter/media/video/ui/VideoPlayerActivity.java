@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
@@ -25,6 +26,8 @@ public class VideoPlayerActivity extends Activity {
 
     private Uri videoUri;
     private boolean shouldAutoPlay;
+    private int resumeWindow;
+    private long resumePosition;
 
     public static void start(Context context, Uri videoUri) {
         Intent intent = new Intent(context, VideoPlayerActivity.class);
@@ -86,15 +89,26 @@ public class VideoPlayerActivity extends Activity {
         player.addListener(new PlayerStateListener());
         simpleExoPlayerView.setPlayer(player);
         player.setPlayWhenReady(shouldAutoPlay);
+        boolean haveResumePosition = resumeWindow != C.INDEX_UNSET;
+        if (haveResumePosition) {
+            player.seekTo(resumeWindow, resumePosition);
+        }
         player.prepare(SimpleExoPlayerInitializer.buildMediaSource(videoUri, this));
     }
 
     private void releasePlayer() {
         if (player != null) {
             shouldAutoPlay = player.getPlayWhenReady();
+            updateResumePosition();
             player.release();
             player = null;
         }
+    }
+
+    private void updateResumePosition() {
+        resumeWindow = player.getCurrentWindowIndex();
+        resumePosition = player.isCurrentWindowSeekable() ? Math.max(0, player.getCurrentPosition())
+                : C.TIME_UNSET;
     }
 
     private void setPlayerToStartPosition() {

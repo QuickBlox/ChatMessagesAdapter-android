@@ -26,12 +26,11 @@ public class AudioRecorder extends QBMediaRecorder<AudioRecorder> {
     private RecordState state = RecordState.RECORD_STATE_UNKNOWN;
     private ConfigurationBuilder configurationBuilder;
 
-    private AudioRecorder(QBMediaRecordListener recordListener) {
-        this.recordListener = recordListener;
+    private AudioRecorder() {
     }
 
-    public static ConfigurationBuilder newBuilder(QBMediaRecordListener recordListener) {
-        return new AudioRecorder(recordListener).new ConfigurationBuilder();
+    public static ConfigurationBuilder newBuilder() {
+        return new AudioRecorder().new ConfigurationBuilder();
     }
 
     @Override
@@ -44,17 +43,17 @@ public class AudioRecorder extends QBMediaRecorder<AudioRecorder> {
 
     @Override
     public void cancelRecord() {
-//        releaseMediaRecorder all data and maybe delete temp file
-        releaseMediaRecorder();
-
-        if(recordListener != null) {
+//        stopAndReleaseMediaRecorder all data and maybe delete temp file
+        stopAndReleaseMediaRecorder();
+        setState(RecordState.RECORD_STATE_UNKNOWN);
+        if (recordListener != null) {
             recordListener.onMediaRecordClosed();
         }
     }
 
     @Override
     public void stopRecord() {
-        releaseMediaRecorder();
+        stopAndReleaseMediaRecorder();
         sendResult();
     }
 
@@ -82,14 +81,14 @@ public class AudioRecorder extends QBMediaRecorder<AudioRecorder> {
 
     private void notifyListenerError(MediaRecorderException e) {
         setState(RecordState.RECORD_STATE_ERROR);
-        if(recordListener != null) {
+        if (recordListener != null) {
             recordListener.onMediaRecordError(e);
         }
     }
 
     private void notifyListenerSuccess() {
         setState(RecordState.RECORD_STATE_COMPLETED);
-        if(recordListener != null) {
+        if (recordListener != null) {
             recordListener.onMediaRecorded(getFile());
         }
     }
@@ -98,18 +97,37 @@ public class AudioRecorder extends QBMediaRecorder<AudioRecorder> {
         return new File(configurationBuilder.filePath);
     }
 
-    private void releaseMediaRecorder() {
+    private void stopAndReleaseMediaRecorder() {
         if (recorder != null) {
             if (state.ordinal() >= RecordState.RECORD_STATE_BEGIN.ordinal()) {
                 recorder.stop();
             }
-            recorder.release();
-            recorder = null;
+            releaseMediaRecorder();
         }
     }
 
+    public void releaseMediaRecorder() {
+        if (recorder != null) {
+            recorder.release();
+            recorder = null;
+            Log.d(TAG, "mediaRecorder released");
+        }
+    }
+
+    public void setMediaRecordListener(QBMediaRecordListener recordListener) {
+        this.recordListener = recordListener;
+    }
+
+    public void removeMediaRecordListener() {
+        this.recordListener = null;
+    }
+
+    public boolean isRecording() {
+        return state.equals(RecordState.RECORD_STATE_BEGIN);
+    }
+
     private void sendResult() {
-        if(state.ordinal() > RecordState.RECORD_STATE_UNKNOWN.ordinal() && state.ordinal() < RecordState.RECORD_STATE_COMPLETED.ordinal()) {
+        if (state.ordinal() > RecordState.RECORD_STATE_UNKNOWN.ordinal() && state.ordinal() < RecordState.RECORD_STATE_COMPLETED.ordinal()) {
             notifyListenerSuccess();
         }
     }
