@@ -1,8 +1,11 @@
 package com.quickblox.ui.kit.chatmessage.adapter;
 
+import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
@@ -427,12 +430,12 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         linkHost.setText(LinkUtils.getHostFromLink(link));
 
         linkImage.setVisibility(View.GONE);
-        if (linkPreview.getImage() != null && linkPreview.getImage().getImageUrl() != null) {
+        if (linkPreview.getImage() != null && linkPreview.getImage().getImageUrl() != null && isPossibleToDisplayImage(context)) {
             loadImageOrHideView(LinkUtils.prepareCorrectLink(linkPreview.getImage().getImageUrl()), linkImage);
         }
 
         linkHostIcon.setVisibility(View.GONE);
-        if (LinkUtils.getLinkForHostIcon(link) != null) {
+        if (LinkUtils.getLinkForHostIcon(link) != null && isPossibleToDisplayImage(context)) {
             loadImageOrHideView(LinkUtils.getLinkForHostIcon(link), linkHostIcon);
         }
     }
@@ -774,6 +777,31 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     protected void setItemAttachAudioClickListener(QBChatAttachClickListener listener, QBMessageViewHolder holder, QBAttachment qbAttachment, int position,
                                                    QBPlaybackControlView controlView) {
         holder.bubbleFrame.setOnClickListener(new QBItemAudioClickListener(listener, qbAttachment, position, controlView));
+    }
+
+
+    /**
+     * Checks possibility loading image via Glide.
+     * Glide can't load image for destroyed activity. If Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1
+     * Glide will take application context.
+     *
+     * @param context the context for checking
+     * @return true if loading possible and false otherwise
+     */
+    protected boolean isPossibleToDisplayImage(Context context) {
+        if (context == null) {
+            return false;
+        }
+
+        if (!(context instanceof Application)) {
+            if (context instanceof Activity) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && ((Activity) context).isDestroyed()) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
 
