@@ -303,9 +303,7 @@ public class ChatActivity extends AppCompatActivity {
 
     public void cancelRecord() {
         Log.d(TAG, "cancelRecord");
-        recordChronometer.stop();
-        recordChronometer.setVisibility(View.INVISIBLE);
-        audioRecordTextView.setVisibility(View.INVISIBLE);
+        hideRecordView();
         Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
         bucketView.startAnimation(shake);
         vibro.vibrate(100);
@@ -319,6 +317,17 @@ public class ChatActivity extends AppCompatActivity {
         audioRecorder.cancelRecord();
     }
 
+    public void clearRecorder() {
+        hideRecordView();
+        audioRecorder.releaseMediaRecorder();
+    }
+
+    private void hideRecordView(){
+        recordChronometer.stop();
+        recordChronometer.setVisibility(View.INVISIBLE);
+        audioRecordTextView.setVisibility(View.INVISIBLE);
+    }
+
     private class QBMediaRecordListenerImpl implements QBMediaRecordListener {
 
         @Override
@@ -329,7 +338,8 @@ public class ChatActivity extends AppCompatActivity {
 
         @Override
         public void onMediaRecordError(MediaRecorderException e) {
-            cancelRecord();
+            Log.d(TAG, "onMediaRecordError e= " + e.getMessage());
+            clearRecorder();
         }
 
         @Override

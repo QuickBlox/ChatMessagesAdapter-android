@@ -35,15 +35,13 @@ public class AudioRecorder extends QBMediaRecorder<AudioRecorder> {
 
     @Override
     public void startRecord() {
-        initMediaRecorder();
-        prepareMediaRecorder();
         setState(RecordState.RECORD_STATE_BEGIN);
-        recorder.start();
+        initMediaRecorder();
+        prepareStartMediaRecorder();
     }
 
     @Override
     public void cancelRecord() {
-//        stopAndReleaseMediaRecorder all data and maybe delete temp file
         stopAndReleaseMediaRecorder();
         setState(RecordState.RECORD_STATE_UNKNOWN);
         if (recordListener != null) {
@@ -71,9 +69,10 @@ public class AudioRecorder extends QBMediaRecorder<AudioRecorder> {
         recorder.setOnErrorListener(new OnErrorListenerImpl());
     }
 
-    private void prepareMediaRecorder() {
+    private void prepareStartMediaRecorder() {
         try {
             recorder.prepare();
+            recorder.start();
         } catch (IOException e) {
             notifyListenerError(new MediaRecorderException(e.getMessage()));
         }
@@ -97,10 +96,17 @@ public class AudioRecorder extends QBMediaRecorder<AudioRecorder> {
         return new File(configurationBuilder.filePath);
     }
 
+    // From MediaRecorder: RuntimeException is intentionally thrown to the application,
+    // if no valid audio/video data has been received when stop() is called.
+    // This happens if stop() is called immediately after start()
     private void stopAndReleaseMediaRecorder() {
         if (recorder != null) {
             if (state.ordinal() >= RecordState.RECORD_STATE_BEGIN.ordinal()) {
-                recorder.stop();
+                try {
+                    recorder.stop();
+                } catch (RuntimeException stopException) {
+                    notifyListenerError(new MediaRecorderException(stopException.getMessage()));
+                }
             }
             releaseMediaRecorder();
         }
