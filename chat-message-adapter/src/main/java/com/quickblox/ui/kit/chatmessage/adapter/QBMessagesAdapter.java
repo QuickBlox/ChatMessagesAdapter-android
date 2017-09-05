@@ -1,11 +1,8 @@
 package com.quickblox.ui.kit.chatmessage.adapter;
 
-import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
@@ -235,6 +232,24 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         }
     }
 
+    @Override
+    public void onViewRecycled(QBMessageViewHolder holder) {
+        if (holder.getItemViewType() == TYPE_TEXT_LEFT || holder.getItemViewType() == TYPE_TEXT_RIGHT){
+            TextMessageHolder textMessageHolder = (TextMessageHolder) holder;
+
+            if (textMessageHolder.linkPreviewLayout.getTag() != null) {
+                textMessageHolder.linkPreviewLayout.setTag(null);
+            }
+        }
+
+        //abort loading avatar before setting new avatar to view
+        if (containerLayoutRes.get(holder.getItemViewType()) != 0) {
+            Glide.clear(holder.avatar);
+        }
+
+        super.onViewRecycled(holder);
+    }
+
     protected QBMessageViewHolder onCreateCustomViewHolder(ViewGroup parent, int viewType) {
         Log.e(TAG, "You must create ViewHolder by your own");
         return null;
@@ -388,6 +403,8 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         final List<String> urlsList = LinkUtils.extractUrls(chatMessage.getBody());
         if (!urlsList.isEmpty()) {
             holder.messageTextView.setMaxWidth((int) context.getResources().getDimension(R.dimen.link_preview_width));
+            holder.linkPreviewLayout.setTag(chatMessage.getId());
+
             if (isLeftMessage){
                 processLinksFromLeftMessage(holder, urlsList, position);
             } else {
@@ -408,8 +425,12 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     protected void processLinksFromMessage(TextMessageHolder holder, final List<String> urlsList, final int position) {
         final String firstLink = LinkUtils.getLinkWithProtocol(urlsList.get(0));
+        String linkPreviewViewIdentifier = (String) holder.linkPreviewLayout.getTag();
 
-        QBLinkPreviewCashService.getInstance().getLinkPreview(firstLink, null, false, new LoadLinkPreviewHandler(holder, urlsList, position));
+        QBLinkPreviewCashService.getInstance().getLinkPreview(firstLink,
+                null,
+                false,
+                new LoadLinkPreviewHandler(holder, urlsList, position, linkPreviewViewIdentifier));
     }
 
     protected void fillLinkPreviewLayout(final View linkPreviewLayout, final QBLinkPreview linkPreview, String link) {
@@ -980,17 +1001,21 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         private int position;
         private String firstLink;
         private List<String> urlsList;
+        private final String viewIdentifier;
 
-        public LoadLinkPreviewHandler(TextMessageHolder holder, List<String> urlsList, int position) {
+        public LoadLinkPreviewHandler(TextMessageHolder holder, List<String> urlsList, int position, String viewIdentifier) {
             this.holder = holder;
             this.urlsList = urlsList;
             this.position = position;
             this.firstLink = LinkUtils.getLinkWithProtocol(urlsList.get(0));
+            this.viewIdentifier = viewIdentifier;
         }
 
         @Override
         public void onSuccess(QBLinkPreview linkPreview, Bundle bundle) {
-            if (linkPreview != null && holder.getAdapterPosition() == position) {
+            if (linkPreview != null
+                    && holder.linkPreviewLayout.getTag() != null
+                    && holder.linkPreviewLayout.getTag().equals(viewIdentifier)) {
                 holder.linkPreviewLayout.setOnClickListener(new QBLinkPreviewClickListenerFilter(linkPreviewClickListener, firstLink, linkPreview, position));
                 holder.linkPreviewLayout.setOnLongClickListener(new QBLinkPreviewClickListenerFilter(linkPreviewClickListener, firstLink, linkPreview, position));
 
