@@ -40,7 +40,7 @@ allprojects {
 
 ext.compileSdkVersion = 24
 ext.buildToolsVersion = "24.0.1"
-ext.versionName = '2.1.0-alpha7'
+ext.versionName = '2.1.0-alpha8'
 
 ext.supportAnnotationsVersion = '24.0.1'
 
@@ -54,7 +54,7 @@ ext.qbSdkVersion = "3.3.4"
 ext.recycleVersion = "25.3.1"
 ext.circleImageVersion = "2.1.0"
 ext.glideVersion = "3.8.0"
-ext.exoPlayerVersion = "r2.4.0"
+ext.exoPlayerVersion = "r2.5.1"
 ext.supportV4Version = "25.3.1"
 
 task clean(type: Delete) {

@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.quickblox.ui.kit.chatmessage.adapter.R;
 import com.quickblox.ui.kit.chatmessage.adapter.media.AudioController;
@@ -104,7 +105,7 @@ public class QBPlaybackControlView extends PlaybackControlView {
     }
 
     @Override
-    public void setPlayer(ExoPlayer player) {
+    public void setPlayer(Player player) {
         if (getPlayer() == player) {
             return;
         }
@@ -132,7 +133,7 @@ public class QBPlaybackControlView extends PlaybackControlView {
     }
 
     private void updateViewState() {
-        if(getPlayer().getPlaybackState() == ExoPlayer.STATE_ENDED){
+        if(getPlayer().getPlaybackState() == Player.STATE_ENDED){
             resetPlayerPosition();
         } else {
             updatePlayPauseIconView();
@@ -194,12 +195,17 @@ public class QBPlaybackControlView extends PlaybackControlView {
 
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-            if(playbackState == ExoPlayer.STATE_ENDED && playWhenReady) {
+            if(playbackState == Player.STATE_ENDED && playWhenReady) {
                 resetPlayerPosition();
                 clickIconPlayPauseView();
             }
         }
-     }
+
+        @Override
+        public void onRepeatModeChanged(int repeatMode) {
+
+        }
+    }
 
      private void resetPlayerPosition() {
          mediaController.onStartPosition();

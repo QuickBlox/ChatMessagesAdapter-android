@@ -62,7 +62,7 @@ public class TimeProgressBar extends ProgressBar implements TimeBar {
     }
 
     @Override
-    public void setAdBreakTimesMs(@Nullable long[] adBreakTimesMs, int adBreakCount) {
+    public void setAdGroupTimesMs(@Nullable long[] adGroupTimesMs, @Nullable boolean[] playedAdGroups, int adGroupCount) {
 
     }
 

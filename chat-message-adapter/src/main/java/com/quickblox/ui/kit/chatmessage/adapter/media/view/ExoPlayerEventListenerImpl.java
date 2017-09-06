@@ -1,8 +1,8 @@
 package com.quickblox.ui.kit.chatmessage.adapter.media.view;
 
 import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
@@ -11,7 +11,7 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
  * Created by Roman on 05.08.2017.
  */
 
-public class ExoPlayerEventListenerImpl implements ExoPlayer.EventListener {
+public class ExoPlayerEventListenerImpl implements Player.EventListener {
     @Override
     public void onTimelineChanged(Timeline timeline, Object manifest) {
 
@@ -29,6 +29,11 @@ public class ExoPlayerEventListenerImpl implements ExoPlayer.EventListener {
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+
+    }
+
+    @Override
+    public void onRepeatModeChanged(int repeatMode) {
 
     }
 

@@ -7,13 +7,13 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.util.Util;
 import com.quickblox.ui.kit.chatmessage.adapter.R;
 import com.quickblox.ui.kit.chatmessage.adapter.media.utils.SimpleExoPlayerInitializer;
-import com.quickblox.ui.kit.chatmessage.adapter.media.video.ExoPlayerEventListenerImpl;
+import com.quickblox.ui.kit.chatmessage.adapter.media.view.ExoPlayerEventListenerImpl;
 
 /**
  * Created by roman on 8/16/17.
@@ -120,7 +120,7 @@ public class VideoPlayerActivity extends Activity {
 
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-            if (playbackState == ExoPlayer.STATE_ENDED) {
+            if (playbackState == Player.STATE_ENDED) {
                 setPlayerToStartPosition();
             }
         }

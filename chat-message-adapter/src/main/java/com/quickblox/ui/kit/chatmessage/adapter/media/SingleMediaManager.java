@@ -6,8 +6,8 @@ import android.util.Log;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -23,7 +23,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * Created by roman on 7/14/17.
  */
 
-public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener {
+public class SingleMediaManager implements MediaManager, Player.EventListener {
     private static String TAG = SingleMediaManager.class.getSimpleName();
 
     private QBPlaybackControlView playerView;
@@ -244,6 +244,11 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
     }
 
     @Override
+    public void onRepeatModeChanged(int repeatMode) {
+
+    }
+
+    @Override
     public void onPlayerError(ExoPlaybackException error) {
         notifyListenersOnPlayerError(error);
     }
@@ -260,14 +265,14 @@ public class SingleMediaManager implements MediaManager, ExoPlayer.EventListener
 
     private void parsePlayerEvent(int playbackState) {
         switch(playbackState) {
-            case ExoPlayer.STATE_BUFFERING:
+            case Player.STATE_BUFFERING:
                 break;
-            case ExoPlayer.STATE_ENDED:
+            case Player.STATE_ENDED:
                 notifyListenersOnStop();
                 break;
-            case ExoPlayer.STATE_IDLE:
+            case Player.STATE_IDLE:
                 break;
-            case ExoPlayer.STATE_READY:
+            case Player.STATE_READY:
                 break;
             default:
                 break;
