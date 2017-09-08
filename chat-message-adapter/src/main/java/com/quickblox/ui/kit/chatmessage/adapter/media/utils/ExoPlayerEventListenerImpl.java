@@ -1,4 +1,4 @@
-package com.quickblox.ui.kit.chatmessage.adapter.media.view;
+package com.quickblox.ui.kit.chatmessage.adapter.media.utils;
 
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.PlaybackParameters;

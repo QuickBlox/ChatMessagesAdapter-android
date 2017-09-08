@@ -13,6 +13,7 @@ import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.quickblox.ui.kit.chatmessage.adapter.R;
 import com.quickblox.ui.kit.chatmessage.adapter.media.AudioController;
+import com.quickblox.ui.kit.chatmessage.adapter.media.utils.ExoPlayerEventListenerImpl;
 
 /**
  * Created by roman on 8/1/17.
