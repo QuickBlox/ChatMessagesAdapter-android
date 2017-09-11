@@ -172,13 +172,13 @@ public class AudioRecorder extends QBMediaRecorder<AudioRecorder> {
         public static final int CHANNEL_MONO = 1;
         public static final int CHANNEL_STEREO = 2;
 
-        private int channels = CHANNEL_STEREO;
+        private static final String DEFAULT_FILE_NAME = "recorded_audio_chat.mp3";
 
-        private String fileName = "recorded_audio_chat.wav";
+        private int channels = CHANNEL_STEREO;
         private String filePath;
 
         private int audioSource = MediaRecorder.AudioSource.MIC;
-        private int outputFormat = MediaRecorder.OutputFormat.THREE_GPP;
+        private int outputFormat = MediaRecorder.OutputFormat.MPEG_4;
         private int audioEncoder = MediaRecorder.AudioEncoder.AAC;
         private int bitRate = 96000;
         private int samplingRate = 44100;
@@ -188,7 +188,7 @@ public class AudioRecorder extends QBMediaRecorder<AudioRecorder> {
         }
 
         public ConfigurationBuilder useInBuildFilePathGenerator(Context context) {
-            filePath = Utils.getAudioPathPrivate(context, fileName);
+            filePath = Utils.getAudioPathPrivate(context, DEFAULT_FILE_NAME);
             return this;
         }
 
