@@ -152,6 +152,7 @@ public class AudioRecorder extends QBMediaRecorder<AudioRecorder> {
         @Override
         public void onInfo(MediaRecorder mediaRecorder, int what, int extra) {
             String event = Utils.parseCode(what);
+            stopAndReleaseMediaRecorder();
             sendResult();
             Log.d(TAG, "onInfo event= " + event + ", extra= " + extra);
         }
