@@ -13,6 +13,7 @@ import java.io.File;
  */
 
 public class Utils {
+    final static int MEDIA_RECORDING_IS_IN_PROGRESS = 895;
 
     public static String getAudioFilePathPublic(String folderName, String fileName) {
         File folder = FileHelper.getDirectory(folderName);
@@ -38,6 +39,9 @@ public class Utils {
                 break;
             case MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED:
                 msg = "MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED";
+                break;
+            case MEDIA_RECORDING_IS_IN_PROGRESS:
+                msg = "MEDIA_RECORDING_IS_IN_PROGRESS";
                 break;
             default:
                 msg = "UNKNOWN";

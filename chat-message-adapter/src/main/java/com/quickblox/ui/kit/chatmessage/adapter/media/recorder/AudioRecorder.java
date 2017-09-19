@@ -152,9 +152,15 @@ public class AudioRecorder extends QBMediaRecorder<AudioRecorder> {
         @Override
         public void onInfo(MediaRecorder mediaRecorder, int what, int extra) {
             String event = Utils.parseCode(what);
-            stopAndReleaseMediaRecorder();
-            sendResult();
             Log.d(TAG, "onInfo event= " + event + ", extra= " + extra);
+            if (!canProceed(what)) {
+                sendResult();
+                stopAndReleaseMediaRecorder();
+            }
+        }
+
+        private boolean canProceed(int what) {
+            return what == Utils.MEDIA_RECORDING_IS_IN_PROGRESS;
         }
     }
 

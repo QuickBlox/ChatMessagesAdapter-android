@@ -40,7 +40,7 @@ allprojects {
 
 ext.compileSdkVersion = 24
 ext.buildToolsVersion = "24.0.1"
-ext.versionName = '2.1.0-alpha11'
+ext.versionName = '2.1.0-alpha12'
 
 ext.supportAnnotationsVersion = '24.0.1'
 
