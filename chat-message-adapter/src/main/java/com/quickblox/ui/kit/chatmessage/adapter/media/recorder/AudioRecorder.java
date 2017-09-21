@@ -154,8 +154,8 @@ public class AudioRecorder extends QBMediaRecorder<AudioRecorder> {
             String event = Utils.parseCode(what);
             Log.d(TAG, "onInfo event= " + event + ", extra= " + extra);
             if (!canProceed(what)) {
-                sendResult();
                 stopAndReleaseMediaRecorder();
+                sendResult();
             }
         }
 
