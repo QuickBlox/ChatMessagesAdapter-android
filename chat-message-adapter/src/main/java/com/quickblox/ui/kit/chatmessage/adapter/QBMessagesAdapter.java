@@ -22,6 +22,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.quickblox.chat.QBChatService;
 import com.quickblox.chat.model.QBAttachment;
 import com.quickblox.chat.model.QBChatMessage;
@@ -664,7 +665,12 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         initPlayerView(playerView, uri, position);
         if (isCurrentViewActive(position)) {
             Log.d(TAG, "showAudioView isCurrentViewActive");
-            playerView.restoreState(getMediaManagerInstance().getExoPlayer());
+            SimpleExoPlayer player = getMediaManagerInstance().getExoPlayer();
+            Log.d(TAG, "showAudioView getMediaManagerInstance()= " + getMediaManagerInstance().hashCode());
+            Log.d(TAG, "showAudioView getMediaManagerInstance()= " + getMediaManagerInstance().getExoPlayer());
+            if (player != null) {
+                playerView.restoreState(player);
+            }
         }
     }
 
