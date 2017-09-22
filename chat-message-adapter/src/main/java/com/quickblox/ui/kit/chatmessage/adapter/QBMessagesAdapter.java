@@ -22,17 +22,16 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.quickblox.chat.QBChatService;
 import com.quickblox.chat.model.QBAttachment;
 import com.quickblox.chat.model.QBChatMessage;
 import com.quickblox.content.model.QBFile;
 import com.quickblox.core.QBEntityCallback;
 import com.quickblox.core.exception.QBResponseException;
-import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBMediaPlayerListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatAttachClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBChatMessageLinkClickListener;
 import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBLinkPreviewClickListener;
+import com.quickblox.ui.kit.chatmessage.adapter.listeners.QBMediaPlayerListener;
 import com.quickblox.ui.kit.chatmessage.adapter.media.AudioController;
 import com.quickblox.ui.kit.chatmessage.adapter.media.MediaController;
 import com.quickblox.ui.kit.chatmessage.adapter.media.SingleMediaManager;
@@ -235,7 +234,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
     @Override
     public void onViewRecycled(QBMessageViewHolder holder) {
-        if (holder.getItemViewType() == TYPE_TEXT_LEFT || holder.getItemViewType() == TYPE_TEXT_RIGHT){
+        if (holder.getItemViewType() == TYPE_TEXT_LEFT || holder.getItemViewType() == TYPE_TEXT_RIGHT) {
             TextMessageHolder textMessageHolder = (TextMessageHolder) holder;
 
             if (textMessageHolder.linkPreviewLayout.getTag() != null) {
@@ -388,7 +387,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         fillTextMessageHolder(holder, chatMessage, position, false);
     }
 
-    protected void fillTextMessageHolder(TextMessageHolder holder, T chatMessage, int position, boolean isLeftMessage){
+    protected void fillTextMessageHolder(TextMessageHolder holder, T chatMessage, int position, boolean isLeftMessage) {
         holder.linkPreviewLayout.setVisibility(View.GONE);
         holder.messageTextView.setText(chatMessage.getBody());
         holder.timeTextMessageTextView.setText(getDate(chatMessage.getDateSent()));
@@ -406,7 +405,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
             holder.messageTextView.setMaxWidth((int) context.getResources().getDimension(R.dimen.link_preview_width));
             holder.linkPreviewLayout.setTag(chatMessage.getId());
 
-            if (isLeftMessage){
+            if (isLeftMessage) {
                 processLinksFromLeftMessage(holder, urlsList, position);
             } else {
                 processLinksFromRightMessage(holder, urlsList, position);
@@ -416,11 +415,11 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         }
     }
 
-    protected void processLinksFromLeftMessage(TextMessageHolder holder, List<String> urlsList, int position){
+    protected void processLinksFromLeftMessage(TextMessageHolder holder, List<String> urlsList, int position) {
         processLinksFromMessage(holder, urlsList, position);
     }
 
-    protected void processLinksFromRightMessage(TextMessageHolder holder, List<String> urlsList, int position){
+    protected void processLinksFromRightMessage(TextMessageHolder holder, List<String> urlsList, int position) {
         processLinksFromMessage(holder, urlsList, position);
     }
 
@@ -463,7 +462,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
         }
     }
 
-    protected void loadImageOrHideView(final String imageUrl, final ImageView imageView){
+    protected void loadImageOrHideView(final String imageUrl, final ImageView imageView) {
         int preferredImageWidth = (int) context.getResources().getDimension(R.dimen.attach_image_width_preview);
         int preferredImageHeight = (int) context.getResources().getDimension(R.dimen.attach_image_height_preview);
 
@@ -506,7 +505,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
             return attachLocationClickListener;
         } else if (QBAttachment.AUDIO_TYPE.equalsIgnoreCase(attachment.getType())) {
             return attachAudioClickListener;
-        } else if(QBAttachment.VIDEO_TYPE.equalsIgnoreCase(attachment.getType())) {
+        } else if (QBAttachment.VIDEO_TYPE.equalsIgnoreCase(attachment.getType())) {
             return attachVideoClickListener;
         }
         return null;
@@ -549,13 +548,13 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
             QBAttachment attachment = getQBAttach(position);
 
             if (QBAttachment.PHOTO_TYPE.equalsIgnoreCase(attachment.getType()) ||
-                QBAttachment.IMAGE_TYPE.equalsIgnoreCase(attachment.getType())) {
-                  return isIncoming(chatMessage) ? TYPE_ATTACH_LEFT : TYPE_ATTACH_RIGHT;
+                    QBAttachment.IMAGE_TYPE.equalsIgnoreCase(attachment.getType())) {
+                return isIncoming(chatMessage) ? TYPE_ATTACH_LEFT : TYPE_ATTACH_RIGHT;
             } else if (QBAttachment.LOCATION_TYPE.equalsIgnoreCase(attachment.getType())) {
-                  return getLocationView(chatMessage);
-            } else if (QBAttachment.AUDIO_TYPE.equalsIgnoreCase(attachment.getType())){
+                return getLocationView(chatMessage);
+            } else if (QBAttachment.AUDIO_TYPE.equalsIgnoreCase(attachment.getType())) {
                 return isIncoming(chatMessage) ? TYPE_ATTACH_LEFT_AUDIO : TYPE_ATTACH_RIGHT_AUDIO;
-            } else if (QBAttachment.VIDEO_TYPE.equalsIgnoreCase(attachment.getType())){
+            } else if (QBAttachment.VIDEO_TYPE.equalsIgnoreCase(attachment.getType())) {
                 return isIncoming(chatMessage) ? TYPE_ATTACH_LEFT_VIDEO : TYPE_ATTACH_RIGHT_VIDEO;
             }
 
@@ -615,11 +614,11 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     protected void displayAttachment(QBMessageViewHolder holder, int position) {
         QBAttachment attachment = getQBAttach(position);
 
-        if (QBAttachment.PHOTO_TYPE.equalsIgnoreCase(attachment.getType())||
-            QBAttachment.IMAGE_TYPE.equalsIgnoreCase(attachment.getType())) {
-              showPhotoAttach(holder, position);
+        if (QBAttachment.PHOTO_TYPE.equalsIgnoreCase(attachment.getType()) ||
+                QBAttachment.IMAGE_TYPE.equalsIgnoreCase(attachment.getType())) {
+            showPhotoAttach(holder, position);
         } else if (QBAttachment.LOCATION_TYPE.equalsIgnoreCase(attachment.getType())) {
-              showLocationAttach(holder, position);
+            showLocationAttach(holder, position);
         }
     }
 
@@ -645,7 +644,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     }
 
     protected void setDurationVideo(int duration, QBMessageViewHolder holder) {
-        ((VideoAttachHolder)holder).durationView.setText(Utils.formatTimeSecondsToMinutes(duration));
+        ((VideoAttachHolder) holder).durationView.setText(Utils.formatTimeSecondsToMinutes(duration));
     }
 
 
@@ -658,19 +657,14 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     }
 
     protected void setDurationAudio(int duration, QBMessageViewHolder holder) {
-        ((AudioAttachHolder)holder).durationView.setText(Utils.formatTimeSecondsToMinutes(duration));
+        ((AudioAttachHolder) holder).durationView.setText(Utils.formatTimeSecondsToMinutes(duration));
     }
 
     private void showAudioView(QBPlaybackControlView playerView, Uri uri, int position) {
         initPlayerView(playerView, uri, position);
         if (isCurrentViewActive(position)) {
             Log.d(TAG, "showAudioView isCurrentViewActive");
-            SimpleExoPlayer player = getMediaManagerInstance().getExoPlayer();
-            Log.d(TAG, "showAudioView getMediaManagerInstance()= " + getMediaManagerInstance().hashCode());
-            Log.d(TAG, "showAudioView getMediaManagerInstance()= " + getMediaManagerInstance().getExoPlayer());
-            if (player != null) {
-                playerView.restoreState(player);
-            }
+            playerView.restoreState(getMediaManagerInstance().getExoPlayer());
         }
     }
 
@@ -689,7 +683,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     }
 
     private void setViewPosition(QBPlaybackControlView view, int position) {
-        if(playerViewHashMap == null) {
+        if (playerViewHashMap == null) {
             playerViewHashMap = new WeakHashMap<>();
         }
         playerViewHashMap.put(view, position);
@@ -768,7 +762,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
         Glide.with(context)
                 .load(url)
-                .listener(this.<String, GlideDrawable> getRequestListener(holder, position))
+                .listener(this.<String, GlideDrawable>getRequestListener(holder, position))
                 .override(preferredImageWidth, preferredImageHeight)
                 .dontTransform()
                 .error(R.drawable.ic_error)
@@ -934,7 +928,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
         @Override
         public void onClick(View view) {
-            if(chatAttachClickListener != null) {
+            if (chatAttachClickListener != null) {
                 super.onClick(view);
             }
             controlView.clickIconPlayPauseView();
@@ -994,7 +988,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
         @Override
         public boolean onLongClick(View v) {
-            if (linkPreviewClickListener != null){
+            if (linkPreviewClickListener != null) {
                 linkPreviewClickListener.onLinkPreviewLongClicked(link, linkPreview, position);
             }
 

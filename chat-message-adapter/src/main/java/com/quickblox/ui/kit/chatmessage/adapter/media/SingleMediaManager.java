@@ -55,8 +55,8 @@ public class SingleMediaManager implements MediaManager, Player.EventListener {
 
     @Override
     public void playMedia(QBPlaybackControlView playerView, Uri uri) {
-        if(isPlayerViewCurrent(playerView)){
-            if(isPlaying()) {
+        if (isPlayerViewCurrent(playerView)) {
+            if (isPlaying()) {
                 Log.v(TAG, "playMedia: already playing");
                 return;
             } else {
@@ -79,8 +79,10 @@ public class SingleMediaManager implements MediaManager, Player.EventListener {
 
     @Override
     public void pauseMedia() {
-        exoPlayer.setPlayWhenReady(false);
-        notifyListenersOnPause();
+        if (exoPlayer != null) {
+            exoPlayer.setPlayWhenReady(false);
+            notifyListenersOnPause();
+        }
     }
 
     public void suspendPlay() {
@@ -114,21 +116,22 @@ public class SingleMediaManager implements MediaManager, Player.EventListener {
     }
 
     public boolean isPlaying() {
-        if(exoPlayer != null) {
+        if (exoPlayer != null) {
             Log.d(TAG, "isPlaying playbackState= " + exoPlayer.getPlaybackState());
             return exoPlayer.getPlayWhenReady();
-        } return false;
+        }
+        return false;
     }
 
     private void updatePlayerView(QBPlaybackControlView playerView) {
-        if(this.playerView !=null && this.playerView != playerView) {
+        if (this.playerView != null && this.playerView != playerView) {
             this.playerView.setDurationViewOnTop();
         }
     }
 
     private void stopResetCurrentPlayer() {
         Log.v(TAG, "stopResetCurrentPlayer");
-        if(playerView != null) {
+        if (playerView != null) {
             releasePlayer();
             playerView.disposeViewPlayer();
         }
@@ -189,36 +192,38 @@ public class SingleMediaManager implements MediaManager, Player.EventListener {
     }
 
     public void onStartPosition() {
-        exoPlayer.seekTo(0);
-        pauseMedia();
+        if(exoPlayer != null) {
+            exoPlayer.seekTo(0);
+            pauseMedia();
+        }
     }
 
     private void notifyListenersOnStart() {
-        for(QBMediaPlayerListener listener : listeners) {
+        for (QBMediaPlayerListener listener : listeners) {
             listener.onStart(uri);
         }
     }
 
     private void notifyListenersOnResume() {
-        for(QBMediaPlayerListener listener : listeners) {
+        for (QBMediaPlayerListener listener : listeners) {
             listener.onResume(uri);
         }
     }
 
     private void notifyListenersOnPause() {
-        for(QBMediaPlayerListener listener : listeners) {
+        for (QBMediaPlayerListener listener : listeners) {
             listener.onPause(uri);
         }
     }
 
     private void notifyListenersOnStop() {
-        for(QBMediaPlayerListener listener : listeners) {
+        for (QBMediaPlayerListener listener : listeners) {
             listener.onStop(uri);
         }
     }
 
     private void notifyListenersOnPlayerError(ExoPlaybackException error) {
-        for(QBMediaPlayerListener listener : listeners) {
+        for (QBMediaPlayerListener listener : listeners) {
             listener.onPlayerError(error);
         }
     }
@@ -264,7 +269,7 @@ public class SingleMediaManager implements MediaManager, Player.EventListener {
     }
 
     private void parsePlayerEvent(int playbackState) {
-        switch(playbackState) {
+        switch (playbackState) {
             case Player.STATE_BUFFERING:
                 break;
             case Player.STATE_ENDED:

@@ -120,9 +120,11 @@ public class QBPlaybackControlView extends PlaybackControlView {
     }
 
     public void restoreState(ExoPlayer player) {
-        setPlayer(player);
-        updatePositionDurationViews();
-        updateViewState();
+        if(player != null) {
+            setPlayer(player);
+            updatePositionDurationViews();
+            updateViewState();
+        }
     }
 
     private void updatePositionDurationViews() {
