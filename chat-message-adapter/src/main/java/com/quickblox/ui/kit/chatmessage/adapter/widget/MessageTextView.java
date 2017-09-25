@@ -40,11 +40,13 @@ public abstract class MessageTextView extends FrameLayout {
         TypedArray array = null;
         int widgetIdBottom;
         int widgetIdTop;
+        int widgetIdLinkPreview;
 
         try {
             array = getContext().obtainStyledAttributes(attrs, R.styleable.MessageTextView);
             widgetIdBottom = array.getResourceId(R.styleable.MessageTextView_widget_id_bottom, 0);
             widgetIdTop = array.getResourceId(R.styleable.MessageTextView_widget_id_top, 0);
+            widgetIdLinkPreview = array.getResourceId(R.styleable.MessageTextView_widget_id_link_preview, R.layout.widget_link_preview);
         } finally {
             if (array != null) {
                 array.recycle();
@@ -54,6 +56,7 @@ public abstract class MessageTextView extends FrameLayout {
         setLinearSide();
         setTextLayout();
         setCustomWidgets(widgetIdBottom, widgetIdTop);
+        setLinkPreviewWidget(widgetIdLinkPreview);
     }
 
     protected void setCustomWidgets(@LayoutRes int widgetIdBottom, @LayoutRes int widgetIdTop) {
@@ -67,6 +70,14 @@ public abstract class MessageTextView extends FrameLayout {
             final ViewGroup widgetFrameTop = (ViewGroup) findViewById(R.id.msg_custom_widget_frame_top);
             View customViewTop = inflater.inflate(widgetIdTop, widgetFrameTop);
             Log.d(TAG, "customViewTop = null ? " + (customViewTop == null));
+        }
+    }
+
+    protected void setLinkPreviewWidget(@LayoutRes int linkPreviewWidget) {
+        if (linkPreviewWidget != 0) {
+            final ViewGroup widgetFrameLinkPreview = (ViewGroup) findViewById(R.id.msg_link_preview);
+            View linkPreview = inflater.inflate(linkPreviewWidget, widgetFrameLinkPreview);
+            Log.d(TAG, "linkPreview = null ? " + (linkPreview == null));
         }
     }
 

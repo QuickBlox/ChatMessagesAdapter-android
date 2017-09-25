@@ -31,12 +31,16 @@ allprojects {
                 url "https://github.com/QuickBlox/quickblox-android-sdk-releases/raw/master/"
             }
         }
+
+        maven {
+            url "https://maven.google.com"
+        }
     }
 }
 
 ext.compileSdkVersion = 24
 ext.buildToolsVersion = "24.0.1"
-ext.versionName = '1.1.0'
+ext.versionName = '2.0'
 
 ext.supportAnnotationsVersion = '24.0.1'
 
@@ -46,11 +50,12 @@ ext.targetSdkVersion = 24
 ext.sourceCompatibility = JavaVersion.VERSION_1_7
 ext.targetCompatibility = JavaVersion.VERSION_1_7
 
-ext.qbSdkVersion = "3.3.1"
-ext.recycleVersion = "25.1.0"
+ext.qbSdkVersion = "3.3.4"
+ext.recycleVersion = "25.3.1"
 ext.circleImageVersion = "2.1.0"
-ext.glideVersion = "3.7.0"
-ext.supportV4Version = "25.1.0"
+ext.glideVersion = "3.8.0"
+ext.exoPlayerVersion = "r2.5.1"
+ext.supportV4Version = "25.3.1"
 
 task clean(type: Delete) {
     delete rootProject.buildDir

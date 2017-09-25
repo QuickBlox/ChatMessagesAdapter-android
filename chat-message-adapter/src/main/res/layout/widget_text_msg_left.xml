@@ -9,7 +9,7 @@
         style="@style/AvatarImageViewStyle.Left"/>
 
     <LinearLayout
-        android:id="@+id/msg_bubble_background_text"
+        android:id="@+id/msg_bubble_background"
         style="@style/BubbleTextFrame.Left">
 
 
@@ -31,6 +31,10 @@
                 android:id="@+id/msg_text_message"
                 style="@style/TextViewTextMsg.Left"
                 tools:text="messagertdfsscsd" />
+
+            <LinearLayout
+                android:id="@+id/msg_link_preview"
+                style="@style/LinkPreviewFrame.Left"/>
 
             <!--LinearLayout should place its actual message widget here.-->
             <LinearLayout

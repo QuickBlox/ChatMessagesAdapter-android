@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/msg_widget_attach_audio_right"
+    style="@style/ListItemAudioMessage.Right">
+
+    <RelativeLayout
+        android:id="@+id/msg_bubble_background"
+        style="@style/BubbleAttachAudioFrame.Right">
+
+        <com.quickblox.ui.kit.chatmessage.adapter.media.view.QBPlaybackControlView
+            android:id="@+id/msg_audio_attach"
+            style="@style/AudioViewAttach.Right" />
+
+        <include layout="@layout/widget_item_attach_right" />
+
+    </RelativeLayout>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/msg_image_avatar"
+        style="@style/AvatarImageViewStyle.Right" />
+</LinearLayout>

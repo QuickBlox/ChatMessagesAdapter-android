@@ -1,12 +1,11 @@
 package com.quickblox.sample.chatadapter.ui.adapter;
 
-import android.content.Context;
+import android.app.Activity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.bumptech.glide.request.RequestListener;
 import com.google.gson.Gson;
 import com.quickblox.chat.QBChatService;
 import com.quickblox.chat.model.QBAttachment;
@@ -30,7 +29,7 @@ public class CustomMessageAdapter extends QBMessagesAdapter<QBChatMessage> {
     private UserData currentUserData;
     private UserData opponentUserData;
 
-    public CustomMessageAdapter(Context context, List<QBChatMessage> chatMessages, ArrayList<QBUser> qbUsers) {
+    public CustomMessageAdapter(Activity context, List<QBChatMessage> chatMessages, ArrayList<QBUser> qbUsers) {
         super(context, chatMessages);
         setUsers(qbUsers);
     }
@@ -65,14 +64,6 @@ public class CustomMessageAdapter extends QBMessagesAdapter<QBChatMessage> {
         }
         return -1;
     }
-
-    @Override
-    protected QBMessageViewHolder onCreateCustomViewHolder(ViewGroup parent, int viewType) {
-        Log.d(TAG, "onCreateCustomViewHolder viewType= " + viewType);
-        return viewType == TYPE_OWN_VIDEO_ATTACH ? new ImageAttachHolder(inflater.inflate(R.layout.list_item_attach_right, parent, false),
-                R.id.msg_image_attach, R.id.msg_progressbar_attach, R.id.msg_text_time_attach) : null;
-    }
-
 
     @Override
     protected void onBindViewCustomHolder(QBMessageViewHolder holder, QBChatMessage chatMessage, int position) {

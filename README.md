@@ -19,7 +19,7 @@ Just add to your build.gradle
 ```xml
 dependencies {
 
-compile 'com.quickblox:chat-message-adapter:1.1.0'
+compile 'com.quickblox:chat-message-adapter:2.0'
 
 }
 ```
@@ -83,7 +83,7 @@ Chat Adapter main event listeners.
 QBChatMessageLinkClickListener - interface used to handle Clicks and Long clicks on the TextView and taps on the phone, web, mail links inside of TextView.
 QBChatAttachImageClickListener - interface used to handle Clicks on image attachments.
 QBChatAttachLocationClickListener - interface used to handle Clicks on location attachments.
-```  
+```
 Usage:
 ```java
 messagesAdapter.setAttachLocationClickListener(new QBChatAttachLocationClickListener{
@@ -96,7 +96,7 @@ messagesAdapter.setAttachLocationClickListener(new QBChatAttachLocationClickList
 
 messagesAdapter.setMessageTextViewLinkClickListener(messagesTextViewLinkClickListener, false);
 messagesAdapter.setAttachImageClickListener(imageAttachClickListener);
-```  
+```
 
 ## Style configuration
   
@@ -239,8 +239,8 @@ and etc.
 
 Starting from version 1.1.0 ***ChatAdapter*** has ability to create location JSON, that represents such fields as lat and lng:
 ```java
-	"attachments":[  
-            {  
+	"attachments":[
+            {
                "type":"location",
                "data":"{\"lat\":\"50.014141\",\"lng\":\"36.229058\"}"
             }
@@ -284,6 +284,69 @@ Besides, ***LocationUtils*** has defaultUrlLocationParams for location URI and i
     <string name="map_type">roadmap</string>
     <string name="map_color">blue</string>
 ```
+
+
+## Link preview customisation
+### Simple customization
+This chat adapter displays preview only for first link in message. If message contains only link, message's text will be hidden and link
+preview will be displayed. If message contains few links, link preview will be displayed only for first link and other links will be
+displayed as message text.
+
+If you want to simple customize view for displaying link previews (change place, position of views etc.), you can create layout resource file
+```widget_link_preview.xml``` in your module and fill it with views with next ids:
+- ```link_preview_image``` - displays main image for link (type ImageView);
+- ```link_preview_title``` - displays title of link (type TextView);
+- ```link_preview_description``` - displays description of link (type TextView);
+- ```link_host``` - displays host of link (type TextView);
+- ```link_host_icon``` - displays host icon of link (type ImageView).
+
+In this way your layout resource file ```widget_link_preview.xml``` must contain all this ids.
+
+If you want use only separated ids, you should override method
+```fillLinkPreviewLayout(View linkPreviewLayout, QBLinkPreview linkPreview, String link)``` for setting data to your views.
+
+For configuration default views we prepared some styles:
+* LinkPreviewFrame (Right or Left) - for LinearLayout in widget text message with background bubble, that includes link title, link image, link description, host icon and host URL
+* LinkPreviewVerticalLine - for vertical line in link preview
+* LinkPreviewTitle - for title of link
+* LinkPreviewImage - for image of link
+* LinkPreviewDescription - for description of link
+* HostView - for LinearLayout in widget link preview, that includes host icon and host URL
+* HostViewIcon - for image of host
+* HostViewUrl - for text with host URL
+
+### Full customization
+If you want fully customize link preview with own views, you should set your own custom view to ```MessageTextViewLeft``` and
+```MessageTextViewRight``` (in example we use layout file with name ```custom_widget_link_preview.xml```):
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<com.quickblox.ui.kit.chatmessage.adapter.widget.MessageTextViewLeft
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+
+    android:id="@+id/msg_message_text_view_left"
+    style="@style/ListItemTextMessage.Left"
+    custom:widget_id_link_preview="@layout/custom_widget_link_preview">
+
+</com.quickblox.ui.kit.chatmessage.adapter.widget.MessageTextViewLeft>
+```
+Then need override method ```processLinksFromMessage(final TextMessageHolder holder, final List<String> urlsList, final int position)```.
+in this method you can find own view from parameter ```hollder```:
+```java
+    View customView = holder.linkPreviewLayout;
+```
+
+Sure, you can use separated views for right side bubbles (own messages) and for left side bubbles (opponent's messages).
+For it need set different layouts for ```MessageTextViewLeft``` and ```MessageTextViewRight```. For example:
+```xml
+<!--  for left link previews-->
+custom:widget_id_link_preview="@layout/custom_widget_link_preview_left"
+
+<!--  for right link previews-->
+custom:widget_id_link_preview="@layout/custom_widget_link_preview_right"
+```
+Then need override methods ```processLinksFromLeftMessage(TextMessageHolder holder, List<String> urlsList, int position)``` and
+```processLinksFromRightMessage(TextMessageHolder holder, List<String> urlsList, int position)``` for
 
 # License
 See [LICENSE](LICENSE)

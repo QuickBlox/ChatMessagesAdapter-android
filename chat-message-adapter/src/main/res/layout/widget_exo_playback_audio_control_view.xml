@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/progress_relativelayout"
+    style="@style/ExoPlaybackControlView">
+
+    <com.quickblox.ui.kit.chatmessage.adapter.media.view.TimeProgressBar
+        android:id="@id/exo_progress"
+        style="@style/TimeProgressBarView" />
+
+    <LinearLayout
+        android:id="@+id/exo_linear_frame"
+        style="@style/ExoLinearFrame">
+
+        <ImageView
+            android:id="@id/icon_play_pause"
+            style="@style/IconPlayPauseView"/>
+
+        <TextView
+            android:id="@+id/msg_attach_duration"
+            style="@style/AudioAttachDurationView"/>
+
+        <TextView
+            android:id="@id/exo_position"
+            style="@style/AudioAttachPositionView"/>
+
+    </LinearLayout>
+
+</RelativeLayout>
