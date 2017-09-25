@@ -19,7 +19,7 @@ Just add to your build.gradle
 ```xml
 dependencies {
 
-compile 'com.quickblox:chat-message-adapter:1.0'
+compile 'com.quickblox:chat-message-adapter:2.0'
 
 }
 ```
@@ -75,6 +75,29 @@ Steps to customize QBMessagesAdapter to your Chat app:
   * bubble background for message
   * for all layouts and views set paddings, margins, etc.
 ```
+
+## Main listeners
+
+Chat Adapter main event listeners.
+```java
+QBChatMessageLinkClickListener - interface used to handle Clicks and Long clicks on the TextView and taps on the phone, web, mail links inside of TextView.
+QBChatAttachImageClickListener - interface used to handle Clicks on image attachments.
+QBChatAttachLocationClickListener - interface used to handle Clicks on location attachments.
+```
+Usage:
+```java
+messagesAdapter.setAttachLocationClickListener(new QBChatAttachLocationClickListener{
+
+        @Override
+        public void onLinkClicked(QBAttachment qbAttachment, int i) {
+            MapsActivity.start(context, qbAttachment.getData());
+        }
+    });
+
+messagesAdapter.setMessageTextViewLinkClickListener(messagesTextViewLinkClickListener, false);
+messagesAdapter.setAttachImageClickListener(imageAttachClickListener);
+```
+
 ## Style configuration
   
 **ChatMessagesAdapter** has a flexible configuration system for displaying any view elements. For example:
@@ -192,29 +215,16 @@ To create your own non predefined view type for hat message use code:
 Also you can override methods to display attach images
 ```java
     @Override
-    public void displayAttachment(QBMessageViewHolder holder, int position) {
-        int preferredImageSizePreview = (int) (80 * Resources.getSystem().getDisplayMetrics().density);
-        int valueType = getItemViewType(position);
-        initGlideRequestListener((ImageAttachHolder) holder);
-
-        QBChatMessage chatMessage = getItem(position);
-
-        Collection<QBAttachment> attachments = chatMessage.getAttachments();
-        QBAttachment attachment = attachments.iterator().next();
-        Glide.with(context)
-                .load(attachment.getUrl())
-                .listener(glideRequestListener)
-                .override(preferredImageSizePreview, preferredImageSizePreview)
-                .dontTransform()
-                .error(R.drawable.ic_error)
-                .into(((ImageAttachHolder) holder).attachImageView);
+    protected void displayAttachment(QBMessageViewHolder holder, int position) {
+       super.displayAttachment(holder, position);
+       ...add own logic
     }
 ```
 override methods to display avatars
 ```java
     @Override
     public void displayAvatarImage(String url, ImageView imageView) {
-        Glide.with(context).load(url).into(imageView);
+       ...
     }
 
     @Override
@@ -225,13 +235,64 @@ override methods to display avatars
 ```
 and etc.
 
+## Location attachment integration.
+
+Starting from version 1.1.0 ***ChatAdapter*** has ability to create location JSON, that represents such fields as lat and lng:
+```java
+	"attachments":[
+            {
+               "type":"location",
+               "data":"{\"lat\":\"50.014141\",\"lng\":\"36.229058\"}"
+            }
+         ]
+```
+This means you can generate json location like this:
+```java
+double latitude = 50.014141;
+double longitude = 36.229058;
+String location = LocationUtils.generateLocationJson(new Pair<>("lat", latitude),
+                            new Pair<>("lng", longitude));
+```
+And then create attachment:
+```java
+QBAttachment attachment = new QBAttachment("location");
+attachment.setData(location);
+...
+chatMessage.addAttachment(attachment);
+```
+
+After receiving message with location ***ChatAdapter*** generates locationUrl type of google static maps api, to show it like an image.
+
+***Note, you should set google_static_maps_key in string resource(https://developers.google.com/maps/documentation/static-maps/) like this:***
+```java
+    <string name="google_static_maps_key" templateMergeStrategy="preserve" translatable="false">
+        YOUR_KEY
+    </string>
+```
+
+Then by clicking this item, using ***QBChatAttachLocationClickListener***, you can get latitude and longitude to show it in your MapActivity:
+```java
+	String receivedLocation = attachment.getData();
+	// latitude - latLngPair.first, longitude - latLngPair.second
+	Pair<Double, Double> latLngPair = LocationUtils.getLatLngFromJson(receivedLocation);
+```
+
+Besides, ***LocationUtils*** has defaultUrlLocationParams for location URI and it can be customized with LocationUtils.BuilderParams(), or can be changed just some parameters in string resource:
+```java
+    <string name="map_zoom">15</string>
+    <string name="map_size">600x300</string>
+    <string name="map_type">roadmap</string>
+    <string name="map_color">blue</string>
+```
+
+
 ## Link preview customisation
 ### Simple customization
-This chat adapter displays preview only for first link in message. If message contains only link, message's text will be hidden and link 
-preview will be displayed. If message contains few links, link preview will be displayed only for first link and other links will be 
+This chat adapter displays preview only for first link in message. If message contains only link, message's text will be hidden and link
+preview will be displayed. If message contains few links, link preview will be displayed only for first link and other links will be
 displayed as message text.
 
-If you want to simple customize view for displaying link previews (change place, position of views etc.), you can create layout resource file 
+If you want to simple customize view for displaying link previews (change place, position of views etc.), you can create layout resource file
 ```widget_link_preview.xml``` in your module and fill it with views with next ids:
 - ```link_preview_image``` - displays main image for link (type ImageView);
 - ```link_preview_title``` - displays title of link (type TextView);
@@ -239,9 +300,9 @@ If you want to simple customize view for displaying link previews (change place,
 - ```link_host``` - displays host of link (type TextView);
 - ```link_host_icon``` - displays host icon of link (type ImageView).
 
-In this way your layout resource file ```widget_link_preview.xml``` must contain all this ids. 
+In this way your layout resource file ```widget_link_preview.xml``` must contain all this ids.
 
-If you want use only separated ids, you should override method 
+If you want use only separated ids, you should override method
 ```fillLinkPreviewLayout(View linkPreviewLayout, QBLinkPreview linkPreview, String link)``` for setting data to your views.
 
 For configuration default views we prepared some styles:
@@ -255,7 +316,7 @@ For configuration default views we prepared some styles:
 * HostViewUrl - for text with host URL
 
 ### Full customization
-If you want fully customize link preview with own views, you should set your own custom view to ```MessageTextViewLeft``` and 
+If you want fully customize link preview with own views, you should set your own custom view to ```MessageTextViewLeft``` and
 ```MessageTextViewRight``` (in example we use layout file with name ```custom_widget_link_preview.xml```):
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -279,13 +340,13 @@ Sure, you can use separated views for right side bubbles (own messages) and for 
 For it need set different layouts for ```MessageTextViewLeft``` and ```MessageTextViewRight```. For example:
 ```xml
 <!--  for left link previews-->
-custom:widget_id_link_preview="@layout/custom_widget_link_preview_left" 
+custom:widget_id_link_preview="@layout/custom_widget_link_preview_left"
 
 <!--  for right link previews-->
-custom:widget_id_link_preview="@layout/custom_widget_link_preview_right" 
+custom:widget_id_link_preview="@layout/custom_widget_link_preview_right"
 ```
-Then need override methods ```processLinksFromLeftMessage(TextMessageHolder holder, List<String> urlsList, int position)``` and 
-```processLinksFromRightMessage(TextMessageHolder holder, List<String> urlsList, int position)``` for 
+Then need override methods ```processLinksFromLeftMessage(TextMessageHolder holder, List<String> urlsList, int position)``` and
+```processLinksFromRightMessage(TextMessageHolder holder, List<String> urlsList, int position)``` for
 
 # License
 See [LICENSE](LICENSE)
