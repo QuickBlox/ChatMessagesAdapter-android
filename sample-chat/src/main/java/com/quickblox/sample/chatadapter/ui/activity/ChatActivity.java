@@ -276,9 +276,13 @@ public class ChatActivity extends AppCompatActivity {
                 .setDuration(10)
                 .build();
                 // Optional
-//                .setAudioSource(QBMediaRecorder.AudioSource.MIC)
-//                .setOutputFormat(QBMediaRecorder.OutputFormat.AMR_NB);
-//                .setSampleRate(AudioSampleRate.HZ_48000)
+//                .setDuration(10)
+//                .setAudioSource(MediaRecorder.AudioSource.MIC)
+//                .setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+//                .setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
+//                .setAudioSamplingRate(44100)
+//                .setAudioChannels(CHANNEL_STEREO)
+//                .setAudioEncodingBitRate(96000)
         audioRecorder.setMediaRecordListener(new QBMediaRecordListenerImpl());
     }
 

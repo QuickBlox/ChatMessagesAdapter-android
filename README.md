@@ -3,16 +3,17 @@ QuickBlox simple to use UI library for showing quickblox chat messages inside an
 
 #Features
 - Ready-to-go QBChatMessage view adapter with a set of view types.
-- UI customisation  for all message types.
+- UI customisation for all message types.
 - Flexibility in improving and extending functionality.
 - Easy to connect with Quickblox.
 - Optimised and performant.
-- Flexible mechainm for styling layout for chat messages.
-- Add custom widgets inside predefined layout
+- Flexible mechanism for styling layout for chat messages.
+- Add custom widgets inside predefined layout.
 
 # Screenshots
 
-<img src="screenshots/screenshot1.png" border="5" alt="Chat Message Adapter" width="300">
+<img src="screenshots/screenshot1.png" border="5" alt="Chat Message Adapter" width="300">&nbsp;
+<img src="screenshots/screenshot2.png" border="5" alt="Chat Message Adapter" width="300">
 
 # Dependencies
 Just add to your build.gradle
@@ -81,12 +82,11 @@ Steps to customize QBMessagesAdapter to your Chat app:
 Chat Adapter main event listeners.
 ```java
 QBChatMessageLinkClickListener - interface used to handle Clicks and Long clicks on the TextView and taps on the phone, web, mail links inside of TextView.
-QBChatAttachImageClickListener - interface used to handle Clicks on image attachments.
-QBChatAttachLocationClickListener - interface used to handle Clicks on location attachments.
+QBChatAttachClickListener - interface used to handle Clicks on any attachments: image, location, audio, video.
 ```
 Usage:
 ```java
-messagesAdapter.setAttachLocationClickListener(new QBChatAttachLocationClickListener{
+messagesAdapter.setAttachLocationClickListener(new QBChatAttachClickListener{
 
         @Override
         public void onLinkClicked(QBAttachment qbAttachment, int i) {
@@ -112,7 +112,7 @@ To change Avatar cell size
 ```xml
     <style name="AvatarImageViewStyle.Left">
         <item name="android:layout_width">@dimen/image_view_small_avatar_layout_width</item>
-        <item name="android:layout_height">@dimen/image_view_small_avatar_layout_width</item>        
+        <item name="android:layout_height">@dimen/image_view_small_avatar_layout_height</item>
     </style>
 ```
 To change some margin or padding
@@ -152,7 +152,7 @@ For example, create layout with namespace `list_item_text_right` with any layout
 </com.quickblox.ui.kit.chatmessage.adapter.widget.MessageTextViewRight>
 ```
 
-Then you can extends QBMessagesAdapter and define your own logic for every item view - plain text message, message with image attachment or your custom item view:
+Then you can extends QBMessagesAdapter and define your own logic for every item view - plain text message, message with attachment or your custom item view:
 ```java
     @Override
     protected void onBindViewMsgRightHolder(TextMessageHolder holder, QBChatMessage chatMessage, int position) {
@@ -177,14 +177,18 @@ Then you can extends QBMessagesAdapter and define your own logic for every item 
     }
 ```
 
-There are 4 predefined view types:
+There are 8 predefined view types:
  - TYPE_TEXT_RIGHT
  - TYPE_TEXT_LEFT
  - TYPE_ATTACH_RIGHT
  - TYPE_ATTACH_LEFT
+ - TYPE_ATTACH_RIGHT_AUDIO
+ - TYPE_ATTACH_LEFT_AUDIO
+ - TYPE_ATTACH_RIGHT_VIDEO
+ - TYPE_ATTACH_LEFT_VIDEO
 
 
-To create your own non predefined view type for hat message use code:
+To create your own non predefined view type for chat message use code:
 
 * Define custom view type for position
 ```java
@@ -234,6 +238,70 @@ override methods to display avatars
     }
 ```
 and etc.
+
+## Audio and video attachment integration.
+
+Starting from version 2.0 ***ChatAdapter*** has ability to record audio attachment, a.k.a. - voice message.  
+AudioRecorder is intended for this purpose. Just use it like this:
+```java
+        audioRecorder = AudioRecorder.newBuilder()
+                // Required
+                .useInBuildFilePathGenerator(this) // or setFilePath(filePath)
+                .build();
+                // Optional
+//                .setDuration(10)
+//                .setAudioSource(MediaRecorder.AudioSource.MIC)
+//                .setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+//                .setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
+//                .setAudioSamplingRate(44100)
+//                .setAudioChannels(CHANNEL_STEREO)
+//                .setAudioEncodingBitRate(96000)
+        audioRecorder.setMediaRecordListener(new QBMediaRecordListener());
+	...
+	audioRecorder.startRecord();
+```
+and listen events with QBMediaRecordListener
+```java
+public interface QBMediaRecordListener {
+
+    void onMediaRecorded(File file);
+
+    void onMediaRecordError(MediaRecorderException e);
+
+    void onMediaRecordClosed();
+}
+```
+QBRecordAudioButton - custom view which extends ImageButton. This view has RecordTouchEventListener:
+ ```java
+    public interface RecordTouchEventListener {
+        void onStartClick(View view);
+
+        void onCancelClick(View view);
+
+        void onStopClick(View view);
+}
+```
+It is convenient way to make voice record. Just set setRecordTouchListener:
+ ```java
+ recordButton.setRecordTouchListener(new RecordTouchListenerImpl());
+ ...
+         @Override
+         public void onStartClick(View view) {
+            audioRecorder.startRecord();
+         }
+ ```
+ 
+ To record Video, for example you can use:
+  ```java
+ new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+ ```
+
+ChatAdapter has audio and video preview integration and can play these kind attachments using ExoPlayer library.  
+VideoPlayerActivity - simple implementation for playing video attachments. To use it just declare VideoPlayerActivity in your AndroidManifest.xml file.
+
+QBPlaybackControlView - custom control view for playback audio attachments, which extends PlaybackControlView from ExoPlayer.
+
+
 
 ## Location attachment integration.
 
