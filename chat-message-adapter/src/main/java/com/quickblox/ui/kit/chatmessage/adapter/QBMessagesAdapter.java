@@ -400,6 +400,15 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
             displayAvatarImage(avatarUrl, holder.avatar);
         }
 
+        processLinksIfPossible(holder, chatMessage, position, isLeftMessage);
+    }
+
+    protected void processLinksIfPossible(TextMessageHolder holder, T chatMessage, int position, boolean isLeftMessage) {
+        if (TextUtils.isEmpty(chatMessage.getBody())){
+            holder.messageTextView.setMaxWidth(context.getResources().getDisplayMetrics().widthPixels);
+            return;
+        }
+
         final List<String> urlsList = LinkUtils.extractUrls(chatMessage.getBody());
         if (!urlsList.isEmpty()) {
             holder.messageTextView.setMaxWidth((int) context.getResources().getDimension(R.dimen.link_preview_width));
