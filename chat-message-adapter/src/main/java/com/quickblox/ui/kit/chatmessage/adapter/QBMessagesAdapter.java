@@ -575,7 +575,13 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
     @Override
     public void add(T item) {
         chatMessages.add(item);
-        notifyDataSetChanged();
+        this.notifyItemInserted(chatMessages.size() - 1);
+    }
+
+    @Override
+    public void addToList(List<T> items) {
+        chatMessages.addAll(0, items);
+        notifyItemRangeInserted(0, items.size());
     }
 
     @Override
