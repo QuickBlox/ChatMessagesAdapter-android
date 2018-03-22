@@ -655,7 +655,7 @@ public class QBMessagesAdapter<T extends QBChatMessage> extends RecyclerView.Ada
 
 
     protected Uri getUriFromAttach(QBAttachment attachment) {
-        return Utils.getUriFromAttachPublicUrl(attachment);
+        return Utils.getUriFromAttachPrivateUrl(attachment);
     }
 
     protected int getDurationFromAttach(QBAttachment attachment, int position) {

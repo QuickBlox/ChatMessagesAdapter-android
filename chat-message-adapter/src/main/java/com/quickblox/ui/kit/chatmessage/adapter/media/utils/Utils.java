@@ -24,4 +24,8 @@ public class Utils {
     public static Uri getUriFromAttachPublicUrl(QBAttachment attachment) {
         return Uri.parse(QBFile.getPublicUrlForUID(attachment.getId()));
     }
+
+    public static Uri getUriFromAttachPrivateUrl(QBAttachment attachment) {
+        return Uri.parse(QBFile.getPrivateUrlForUID(attachment.getId()));
+    }
 }
